@@ -1,0 +1,5 @@
+spring :
+  application :
+    name : be
+#  datasource:
+#    driver-class-name: com.mysql.jdbc.Driver
