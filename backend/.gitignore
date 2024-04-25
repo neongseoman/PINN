@@ -273,3 +273,6 @@ gradle-app.setting
 ### Gradle Patch ###
 # Java heap dump
 *.hprof
+
+# End of https://www.toptal.com/developers/gitignore/api/java,windows,git,intellij,visualstudiocode,gradle,redis
+/src/main/resources/
