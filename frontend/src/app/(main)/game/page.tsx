@@ -23,6 +23,7 @@ export default function GamePage() {
       </div>
       <div className={`${styles.chat} ${styles.opacity}`}>Chatting</div>
       <div className={`${styles.map} ${styles.opacity}`}>Map</div>
+      <div className={styles.streetView}>StreetView</div>
     </main>
   )
 }
