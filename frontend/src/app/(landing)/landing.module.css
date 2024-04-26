@@ -1,5 +1,48 @@
 .green {
   background-color: var(--Main-Green);
   color: var(--Main-Yellow);
-  height: 100px;
+  height: 100vh;
 }
+
+.landing {
+  /* background-image: url('');  랜딩 페이지 배경 이미지  */
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--Main-Green);
+}
+
+.logo {
+  color: var(--Main-Yellow);
+  font-size: 80px;
+  font-weight: bold;
+  margin: 0px;
+}
+
+.name {
+  color: var(--Main-Red);
+  font-size: 100px;
+  font-weight: bold;
+  margin: 10px;
+}
+
+/* .login {
+  background-image: url('');  카카오 로그인 버튼 이미지
+} */
+
+.scroll {
+  color: white;
+  font-size: 100px;
+  margin-top: 50px;
+  transition: transform 0.3s ease;
+  background: none;
+  border: none;
+}
+
+.scroll:hover {
+  transform: translateY(10px);
+  cursor: pointer;
+}
+
