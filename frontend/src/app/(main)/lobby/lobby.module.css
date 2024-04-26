@@ -1,0 +1,77 @@
+.lobby {
+  /* background-image: url('');  로비 페이지 배경 이미지  */
+  height: 100%;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: black;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  margin: 30px;
+  margin-bottom: 100px;
+}
+
+.logo {
+  color: var(--Main-Red);
+  font-size: 60px;
+  font-weight: bold;
+  margin: 0px;
+}
+
+.userInfo {
+  display: flex;
+  margin: 0px;
+}
+
+.userInfo:hover {
+  transform: scale(1.03);
+  transition: transform 0.3s ease;
+}
+
+.username {
+  color: white;
+  font-size: 35px;
+  margin: 0px;
+  cursor: pointer;
+}
+
+.profile {
+  margin-left: 10px;
+  border-color: white;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.medium {
+  display: flex;
+  justify-content: space-between;
+}
+
+.buttons {
+  color: var(--Main-Yellow);
+  font-size: 40px;
+  font-weight: bold;
+  margin: 0px 30px;
+}
+
+.buttons:hover {
+  color: var(--Main-Red);
+  cursor: pointer;
+  transform: scale(1.1);
+  transition: transform 0.3s ease;
+}
+
+.bottom {
+  display: flex;
+  justify-content: space-between;
+  flex-grow: 1;
+  margin: 30px;
+  color: white;
+}
