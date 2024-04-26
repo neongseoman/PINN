@@ -24,6 +24,12 @@
   color: white;
   height: 240px;
   width: 320px;
+  transition: all 0.3s ease;
+}
+
+.map:hover {
+  height: 360px;
+  width: 480px;
 }
 
 .hints {
