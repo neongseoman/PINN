@@ -1,7 +1,16 @@
+import styles from './room.module.css'
+
+import TeamList from './_components/TeamList'
+
 export default function RoomPage({ params }: { params: { id: number } }) {
   return (
-    <main>
-      <h1>{params.id}번 방 페이지입니다.</h1>
+    <main className={styles.background}>
+      <div className={styles.container}>
+        <div className={styles['option-team-container']}>
+          <div className={styles['option-wrapper']}>옵션 컴포넌트 입니다</div>
+          <TeamList></TeamList>
+        </div>
+      </div>
     </main>
   )
 }
