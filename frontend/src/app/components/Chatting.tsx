@@ -14,6 +14,10 @@ export default function Chatting() {
     socket.on('message', (message: string) => {
       setMessages((prevMessages) => [...prevMessages, message])
     })
+
+    return () => {
+      socket.disconnect()
+    }
   }, [])
 
   const handleSendMessage = () => {
