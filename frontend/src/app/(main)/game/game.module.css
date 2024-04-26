@@ -1,0 +1,46 @@
+.opacity {
+  opacity: 0.2;
+  transition: opacity 0.3s ease;
+}
+.opacity:hover {
+  opacity: 1;
+}
+
+.chat {
+  position: fixed;
+  bottom: 4vh;
+  left: 2vw;
+  background-color: var(--Main-Navy);
+  color: white;
+  height: 240px;
+  width: 320px;
+}
+
+.map {
+  position: fixed;
+  bottom: 4vh;
+  right: 2vw;
+  background-color: var(--Main-Navy);
+  color: white;
+  height: 240px;
+  width: 320px;
+}
+
+.hints {
+  position: fixed;
+  top: 4vh;
+  right: 2vw;
+}
+
+.infos {
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.timer {
+  position: fixed;
+  top: 12vh;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
