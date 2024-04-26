@@ -1,4 +1,4 @@
 package com.ssafy.be.auth.service;
 
-public interface AuthService {
+public interface OAuthService {
 }
