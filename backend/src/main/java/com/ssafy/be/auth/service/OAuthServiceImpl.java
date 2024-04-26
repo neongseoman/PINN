@@ -1,6 +1,5 @@
 package com.ssafy.be.auth.service;
 
-import com.ssafy.be.auth.model.OAuth2UserInfo;
 import com.ssafy.be.gamer.model.GamerDTO;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +32,7 @@ public class OAuthServiceImpl extends DefaultOAuth2UserService implements OAuthS
         String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
                 .getUserInfoEndpoint().getUserNameAttributeName();
 
-        OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfo.of(registationId,oAuthUserAttribute);
+//        OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfo.of(registationId,oAuthUserAttribute);
 
 //        GamerDTO gamer = getOrSave()
 
