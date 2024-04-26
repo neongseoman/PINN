@@ -52,6 +52,7 @@
 .medium {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 15px;
 }
 
 .buttons {
@@ -70,8 +71,59 @@
 
 .bottom {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   flex-grow: 1;
-  margin: 30px;
+  margin: 0px 20px;
   color: white;
+}
+
+
+/* RoomCard.tsx */
+.card {
+  width: 475px;
+  height: 160px;
+  background-color: var(--Main-Navy);
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-evenly;
+  padding-top: 20px;
+}
+
+.roomInfo {
+  width: 275px;
+  height: 140px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+}
+
+.title {
+  color: var(--Main-Navy);
+  font-size: 30px;
+  margin: 0px;
+}
+
+.theme {
+  color: var(--Main-Brown);
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0px;
+}
+
+.round {
+  color: white;
+  font-size: 15px;
+  margin: 0px 10px 0px 0px;
+  background-color: var(--Main-Green);
+  padding: 5px;
+}
+
+.count {
+  color: white;
+  font-size: 15px;
+  margin: 0px 10px 0px 0px;
+  background-color: var(--Main-Light-Green);
+  padding: 5px;
 }
