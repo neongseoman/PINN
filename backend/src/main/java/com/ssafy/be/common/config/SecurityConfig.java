@@ -8,6 +8,7 @@ import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
@@ -15,6 +16,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -33,7 +35,7 @@ public class SecurityConfig {
     private final OAuthSuccessHandler oAuthSuccessHandler;
 
     private static final String[] AUTH_BLACKLIST = {
-            "/api/**"
+            "/api/v1/**"
     };
 
 
@@ -47,17 +49,13 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
                 .sessionManagement(c ->
-                        c.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                        c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // request 인증, 인가 설정 url을 분석해서 인증 인가가 필요한 url의 인증을 요청한다.
-//                .authorizeHttpRequests(request ->
-//                        request.requestMatchers(
-//                                AUTH_BLACKLIST
-//                        ).authenticated().anyRequest().permitAll()
-//                )//팀장 인가를 여기서하는게 나을 것도 같긴한데.........
-//                .oauth2Login(oauth ->
-//                        oauth.userInfoEndpoint(c -> c.userService(oAuthServiceImpl))
-//                                .successHandler(oAuthSuccessHandler)
-//                );
+                .authorizeHttpRequests(request ->
+                        request.requestMatchers(
+                                AUTH_BLACKLIST
+                        ).authenticated().anyRequest().permitAll());
+//                //팀장 인가를 여기서하는게 나을 것도 같긴한데.........
 //                .addFilterBefore(token)
 //                .exceptionHandling((exception) ->
 //                        exception
