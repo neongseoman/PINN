@@ -1,24 +1,6 @@
 spring :
   application :
     name : be
-  security:
-    oauth2:
-      client:
-        registration:
-          kakao:
-            client_id: ${KAKAO_CLIENT_ID} # REST API 키
-            client_secret: ${KAKAO_CLIENT_SECRET} # Client Secret 키
-            redirect_uri: ${KAKAO_REDIRECT_URI}
-            client-name: kakao
-            authorization-grant-type: authorization_code
-
-        provider:
-          kakao:
-            authorization-uri: https://kauth.kakao.com/oauth/authorize
-            token-uri: https://kauth.kakao.com/oauth/token
-            user-info-uri: https://kapi.kakao.com/v2/user/me
-            user-name-attribute: id
-
   #  datasource:
   #  driver-class-name: com.mysql.bc.Driver
   datasource:
@@ -67,3 +49,12 @@ jwt:
 
 
 
+
+oauth2:
+  client:
+      kakao:
+        client_id: ${KAKAO_CLIENT_ID} # REST API 키
+        client_secret: ${KAKAO_CLIENT_SECRET} # Client Secret 키
+        redirect_uri: ${KAKAO_REDIRECT_URI}
+        client-name: kakao
+        authorization-grant-type: authorization_code
