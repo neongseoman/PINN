@@ -21,9 +21,13 @@ import java.util.Map;
 public class OAuth2Service {
     private final KakaoOAuthConfig kakaoOAuthConfig;
     private static final String kakaoTokenURL = "https://kauth.kakao.com/oauth/token";
+    private static final String kakaoUserURL = "https://kapi.kakao.com/v2/user/me";
     WebClient.Builder tokenApi = WebClient.builder()
             .baseUrl(kakaoTokenURL)
             .defaultHeader("Content-type","application/x-www-form-urlencoded;charset=utf-8");
+
+    WebClient.Builder userApi = WebClient.builder()
+            .baseUrl(kakaoUserURL);
 
     public String getAccessToken(String authCode) {
         MultiValueMap<String, String> params = queryParam(authCode);
@@ -36,8 +40,24 @@ public class OAuth2Service {
         for (Map.Entry<String, Object> stringObjectEntry : response.entrySet()) {
             log.info(stringObjectEntry.getKey()+":"+stringObjectEntry.getValue());
         }
+        String accessToken = (String) response.get("access_token");
 
-        return "accessToken";
+        return accessToken;
+    }
+
+    public void getUserInfo(String accessToken) {
+        log.info(accessToken);
+        Map<String, Object> response = userApi.build()
+                .post()
+                .header("Content-type","application/x-www-form-urlencoded;charset=utf-8")
+                .header("Authorization", "Bearer " + accessToken)
+                .retrieve()
+                .bodyToMono(Map.class)
+                .block();
+
+        for (Map.Entry<String, Object> stringObjectEntry : response.entrySet()) {
+            log.info(stringObjectEntry.getKey()+":"+stringObjectEntry.getValue());
+        }
     }
 
     private MultiValueMap<String,String> queryParam(String authCode){

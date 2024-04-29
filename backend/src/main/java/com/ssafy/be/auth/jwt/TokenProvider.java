@@ -1,13 +1,9 @@
 package com.ssafy.be.auth.jwt;
 
-import com.ssafy.be.auth.model.JwtType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.token.TokenService;
 import org.springframework.stereotype.Component;
-
-import javax.crypto.SecretKey;
 
 @RequiredArgsConstructor
 @Component
