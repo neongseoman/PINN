@@ -1,27 +1,15 @@
 package com.ssafy.be.common.config;
 
-import com.ssafy.be.auth.handler.OAuthSuccessHandler;
-import com.ssafy.be.auth.service.OAuthService;
 import com.ssafy.be.auth.service.OAuthServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-
-import java.util.Arrays;
-import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
@@ -31,9 +19,6 @@ public class SecurityConfig {
     //jwt 처리 
     //oauth 처리
     private final OAuthServiceImpl oAuthServiceImpl;
-    // 인증 핸들러
-    private final OAuthSuccessHandler oAuthSuccessHandler;
-
     private static final String[] AUTH_BLACKLIST = {
             "/api/v1/**"
     };

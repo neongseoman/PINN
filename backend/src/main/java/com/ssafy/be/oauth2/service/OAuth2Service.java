@@ -49,7 +49,7 @@ public class OAuth2Service {
         return response.accessToken();
     }
 
-    public void getUserInfo(String accessToken) {
+    public GamerDTO getUserInfo(String accessToken) {
         Map response = userApi.build()
                 .post()
                 .header("Content-type","application/x-www-form-urlencoded;charset=utf-8")
@@ -64,7 +64,8 @@ public class OAuth2Service {
          KakaoUserDTO userDTO = new KakaoUserDTO(
                 (Long) response.get("id"),
                 (String) profile.get("nickname"));
-        getOrSave(userDTO);
+        return getOrSave(userDTO);
+
     }
 
     private MultiValueMap<String,String> queryParam(String authCode){
@@ -78,7 +79,7 @@ public class OAuth2Service {
         return params;
     }
 
-    private void getOrSave(KakaoUserDTO userDTO){
+    private GamerDTO getOrSave(KakaoUserDTO userDTO){
         GamerDTO gamer = gamerRepository.findByProviderId(userDTO.id()).orElse(null);
 
         if (gamer == null) {
@@ -92,8 +93,7 @@ public class OAuth2Service {
             );
 
             gamerRepository.save(gamer);
-//            gamerRepository.flush();
         }
-
+        return gamer;
     }
 }
