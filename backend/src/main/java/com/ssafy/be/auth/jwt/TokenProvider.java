@@ -16,9 +16,9 @@ public class TokenProvider {
     private String secretKey;
 //    private final TokenService tokenService;
     @Value("${jwt.kakao.access.expiration}")
-    private static long ACCESS_TOKEN_EXPIRE_TIME;
+    private long ACCESS_TOKEN_EXPIRE_TIME;
     @Value("${jwt.kakao.refresh.expiration}")
-    private static long REFRESH_TOKEN_EXPIRE_TIME;
+    private long REFRESH_TOKEN_EXPIRE_TIME;
     private static final String KEY_ROLE = "role";
 
     public String[] generateAccessToken(Authentication authentication) {
