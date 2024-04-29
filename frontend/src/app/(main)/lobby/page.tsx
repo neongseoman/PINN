@@ -28,7 +28,7 @@ export default function LobbyPage() {
           <p className={styles.logo}>PINN</p>
           <div className={styles.userInfo}  onClick={profileModal}>
             <p className={styles.username}>유전의 힘</p>
-            <Image className={styles.profile} width={35} height={35} src="/assets/images/default_profile.png" alt="프로필 이미지" />
+            <Image className={styles.profile} width={30} height={30} src="/assets/images/default_profile.png" alt="프로필 이미지" />
           </div>
         </div>
         <div className={styles.medium}>
@@ -40,14 +40,14 @@ export default function LobbyPage() {
         </div>
         <div className={styles.bottom}>
           <RoomCard />
-          {/* <RoomCard />
           <RoomCard />
           <RoomCard />
           <RoomCard />
           <RoomCard />
           <RoomCard />
           <RoomCard />
-          <RoomCard /> */}
+          <RoomCard />
+          <RoomCard />
         </div>
       </main>
     </>
