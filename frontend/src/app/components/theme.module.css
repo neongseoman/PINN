@@ -1,0 +1,25 @@
+.random {
+  color: var(--Main-Yellow);
+  background-color: var(--Main-Navy);
+  border-color: solid var(--Main-Yellow);
+}
+
+.korea {
+  color: var(--Main-Yellow);
+  background-color: var(--Theme-Korea);
+}
+
+.egypt {
+  color: var(--Main-Brown);
+  background-color: var(--Theme-Egypt);
+}
+
+.greece {
+  color: var(--Main-Navy);
+  background-color: var(--Theme-Greece);
+}
+
+.landmark {
+  color: var(--Main-Yellow);
+  background-color: var(--Theme-Landmark);
+}
