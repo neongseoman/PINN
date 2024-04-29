@@ -1,0 +1,22 @@
+.hintBox {
+  padding: 30px;
+  font-size: x-large;
+  display: flex;
+  flex-direction: column;
+  font-weight: 700;
+  width: 200px;
+  border-bottom: solid 4px;
+  border-right: solid 4px;
+}
+
+.title {
+  margin-bottom: 20px;
+  align-self: center;
+}
+
+.content {
+  align-self: flex-start;
+  margin-bottom: 5px;
+  font-weight: 400;
+  font-size: large;
+}

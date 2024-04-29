@@ -1,15 +1,40 @@
+'use client'
+
 import Link from 'next/link'
 import styles from './landing.module.css'
 import { FaAnglesDown } from "react-icons/fa6";
 
 export default function KakaoLogin() {
 
+  const scrollDown = () => {
+    // 스크롤 최하단으로
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: 'smooth'
+    });
+  }
+
   return (
     <main className={styles.landing}>
-      <p className={styles.logo}>지도 게임</p>
-      <p className={styles.name}>PINN</p>
-      <Link href={'https://kauth.kakao.com/oauth/authorize?client_id=a4bfe3f2b2f815648b923deb0a3c54c7&redirect_uri=http://www.pinn.kr/api/v1/oauth/kakao&response_type=code'} className={styles.login}>카카오 로그인</Link>
-      <button className={styles.scroll}><FaAnglesDown /></button>
+      <p className={styles.name}>지도 게임</p>
+      <img className={styles.logo} src="/assets/images/logo.png" alt="로고" />
+      <Link href={'https://kauth.kakao.com/oauth/authorize?client_id=a4bfe3f2b2f815648b923deb0a3c54c7&redirect_uri=https://www.pinn.kr/api/oauth/code/kakao&response_type=code'} className={styles.login}>
+        <img src="/assets/images/kakao_login.png" alt="카카오 로그인" />
+      </Link>
+      <button className={styles.scroll} onClick={scrollDown}><FaAnglesDown /></button>
+      <div className={styles.guide}>
+        <div className={styles.left}>
+          <img className={styles.guide1} src="/assets/images/guide1.png" alt="랜딩 페이지 설명 이미지 1" />
+          <p className={styles.text}>스트리트 뷰와 힌트를 참고해</p>
+          <p className={styles.text}>정답과 근접한 곳을 유추하여</p>
+          <p className={styles.text}>지도에 핀을 꽂아요!</p>
+        </div>
+        <div className={styles.right}>
+          <img className={styles.guide2} src="/assets/images/guide2.png" alt="랜딩 페이지 설명 이미지 2" />
+          <p className={styles.text}>정답과 가장 가까운 곳에</p>
+          <p className={styles.text}>핀을 꽂아서 보물을 획득해요!</p>
+        </div>
+      </div>
     </main>
   )
 }
