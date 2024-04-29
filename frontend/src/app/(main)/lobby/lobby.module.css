@@ -126,19 +126,17 @@
   display: flex;
   width: 285px;
   margin-top: 20px;
+  color: white;
+  font-size: 10px;
 }
 
 .round {
-  color: white;
-  font-size: 10px;
   margin: 0px 10px 0px 0px;
   background-color: var(--Main-Green);
   padding: 5px;
 }
 
 .count {
-  color: white;
-  font-size: 10px;
   margin: 0px 10px 0px 0px;
   background-color: var(--Main-Light-Green);
   padding: 5px;
