@@ -48,8 +48,6 @@ jwt:
       expiration: 86400000 # 240 시간
 
 
-
-
 oauth2:
   client:
       kakao:
@@ -58,3 +56,10 @@ oauth2:
         redirect_uri: ${KAKAO_REDIRECT_URI}
         client-name: kakao
         authorization-grant-type: authorization_code
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
