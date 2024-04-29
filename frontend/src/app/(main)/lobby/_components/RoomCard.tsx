@@ -13,7 +13,7 @@ export default function RoomCard() {
   return (
     <>
       <div className={styles.card} onClick={joinGame}>
-        <Image width={110} height={110} src="/assets/images/theme.jpg" alt="테마 이미지" />
+        <Image width={110} height={110} src="/assets/images/themes/EgyptTheme.jpg" alt="테마 이미지" />
         <div className={styles.roomInfo}>
           <p className={styles.title}>방 제목</p>
           <p className={styles.theme}>테마</p>

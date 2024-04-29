@@ -25,26 +25,27 @@
 
 .userInfo {
   display: flex;
+  align-items: center;
   margin: 0px;
+  padding: 0px 15px;
+  border-radius: 30px;
 }
 
 .userInfo:hover {
-  transform: scale(1.03);
-  transition: transform 0.3s ease;
+  background-color: rgb(255, 255, 255, 0.3);
+  cursor: pointer;
 }
 
 .username {
   color: white;
-  font-size: 30px;
+  font-size: 25px;
   margin: 0px;
-  cursor: pointer;
 }
 
 .profile {
   margin-left: 10px;
   border-color: white;
   border-radius: 50%;
-  cursor: pointer;
 }
 
 .medium {
@@ -125,6 +126,7 @@
   margin-top: 20px;
   color: white;
   font-size: 10px;
+  font-weight: bold;
 }
 
 .round {
