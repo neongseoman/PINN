@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: 'PINN',
   description: '현재 위치를 지도에 찍어보세요',
   icons: {
-    icon: '/assets/images/logo.png',
+    icon: '/assets/images/favicon.png',
   },
 }
 
