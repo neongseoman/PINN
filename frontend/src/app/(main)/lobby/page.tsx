@@ -25,7 +25,7 @@ export default function LobbyPage() {
     <>
       <main className={styles.lobby}>
         <div className={styles.top}>
-          <p className={styles.logo}>PINN</p>
+          <img className={styles.logo} src="/assets/images/logo.png" alt="로고" />
           <div className={styles.userInfo}  onClick={profileModal}>
             <p className={styles.username}>유전의 힘</p>
             <Image className={styles.profile} width={30} height={30} src="/assets/images/default_profile.png" alt="프로필 이미지" />
