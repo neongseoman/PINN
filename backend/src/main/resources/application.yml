@@ -1,9 +1,8 @@
 spring :
   application :
     name : be
-
   #  datasource:
-#    driver-class-name: com.mysql.bc.Driver
+  #  driver-class-name: com.mysql.bc.Driver
   datasource:
     url: ${MYSQL_URL}
     username: ${MYSQL_USERNAME}
@@ -30,10 +29,6 @@ spring :
     hibernate:
       ddl-auto: create
 
-    profiles:
-      include: jwt, oauth
-
-
 
 server:
   port: 8081
@@ -48,20 +43,18 @@ jwt:
   kakao:
     secret_key: ${KAKAO_JWT_KEY}
     access:
-      expiration: 600000 # 10 분
+      expiration: 600000 # 100 분
     refresh:
-      expiration: 86400000 # 24 시간
+      expiration: 86400000 # 240 시간
 
 
 
-security:
-  oauth2:
-    client:
-      registration:
-        kakao:
-          client_id: ${KAKAO_CLIENT_ID} # REST API 키
-          redirect_uri: ${KAKAO_REDIRECT_URI}
-          client_secret: ${KAKAO_CLIENT_SECRET} # Client Secret 키
-          client-name: kakao
-          authorization-grant-type: authorization_code
-          provider: kakao
+
+oauth2:
+  client:
+      kakao:
+        client_id: ${KAKAO_CLIENT_ID} # REST API 키
+        client_secret: ${KAKAO_CLIENT_SECRET} # Client Secret 키
+        redirect_uri: ${KAKAO_REDIRECT_URI}
+        client-name: kakao
+        authorization-grant-type: authorization_code
