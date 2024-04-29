@@ -10,8 +10,10 @@ export default function Hints({ theme, hints }: HintProps) {
   return (
     <div className={`${styles.hintBox} ${themeStyles[theme]}`}>
       <div className={styles.title}>Hints</div>
-      {hints.map((hint) => (
-        <div className={styles.content}>{hint}</div>
+      {hints.map((hint, index) => (
+        <div className={styles.content} key={index}>
+          {hint}
+        </div>
       ))}
     </div>
   )
