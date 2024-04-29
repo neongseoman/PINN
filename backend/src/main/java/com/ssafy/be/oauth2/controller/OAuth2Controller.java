@@ -18,7 +18,7 @@ public class OAuth2Controller {
 
     @GetMapping("/code/kakao")
     public void getAuthCode(HttpServletResponse res, @RequestParam("code") String code) throws IOException {
-        log.info("auth code : " + code);
+
         String kakaoAccessToken = oAuth2Service.getAccessToken(code);
         oAuth2Service.getUserInfo(kakaoAccessToken);
 
