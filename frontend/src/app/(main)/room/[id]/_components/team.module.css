@@ -14,6 +14,7 @@
   height: 20%;
   font-size: 1.5rem;
   font-weight: bold;
+  color: var(--Main-Yellow);
   display: flex;
   align-items: center;
   padding-top: 3%;
@@ -42,6 +43,17 @@
   height: 22%;
   font-size: 2rem;
   font-weight: bold;
+  color: var(--Main-Red);
+  display: flex;
+  align-items: center;
+  padding-top: 3%;
+}
+
+.ready-complete {
+  height: 22%;
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--Main-Red);
   display: flex;
   align-items: center;
   padding-top: 3%;

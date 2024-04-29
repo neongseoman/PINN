@@ -9,20 +9,63 @@
 }
 
 .container {
-  width: 90%;
+  width: 95%;
   height: 90%;
   margin: auto;
   display: flex;
 }
 
 .option-team-container {
-  width: 80%;
+  width: 75%;
   height: 100%;
   display: flex;
   flex-direction: column;
 }
 
-.option-wrapper {
-  height: 18%;
-  /* margin-top: 5%; */
+.chat-ready-out {
+  margin-left: 2%;
+  width: 24%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* 위에 마진 조절 */
+.chat {
+  height: 64%;
+  margin-top: 24.5%;
+  border-radius: 8px;
+  background-color: var(--Main-Navy);
+  padding: 10% 8%;
+}
+
+.ready-out {
+  height: 32%;
+  margin-top: 4%;
+  display: flex;
+  flex-direction: column;
+}
+
+.ready {
+  height: 60%;
+  color: var(--Main-Navy);
+  font-weight: bold;
+  font-size: 3.5rem;
+  font-family: 'GmarketSans';
+  border-radius: 8px;
+  background-color: var(--Main-Yellow);
+  padding-top: 6%;
+}
+
+.out {
+  height: 40%;
+  margin-top: 4%;
+  color: var(--Main-Yellow);
+  background-color: var(--Main-Red);
+  font-weight: bold;
+  font-size: 2rem;
+  font-family: 'GmarketSans';
+  border-radius: 8px;
+  padding-top: 3%;
 }
