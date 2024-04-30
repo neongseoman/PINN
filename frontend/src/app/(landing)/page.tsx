@@ -18,7 +18,7 @@ export default function KakaoLogin() {
     <main className={styles.landing}>
       <p className={styles.name}>지도 게임</p>
       <img className={styles.logo} src="/assets/images/logo.png" alt="로고" />
-      <Link href={'https://kauth.kakao.com/oauth/authorize?client_id=a4bfe3f2b2f815648b923deb0a3c54c7&redirect_uri=https://www.pinn.kr/api/oauth/code/kakao&response_type=code'} className={styles.login}>
+      <Link href={`https://kauth.kakao.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_KAKAO_REST_KEY}&redirect_uri=${process.env.NEXT_PUBLIC_KAKAO_LOGIN_REDIRECT_URI}&response_type=code`} className={styles.login}>
         <img src="/assets/images/kakao_login.png" alt="카카오 로그인" />
       </Link>
       <button className={styles.scroll} onClick={scrollDown}><FaAnglesDown /></button>
