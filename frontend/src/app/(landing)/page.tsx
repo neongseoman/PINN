@@ -3,8 +3,24 @@
 import Link from 'next/link'
 import styles from './landing.module.css'
 import { FaAnglesDown } from "react-icons/fa6";
+import { useSearchParams } from 'next/navigation';
 
-export default function KakaoLogin() {
+// const { Kakao } = window;
+export default function LandingPage() {
+
+  const KAKAO_AUTH_URI = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_KAKAO_REST_KEY}&redirect_uri=${process.env.NEXT_PUBLIC_KAKAO_LOGIN_REDIRECT_URI}&response_type=code`;
+
+  const kakaoLogin = () => {
+    console.log(window.Kakao.Auth);
+    window.Kakao.Auth.authorize({
+      redirectUri: process.env.NEXT_PUBLIC_KAKAO_LOGIN_REDIRECT_URI,
+    });
+    // const url = new URL('https://kauth.kakao.com/oauth/authorize')
+    // console.log(url.searchParams.get("code"))
+    const searchParams = useSearchParams();
+    const authCode = searchParams.get('code')
+    console.log(authCode)
+  }
 
   const scrollDown = () => {
     // 스크롤 최하단으로
@@ -18,9 +34,8 @@ export default function KakaoLogin() {
     <main className={styles.landing}>
       <p className={styles.name}>지도 게임</p>
       <img className={styles.logo} src="/assets/images/logo.png" alt="로고" />
-      <Link href={`https://kauth.kakao.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_KAKAO_REST_KEY}&redirect_uri=${process.env.NEXT_PUBLIC_KAKAO_LOGIN_REDIRECT_URI}&response_type=code`} className={styles.login}>
-        <img src="/assets/images/kakao_login.png" alt="카카오 로그인" />
-      </Link>
+      {/* <Link href={`https://kauth.kakao.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_KAKAO_REST_KEY}&redirect_uri=${process.env.NEXT_PUBLIC_KAKAO_LOGIN_REDIRECT_URI}&response_type=code`}> */}
+      <button className={styles.login} onClick={kakaoLogin}><img src="/assets/images/kakao_login.png" alt="카카오 로그인" /></button>
       <button className={styles.scroll} onClick={scrollDown}><FaAnglesDown /></button>
       <div className={styles.guide}>
         <div className={styles.left}>

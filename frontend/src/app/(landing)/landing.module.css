@@ -20,6 +20,15 @@
   margin: 0px 0px 80px 0px;
 }
 
+.login {
+  background: none;
+  border: none;
+}
+
+.login:hover {
+  cursor: pointer;
+}
+
 .scroll {
   color: white;
   font-size: 100px;
