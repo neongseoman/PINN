@@ -54,14 +54,14 @@
 .medium {
   display: flex;
   justify-content: space-between;
-  margin: 0px 30px 15px 30px;
+  margin: 0px 25px 10px 25px;
 }
 
 .buttons {
   color: white;
   font-size: 32px;
   font-weight: bold;
-  margin: 0px 20px;
+  margin: 0px 15px;
 }
 
 .buttons:hover {
@@ -74,10 +74,32 @@
 .bottom {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
-  flex-grow: 1;
-  margin: 0px 40px;
+  gap: 50px;
+  /* flex-grow: 1; */
+  margin: 0px 10px;
+  padding: 0px 20px 10px 20px;
   color: white;
+  overflow-y: auto;
+}
+
+/* 스크롤바 전체 스타일 */
+.bottom::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* 스크롤바 트랙 (바탕) */
+.bottom::-webkit-scrollbar-track {
+  background:  rgba(119, 107,93, 0.1);
+}
+
+/* 스크롤바 핸들 (움직이는 부분) */
+.bottom::-webkit-scrollbar-thumb {
+  background: rgba(119, 107,93, 0.5);
+}
+
+/* 스크롤바 핸들:hover (마우스 오버 시) */
+.bottom::-webkit-scrollbar-thumb:hover {
+  background: rgba(119, 107,93, 0.7);
 }
 
 
@@ -86,7 +108,6 @@
   width: 455px;
   height: 125px;
   background-color: var(--Main-Navy);
-  margin-bottom: 20px;
   display: flex;
   justify-content: space-evenly;
   padding-top: 15px;
@@ -95,7 +116,7 @@
 
 .card:hover {
   cursor: pointer;
-  transform: scale(1.05);
+  transform: scale(1.03);
   transition: transform 0.3s ease;
 }
 
@@ -111,7 +132,7 @@
 .title {
   width: 285px;
   color: var(--Main-Navy);
-  font-size: 24px;
+  font-size: 20px;
   margin: 0px 0px 5px 0px;
 }
 
@@ -126,7 +147,7 @@
 .bottomInfo {
   display: flex;
   width: 285px;
-  margin-top: 20px;
+  margin-top: 5px;
   color: white;
   font-size: 10px;
   font-weight: bold;

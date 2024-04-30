@@ -48,6 +48,14 @@ export default function LobbyPage() {
           <RoomCard />
           <RoomCard />
           <RoomCard />
+          
+          <RoomCard />
+          <RoomCard />
+          <RoomCard />
+          <RoomCard />
+          <RoomCard />
+          <RoomCard />
+          <RoomCard />
         </div>
       </main>
     </>
