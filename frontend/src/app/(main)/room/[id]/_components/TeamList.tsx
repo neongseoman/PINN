@@ -3,26 +3,18 @@
 import styles from './teamList.module.css'
 import Team from './Team'
 import { useEffect, useRef, useState } from 'react'
+import { Stomp, Client, IFrame, IMessage } from '@stomp/stompjs'
 
-interface Team {
-    teamNumber: number
-    teamColor: string
-    teamMember: string[]
+interface TeamsProp {
+    teams: {
+        teamNumber: number
+        teamColor: string
+        teamMember: string[]
+        isReady: number
+    }[]
 }
 
-export default function TeamList() {
-    const [teams, setTeams] = useState<Team[]>([
-        { teamNumber: 1, teamColor: 'rgba(255, 0, 61, 1)', teamMember: ['테스트', '', ''] },
-        { teamNumber: 2, teamColor: 'rgba(182, 53, 53, 1)', teamMember: ['', '테스트', ''] },
-        { teamNumber: 3, teamColor: 'rgba(255, 111, 0, 1)', teamMember: ['', '', ''] },
-        { teamNumber: 4, teamColor: 'rgba(153, 155, 41, 1)', teamMember: ['', '테스트', ''] },
-        { teamNumber: 5, teamColor: 'rgba(0, 131, 143, 1)', teamMember: ['', '테스트', ''] },
-        { teamNumber: 6, teamColor: 'rgba(105, 53, 170, 1)', teamMember: ['', '', ''] },
-        { teamNumber: 7, teamColor: 'rgba(251, 52, 159, 1)', teamMember: ['', '', ''] },
-        { teamNumber: 8, teamColor: 'rgba(255, 172, 207, 1)', teamMember: ['', '', ''] },
-        { teamNumber: 9, teamColor: 'rgba(188, 157, 157, 1)', teamMember: ['', '', ''] },
-        { teamNumber: 10, teamColor: 'rgba(85, 85, 85, 1)', teamMember: ['', '', ''] },
-    ])
+export default function TeamList({ teams }: TeamsProp) {
 
     // useEffect(() => {
     //     const stompClient = Stomp.over(new WebSocket('ws://localhost:8080/ws'));

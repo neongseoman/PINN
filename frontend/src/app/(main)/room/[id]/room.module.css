@@ -2,7 +2,7 @@
   position: absolute;
   width: 100vw;
   height: 100vh;
-  background-image: url('../../../../../public/assets/images/background.jpg');
+  background-image: url('../../../../../public/assets/images/BackgroundImage.jpg');
   background-repeat: no-repeat;
   background-size: cover;
   display: flex;

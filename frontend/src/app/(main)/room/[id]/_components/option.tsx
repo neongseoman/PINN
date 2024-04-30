@@ -11,7 +11,7 @@ export default function Option() {
     const [selectedStage2, setSelectedStage2] = useState<string>('')
 
     useEffect(() => {
-        // API 받아오기
+        // API 
         const themeOptions = []
     }, [])
 
@@ -41,7 +41,7 @@ export default function Option() {
             <div className={styles.theme}>
                 {/* 테마 선택 select box */}
                 <label htmlFor="theme">테마</label>
-                <select id="theme" value={selectedTheme} onChange={handleThemeChange}>
+                <select id="theme" value={selectedTheme} onChange={undefined}>
                     {themeOptions.map((option, index) => (
                         <option key={index} value={option}>{option}</option>
                     ))}
@@ -59,7 +59,7 @@ export default function Option() {
             {/* 스테이지 1 선택 select box */}
             <div>
                 <label htmlFor="stage1">스테이지1</label>
-                <select id="stage1" value={selectedStage1} onChange={handleStage1Change}>
+                <select id="stage1" value={selectedStage1} onChange={handleStage1Change} disabled>
                     {stage1Options.map((option, index) => (
                         <option key={index} value={option}>{option}초</option>
                     ))}
