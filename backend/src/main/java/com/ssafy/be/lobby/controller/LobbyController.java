@@ -27,7 +27,7 @@ public class LobbyController {
 
     @MessageMapping("/lobby/create")
     public BaseResponse<?> createRoom(@Payload RoomDTO roomDTO){
-        ConcurrentHashMap<String, Game> games = gameManager.getGameManager();
+        ConcurrentHashMap<String, Game> games = gameManager.getGames();
         return new BaseResponse<>("hello ws");
     }
 }

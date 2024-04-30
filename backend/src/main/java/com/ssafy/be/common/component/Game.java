@@ -1,5 +1,7 @@
 package com.ssafy.be.common.component;
 
+import org.springframework.stereotype.Component;
+
 import java.time.LocalDateTime;
 import java.util.concurrent.ConcurrentHashMap;
 
