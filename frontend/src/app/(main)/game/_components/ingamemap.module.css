@@ -1,0 +1,16 @@
+.map {
+  width: 100%;
+  background-color: red;
+  height: 80%;
+}
+
+.guess {
+  width: 100%;
+  height: 16%;
+  position: absolute;
+  bottom: 0;
+  font-family: 'GmarketSans';
+  font-size: large;
+  font-weight: 700;
+  border-radius: 20px;
+}

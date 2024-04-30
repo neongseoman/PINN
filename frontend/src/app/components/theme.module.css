@@ -1,0 +1,59 @@
+.random {
+  color: var(--Main-Yellow);
+  background-color: var(--Main-Navy);
+  border-color: solid var(--Main-Yellow);
+}
+
+.korea {
+  color: var(--Main-Yellow);
+  background-color: var(--Theme-Korea);
+  border-color: solid var(--Main-Yellow);
+}
+
+.egypt {
+  color: var(--Main-Brown);
+  background-color: var(--Theme-Egypt);
+  border-color: solid var(--Main-Brown);
+}
+
+.greece {
+  color: var(--Main-Navy);
+  background-color: var(--Theme-Greece);
+  border-color: solid var(--Main-Navy);
+}
+
+.landmark {
+  color: var(--Main-Yellow);
+  background-color: var(--Theme-Landmark);
+  border-color: solid var(--Main-Yellow);
+}
+
+.random-inverse {
+  color: var(--Main-Navy);
+  background-color: var(--Main-Yellow);
+  border-color: solid var(--Main-Navy);
+}
+
+.korea-inverse {
+  color: var(--Theme-Korea);
+  background-color: var(--Main-Yellow);
+  border-color: solid var(--Theme-Korea);
+}
+
+.egypt-inverse {
+  color: var(--Theme-Egypt);
+  background-color: var(--Main-Brown);
+  border-color: solid var(--Theme-Egypt);
+}
+
+.greece-inverse {
+  color: var(--Theme-Greece);
+  background-color: var(--Main-Navy);
+  border-color: solid var(--Theme-Greece);
+}
+
+.landmark-inverse {
+  color: var(--Theme-Landmark);
+  background-color: var(--Main-Yellow);
+  border-color: solid var(--Theme-Landmark);
+}
