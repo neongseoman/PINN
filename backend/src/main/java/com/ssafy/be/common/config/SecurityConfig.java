@@ -41,7 +41,7 @@ public class SecurityConfig {
                                 AUTH_BLACKLIST
                         ).authenticated().anyRequest().permitAll());
 //                //팀장 인가를 여기서하는게 나을 것도 같긴한데.........
-//                .addFilterBefore(token)
+//                .addFilterBefore(new JwtAuthenticationFiler(jwt), )
 //                .exceptionHandling((exception) ->
 //                        exception
 //                                .authenticationEntryPoint(new Authen))

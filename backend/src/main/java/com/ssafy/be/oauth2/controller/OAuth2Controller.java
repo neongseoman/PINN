@@ -13,7 +13,7 @@ import java.io.IOException;
 
 @Log4j2
 @RestController
-@RequestMapping("/api/oauth")
+@RequestMapping("oauth")
 @RequiredArgsConstructor
 public class OAuth2Controller {
 
@@ -22,13 +22,12 @@ public class OAuth2Controller {
 
     @GetMapping("/code/kakao")
     public void getAuthCode(HttpServletResponse res, @RequestParam("code") String code) throws IOException {
+        log.info("getAuthCode : " + code);
 
         String kakaoAccessToken = oAuth2Service.getAccessToken(code);
         GamerDTO gamer = oAuth2Service.getUserInfo(kakaoAccessToken);
 
         String[] tokens = tokenProvider.generateAccessToken(gamer);
-        Cookie accessTokenCookie = new Cookie("access_token", tokens[0]);
-        Cookie refreshTokenCookie = new Cookie("refresh_token", tokens[1]);
 
         res.setHeader("access_token", tokens[0]);
         res.setHeader("refresh_token", tokens[1]);
