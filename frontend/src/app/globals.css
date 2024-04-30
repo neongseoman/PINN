@@ -1,0 +1,40 @@
+@font-face {
+  font-family: 'GmarketSans';
+  font-weight: 300;
+  src: url('../../public/assets/fonts/GmarketSansLight.otf') format('otf'),
+    url('../../public/assets/fonts/GmarketSansTTFLight.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'GmarketSans';
+  font-weight: 400;
+  src: url('../../public/assets/fonts/GmarketSansMedium.otf') format('otf'),
+    url('../../public/assets/fonts/GmarketSansTTFMedium.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'GmarketSans';
+  font-weight: 700;
+  src: url('../../public/assets/fonts/GmarketSansBold.otf') format('otf'),
+    url('../../public/assets/fonts/GmarketSansTTFBold.ttf') format('truetype');
+}
+
+body {
+  font-family: 'GmarketSans';
+}
+
+:root {
+  /* Main colors */
+  --Main-Red: #f23838; /* Main Red */
+  --Main-Yellow: #f2ca50; /* Main Yellow */
+  --Main-Light-Green: #50bf61; /* Main Light Green */
+  --Main-Green: #378c4c; /* Main Green */
+  --Main-Navy: #1d3240; /* Main Navy */
+  --Main-Brown: #66321c; /* Main Brown */
+
+  /* Theme colors */
+  --Theme-Korea: #401914; /* Korea Theme */
+  --Theme-Egypt: #dc8a1d; /* Egypt Theme */
+  --Theme-Greece: #53c0fb; /* Greece Theme */
+  --Theme-Landmark: #5c3a78; /* Landmark Theme */
+}
