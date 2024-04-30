@@ -3,7 +3,7 @@
 import styles from './ingamemap.module.css'
 import themeStyles from '@/app/components/theme.module.css'
 // import { Loader } from '@googlemaps/js-api-loader'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 interface IngameMapProps {
   theme: string
@@ -12,6 +12,8 @@ interface IngameMapProps {
 
 export default function IngameMap({ theme, loader }: IngameMapProps) {
   const mapRef = useRef<any>()
+  const [marker, setMarker] = useState<any>(null)
+
   // const loader = new Loader({
   //   apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY as string,
   //   version: 'weekly',
@@ -28,7 +30,17 @@ export default function IngameMap({ theme, loader }: IngameMapProps) {
       const map = new Map(mapRef.current, {
         center: position,
         disableDefaultUI: true,
-        zoom: 4,
+        zoom: 8,
+      })
+      map.addListener('click', (e: any) => {
+        if (marker) {
+          marker.setMap(null)
+        }
+        const newMarker = new google.maps.Marker({
+          position: e.latLng!,
+          map: map,
+        })
+        setMarker(newMarker)
       })
     })
   }, [])
