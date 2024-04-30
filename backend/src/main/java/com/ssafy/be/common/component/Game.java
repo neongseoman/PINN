@@ -1,10 +1,10 @@
 package com.ssafy.be.common.component;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class Game implements GameAccessAuth {
-    HashMap<Integer, Team> teams;
+public class Game {
+    ConcurrentHashMap<Integer, Team> teams;
     private int gameId;
     private int themeId;
     private String leaderId;
