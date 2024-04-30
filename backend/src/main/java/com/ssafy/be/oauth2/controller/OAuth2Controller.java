@@ -23,7 +23,6 @@ public class OAuth2Controller {
     @GetMapping("/code/kakao")
     public void getAuthCode(HttpServletResponse res, @RequestParam("code") String code) throws IOException {
         log.info("getAuthCode : " + code);
-
         String kakaoAccessToken = oAuth2Service.getAccessToken(code);
         GamerDTO gamer = oAuth2Service.getUserInfo(kakaoAccessToken);
 
@@ -31,7 +30,7 @@ public class OAuth2Controller {
 
         res.setHeader("access_token", tokens[0]);
         res.setHeader("refresh_token", tokens[1]);
-        res.sendRedirect("http://www.pinn.kr");
+        res.sendRedirect("http://www.pinn.kr/lobby");
     }
 
 }
