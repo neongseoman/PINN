@@ -40,13 +40,15 @@ public class OAuth2Service {
 
     public String getAccessToken(String authCode) {
         MultiValueMap<String, String> params = queryParam(authCode);
-        KakaoTokenDTO response = tokenApi.build()
+        Map<String,Object> response = tokenApi.build()
                 .post()
                 .bodyValue(params)
                 .retrieve()
-                .bodyToMono(KakaoTokenDTO.class).block();
+                .bodyToMono(Map.class)
+                .block();
 
-        return response.accessToken();
+        String acessToken = response.get("access_token").toString();
+        return acessToken;
     }
 
     public GamerDTO getUserInfo(String accessToken) {
@@ -65,10 +67,10 @@ public class OAuth2Service {
                 (Long) response.get("id"),
                 (String) profile.get("nickname"));
         return getOrSave(userDTO);
-
     }
 
     private MultiValueMap<String,String> queryParam(String authCode){
+        log.info("reuri" + kakaoOAuthConfig.redirect_uri());
         MultiValueMap<String,String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
         params.add("client_id", kakaoOAuthConfig.client_id());
