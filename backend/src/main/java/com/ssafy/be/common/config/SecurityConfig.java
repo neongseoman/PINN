@@ -10,6 +10,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
@@ -35,12 +40,10 @@ public class SecurityConfig {
                 .logout(AbstractHttpConfigurer::disable)
                 .sessionManagement(c ->
                         c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // request 인증, 인가 설정 url을 분석해서 인증 인가가 필요한 url의 인증을 요청한다.
                 .authorizeHttpRequests(request ->
                         request.requestMatchers(
                                 AUTH_BLACKLIST
                         ).authenticated().anyRequest().permitAll());
-//                //팀장 인가를 여기서하는게 나을 것도 같긴한데.........
 //                .addFilterBefore(new JwtAuthenticationFiler(jwt), )
 //                .exceptionHandling((exception) ->
 //                        exception
@@ -49,17 +52,17 @@ public class SecurityConfig {
         return http.build();
     }
 
-//    CorsConfigurationSource corsConfigurationSource() {
-//        return request -> {
-//            CorsConfiguration config = new CorsConfiguration();
-//            config.setAllowedHeaders(Collections.singletonList("*"));
-//            config.setAllowedMethods(Collections.singletonList("*"));
-//            config.setAllowedOriginPatterns(Arrays.asList("https://www.pinn.kr", "http://localhost:3000"));
-//            config.setAllowCredentials(true);
-//            config.addExposedHeader("accessToken");
-//            config.addExposedHeader("refreshToken");
-//            return config;
-//        };
-//    }
+    CorsConfigurationSource corsConfigurationSource() {
+        return request -> {
+            CorsConfiguration config = new CorsConfiguration();
+            config.setAllowedHeaders(Collections.singletonList("*"));
+            config.setAllowedMethods(Collections.singletonList("*"));
+            config.setAllowedOriginPatterns(Arrays.asList("https://www.pinn.kr", "http://localhost:3000"));
+            config.setAllowCredentials(true);
+            config.addExposedHeader("accessToken");
+            config.addExposedHeader("refreshToken");
+            return config;
+        };
+    }
 
 }
