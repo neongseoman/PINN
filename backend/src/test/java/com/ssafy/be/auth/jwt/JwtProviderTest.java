@@ -1,9 +1,7 @@
 package com.ssafy.be.auth.jwt;
 
 import com.ssafy.be.auth.model.JwtPayload;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -13,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @DisplayName("JWT Access Token 발급")
@@ -68,6 +68,54 @@ class JwtProviderTest {
 //        Claims claims = jwtProvider.validateToken(accessToken);
         Assertions.assertThrows(ExpiredJwtException.class,()->{
             jwtProvider.validateToken(accessToken);
+        });
+    }
+
+    @DisplayName("SecretKey가 일치하지 않으면 실패한다.")
+    @Test
+    void notEqualsSecretKey_willFail() {
+        // given
+        Date issueDate = new Date(System.currentTimeMillis());
+        JwtPayload jwtPayload = new JwtPayload(issueDate,10000,"testname",1234);
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("nickname", jwtPayload.getNickname());
+        claims.put("gamerId", jwtPayload.getGamerId());
+
+        String accessToken = Jwts.builder()
+                .issuer("moonjar")
+                .subject("user identity") //발급 받는 사용자
+                .claims(claims)
+                .issuedAt(jwtPayload.getIssuedAt()) // 발급한 날짜
+                .expiration(jwtPayload.getExpiresAt()) // 만료시간J.claims(claims)
+                .signWith(Jwts.SIG.HS256.key().build())
+                .compact();
+
+        // when
+        Assertions.assertThrows(SignatureException.class,() -> jwtProvider.validateToken(accessToken));
+    }
+
+    @DisplayName("변조됐다면 실패")
+    @Test
+    void _token_validate_modified_fail(){
+        Date issueDate = new Date(System.currentTimeMillis());
+        JwtPayload jwtPayload = new JwtPayload(issueDate,10000,"testname",1234);
+
+        String accessToken = jwtProvider.generateToken(jwtPayload);
+        String[] tokens = accessToken.split("\\.");
+//        for (String token : tokens) {
+//            System.out.println(token);
+//        }
+        tokens[1] = "setaedrqwerewasfasefasefasfas";
+//        for (String token : tokens) {
+//            System.out.println(token);
+//        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(tokens[0]).append(".").append(tokens[1]).append(".").append(tokens[2]);
+        String newToken = sb.toString();
+//        Claims claims = jwtProvider.validateToken(accessToken);
+        Assertions.assertThrows(SignatureException.class,()->{
+            jwtProvider.validateToken(newToken);
         });
     }
 }

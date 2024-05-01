@@ -1,5 +1,6 @@
 package com.ssafy.be.auth.jwt;
 
+import com.nimbusds.jwt.JWT;
 import com.ssafy.be.auth.model.JwtPayload;
 import com.ssafy.be.gamer.model.GamerDTO;
 import io.jsonwebtoken.*;
@@ -74,11 +75,11 @@ public class JwtProvider {
             return claims.getPayload();
         } catch(SignatureException e){
             e.printStackTrace();
-            throw new RuntimeException();
+            throw new SignatureException("Invalid JWT signature");
             // 비밀키 일치 X 처리
         } catch(ExpiredJwtException e){
             e.printStackTrace();
-            throw new RuntimeException();
+            throw new ExpiredJwtException(e.getHeader(),e.getClaims(),e.getMessage());
             // 만료 exception 처리
         }
     }
