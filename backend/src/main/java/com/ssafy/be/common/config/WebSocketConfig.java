@@ -15,11 +15,6 @@ import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer  {
     private final StompInboundMessageInterceptor stompInboundMessageInterceptor;
 
-//        public WebSocketConfig(@Value("${stomp.endpoint}")  String value) {
-//        System.out.println(value);
-//        this.EndPoint = value;
-//        }
-
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/game","/team","/guess"); // sub

@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisHash;
 
 @NoArgsConstructor //기본 생성자 만들어줌
 @Entity
