@@ -1,18 +1,24 @@
-package com.ssafy.be.common.component;
+package com.ssafy.be.common.model.domain;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-import java.util.concurrent.ConcurrentHashMap;
-
-@ToString
+@Entity
 @Getter
-@Setter  // TODO : 유효성검사
+@Setter
+@Builder
+@AllArgsConstructor
+@ToString
 public class Game {
-    ConcurrentHashMap<Integer, Team> teams;
+    @Id
     private int gameId;
     private String roomName;
     private int themeId;
@@ -25,5 +31,6 @@ public class Game {
     private LocalDateTime finishedTime;
     private boolean hasPassword;
 
-
+    public Game() {
+    }
 }
