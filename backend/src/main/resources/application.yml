@@ -1,8 +1,6 @@
 spring :
   application :
     name : be
-  #  datasource:
-  #  driver-class-name: com.mysql.bc.Driver
   datasource:
     url: ${MYSQL_URL}
     username: ${MYSQL_USERNAME}
@@ -57,7 +55,6 @@ oauth2:
         redirect_uri: ${KAKAO_REDIRECT_URI}
         client-name: kakao
         authorization-grant-type: authorization_code
-
 
 management:
   endpoints:
