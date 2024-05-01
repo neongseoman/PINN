@@ -16,6 +16,6 @@ public class GamerController {
     @GetMapping("userInfo")
     public BaseResponse getUserInfo(ServletRequest request){
 
-        return new BaseResponse(BaseResponseStatus.SUCCESS,);
+        return new BaseResponse(BaseResponseStatus.SUCCESS);
     }
 }

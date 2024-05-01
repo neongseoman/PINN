@@ -35,10 +35,9 @@ public class SecurityConfig {
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
 
-    private static final String[] AUTH_BLACKLIST = { // 여기로 들어오려면 접근 권한이 있어야해. auth가
+    private static final String[] AUTH_BLACKLIST = { // 여기로 들어오려면 접근 권한이 있어야함. 아직 미정
             "/api"
     };
-
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -62,6 +61,16 @@ public class SecurityConfig {
 
         return http.build();
     }
+    
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer(){
+        return web -> {
+            web.ignoring()
+                    .requestMatchers("/app/game/**")
+                    .requestMatchers("/game/**")
+                    .requestMatchers("oauth/code/kakao");
+        };
+    }
 
     CorsConfigurationSource corsConfigurationSource() {
         return request -> {
@@ -73,15 +82,6 @@ public class SecurityConfig {
 //            config.addExposedHeader("accessToken");
 //            config.addExposedHeader("refreshToken");
             return config;
-        };
-    }
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer(){
-        return web -> {
-            web.ignoring()
-                    .requestMatchers("/app/game/**")
-                    .requestMatchers("/game/**")
-                    .requestMatchers("oauth/code/kakao");
         };
     }
 
