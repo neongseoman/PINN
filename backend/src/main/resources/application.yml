@@ -61,6 +61,3 @@ management:
     web:
       exposure:
         include: prometheus
-
-stomp:
-  endpoint: ${SPRING_SOCKET_END_POINT}

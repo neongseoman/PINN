@@ -3,22 +3,16 @@ package com.ssafy.be.oauth2.service;
 import com.ssafy.be.common.Provider.NickNameProvider;
 import com.ssafy.be.gamer.model.GamerDTO;
 import com.ssafy.be.gamer.repository.GamerRepository;
-import com.ssafy.be.oauth2.config.KakaoOAuthConfig;
-import com.ssafy.be.oauth2.dto.KakaoTokenDTO;
+import com.ssafy.be.oauth2.dto.KakaoOAuthConfig;
 import com.ssafy.be.oauth2.dto.KakaoUserDTO;
 import com.ssafy.be.oauth2.dto.OAuthType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.net.URL;
 import java.util.Map;
 
 @Log4j2
@@ -70,7 +64,7 @@ public class OAuth2Service {
     }
 
     private MultiValueMap<String,String> queryParam(String authCode){
-        log.info("reuri" + kakaoOAuthConfig.redirect_uri());
+//        log.info("re uri" + kakaoOAuthConfig.redirect_uri());
         MultiValueMap<String,String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
         params.add("client_id", kakaoOAuthConfig.client_id());

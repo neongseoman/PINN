@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class testController {
     @GetMapping("/test")
-    public void test() {
+    public String test() {
         log.info("test");
+        return "success";
     }
+
 }
