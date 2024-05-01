@@ -6,6 +6,7 @@ import com.ssafy.be.common.response.BaseResponseStatus;
 import com.ssafy.be.gamer.model.GamerDTO;
 import com.ssafy.be.oauth2.service.OAuth2Service;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -23,7 +24,10 @@ public class OAuth2Controller {
     private final TokenProvider tokenProvider;
 
     @GetMapping("/code/kakao")
-    public BaseResponse getAuthCode(HttpServletResponse res, @RequestParam("code") String code) throws IOException {
+    public BaseResponse getAuthCode(HttpServletRequest req, HttpServletResponse res, @RequestParam("code") String code) throws IOException {
+        for (Cookie cookie : req.getCookies()) {
+            log.info(cookie.getName() +" : " + cookie.getValue());
+        }
         log.info("getAuthCode : " + code);
         String kakaoAccessToken = oAuth2Service.getAccessToken(code);
         GamerDTO gamer = oAuth2Service.getUserInfo(kakaoAccessToken);
@@ -39,7 +43,7 @@ public class OAuth2Controller {
         acookie.setPath("/");
         res.setHeader("Set-Cookie",tokens[0]);
         res.setHeader("Set-Cookie",tokens[1]);
-        res.sendRedirect("http://www.pinn.kr/lobby");
+//        res.sendRedirect("https://www.pinn.kr/lobby");
         return new BaseResponse(BaseResponseStatus.SUCCESS);
     }
 
