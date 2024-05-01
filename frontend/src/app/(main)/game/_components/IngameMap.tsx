@@ -18,6 +18,7 @@ interface MyGuess {
 export default function IngameMap({ theme, loader }: IngameMapProps) {
   const mapRef = useRef<any>()
   const currentMarker = useRef<google.maps.Marker | null>(null)
+  const myGuess = useRef<MyGuess | null>(null)
 
   // const loader = new Loader({
   //   apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY as string,
@@ -35,6 +36,7 @@ export default function IngameMap({ theme, loader }: IngameMapProps) {
       const map = new Map(mapRef.current, {
         center: position,
         disableDefaultUI: true,
+        clickableIcons: false,
         zoom: 8,
       })
       map.addListener('click', (e: google.maps.MapMouseEvent) => {
@@ -54,6 +56,11 @@ export default function IngameMap({ theme, loader }: IngameMapProps) {
           },
         })
         currentMarker.current = newMarker
+        myGuess.current = {
+          lat: e.latLng?.lat() as number,
+          lng: e.latLng?.lng() as number,
+        }
+        console.log(myGuess.current)
       })
     })
   }, [])
