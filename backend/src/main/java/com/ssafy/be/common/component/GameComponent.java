@@ -1,13 +1,19 @@
 package com.ssafy.be.common.component;
 
-import org.springframework.stereotype.Component;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Game {
-    ConcurrentHashMap<Integer, Team> teams;
+@ToString
+@Getter
+@Setter  // TODO : 유효성검사
+public class GameComponent {
+    ConcurrentHashMap<Integer, TeamComponent> teams;
     private int gameId;
+    private String roomName;
     private int themeId;
     private String leaderId;
     private int roundCount;
@@ -17,6 +23,4 @@ public class Game {
     private LocalDateTime startedTime;
     private LocalDateTime finishedTime;
     private boolean hasPassword;
-
-
 }

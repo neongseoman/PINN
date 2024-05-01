@@ -1,22 +1,21 @@
 package com.ssafy.be.lobby.controller;
 
-import com.ssafy.be.common.component.Game;
+import com.ssafy.be.common.component.GameComponent;
 import com.ssafy.be.common.component.GameManager;
-import com.ssafy.be.common.component.Team;
 import com.ssafy.be.lobby.service.LobbyService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.ssafy.be.lobby.model.dto.RoomDTO;
-
-import com.ssafy.be.common.response.BaseResponse;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 @RequestMapping("lobby")
+@RequiredArgsConstructor
 public class LobbyController {
 
     @Autowired
@@ -25,10 +24,21 @@ public class LobbyController {
     @Autowired
     private GameManager gameManager;
 
-    @MessageMapping("/lobby/create")
-    public BaseResponse<?> createRoom(@Payload RoomDTO roomDTO){
-        ConcurrentHashMap<String, Game> games = gameManager.getGames();
-        return new BaseResponse<>("hello ws");
+    private final SimpMessagingTemplate simpMessagingTemplate;
+
+    /*
+    * return : game_id,
+    * */
+    @MessageMapping("/game")
+    public void createRoom(@Payload GameComponent game){
+        ConcurrentHashMap<String, GameComponent> games = gameManager.getGames();
+        // gamer_id, 즉 방을 생성한 방리더의 '검증된' id 추출하여 game에 삽입
+
+        // 생성된 초기 게임 설정을 DB에 저장
+        lobbyService.createRoom(game);
+
+        System.out.println(game);
+        simpMessagingTemplate.convertAndSend("/game" , game);
     }
 }
 

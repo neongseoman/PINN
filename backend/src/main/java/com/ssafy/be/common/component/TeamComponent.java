@@ -3,7 +3,7 @@ package com.ssafy.be.common.component;
 import java.time.LocalDateTime;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Team {
+public class TeamComponent {
     ConcurrentHashMap<Long, TeamGamer> teamGamers;
     private int teamId;
     private int gameId;
