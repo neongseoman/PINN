@@ -2,17 +2,22 @@
 
 import styles from './ingamemap.module.css'
 import themeStyles from '@/app/components/theme.module.css'
-// import { Loader } from '@googlemaps/js-api-loader'
+import { Loader } from '@googlemaps/js-api-loader'
 import { useEffect, useRef, useState } from 'react'
 
 interface IngameMapProps {
   theme: string
-  loader: any
+  loader: Loader
+}
+
+interface MyGuess {
+  lat: number
+  lng: number
 }
 
 export default function IngameMap({ theme, loader }: IngameMapProps) {
   const mapRef = useRef<any>()
-  const [marker, setMarker] = useState<any>(null)
+  const currentMarker = useRef<google.maps.Marker | null>(null)
 
   // const loader = new Loader({
   //   apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY as string,
@@ -32,15 +37,15 @@ export default function IngameMap({ theme, loader }: IngameMapProps) {
         disableDefaultUI: true,
         zoom: 8,
       })
-      map.addListener('click', (e: any) => {
-        if (marker) {
-          marker.setMap(null)
+      map.addListener('click', (e: google.maps.MapMouseEvent) => {
+        if (currentMarker.current) {
+          currentMarker.current.setMap(null)
         }
         const newMarker = new google.maps.Marker({
           position: e.latLng!,
           map: map,
         })
-        setMarker(newMarker)
+        currentMarker.current = newMarker
       })
     })
   }, [])

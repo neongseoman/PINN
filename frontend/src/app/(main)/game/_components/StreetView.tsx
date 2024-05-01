@@ -1,12 +1,12 @@
 'use client'
 
-// import { Loader } from '@googlemaps/js-api-loader'
+import { Loader } from '@googlemaps/js-api-loader'
 import { useEffect, useRef } from 'react'
 
 interface StreetViewProps {
   lat: number
   lng: number
-  loader: any
+  loader: Loader
 }
 
 export default function StreetView({ lat, lng, loader }: StreetViewProps) {
