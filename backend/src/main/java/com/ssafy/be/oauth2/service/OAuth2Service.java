@@ -70,7 +70,7 @@ public class OAuth2Service {
     }
 
     private MultiValueMap<String,String> queryParam(String authCode){
-        log.info("reuri" + kakaoOAuthConfig.redirect_uri());
+//        log.info("re uri" + kakaoOAuthConfig.redirect_uri());
         MultiValueMap<String,String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
         params.add("client_id", kakaoOAuthConfig.client_id());

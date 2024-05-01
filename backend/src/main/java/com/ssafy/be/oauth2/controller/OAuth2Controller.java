@@ -1,6 +1,8 @@
 package com.ssafy.be.oauth2.controller;
 
 import com.ssafy.be.auth.jwt.TokenProvider;
+import com.ssafy.be.common.response.BaseResponse;
+import com.ssafy.be.common.response.BaseResponseStatus;
 import com.ssafy.be.gamer.model.GamerDTO;
 import com.ssafy.be.oauth2.service.OAuth2Service;
 import jakarta.servlet.http.Cookie;
@@ -21,16 +23,25 @@ public class OAuth2Controller {
     private final TokenProvider tokenProvider;
 
     @GetMapping("/code/kakao")
-    public void getAuthCode(HttpServletResponse res, @RequestParam("code") String code) throws IOException {
+    public BaseResponse getAuthCode(HttpServletResponse res, @RequestParam("code") String code) throws IOException {
         log.info("getAuthCode : " + code);
         String kakaoAccessToken = oAuth2Service.getAccessToken(code);
         GamerDTO gamer = oAuth2Service.getUserInfo(kakaoAccessToken);
 
         String[] tokens = tokenProvider.generateAccessToken(gamer);
-
-        res.setHeader("access_token", tokens[0]);
-        res.setHeader("refresh_token", tokens[1]);
+        Cookie acookie = new Cookie("access_token", tokens[0]);
+        acookie.setSecure(true);
+        acookie.setHttpOnly(true);
+        acookie.setPath("/");
+        Cookie rcookie = new Cookie("refresh_token", tokens[1]);
+        rcookie.setSecure(true);
+        rcookie.setHttpOnly(true);
+        acookie.setPath("/");
+        res.setHeader("Set-Cookie",tokens[0]);
+        res.setHeader("Set-Cookie",tokens[1]);
         res.sendRedirect("http://www.pinn.kr/lobby");
+        return new BaseResponse(BaseResponseStatus.SUCCESS);
     }
+
 
 }
