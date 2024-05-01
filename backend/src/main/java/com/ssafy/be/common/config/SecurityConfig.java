@@ -79,6 +79,7 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer(){
         return web -> {
             web.ignoring()
+                    .requestMatchers("/game/**")
                     .requestMatchers("oauth/code/kakao");
         };
     }
