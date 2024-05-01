@@ -44,6 +44,14 @@ export default function IngameMap({ theme, loader }: IngameMapProps) {
         const newMarker = new google.maps.Marker({
           position: e.latLng!,
           map: map,
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 10,
+            fillColor: 'red',
+            fillOpacity: 1,
+            strokeColor: 'black',
+            strokeWeight: 3,
+          },
         })
         currentMarker.current = newMarker
       })
