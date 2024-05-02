@@ -3,9 +3,14 @@ package com.ssafy.be.auth.jwt;
 import com.nimbusds.jwt.JWT;
 import com.ssafy.be.auth.model.JwtPayload;
 import com.ssafy.be.gamer.model.GamerDTO;
+import com.ssafy.be.gamer.model.LoginTokenDTO;
+import com.ssafy.be.gamer.repository.GamerLoginRedisRepository;
+import com.ssafy.be.gamer.repository.GamerRedisRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
@@ -16,7 +21,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-//@RequiredArgsConstructor
 @Component
 @Log4j2
 public class JwtProvider {
@@ -25,6 +29,9 @@ public class JwtProvider {
     private long ACCESS_TOKEN_EXPIRE_TIME;
     @Value("${jwt.kakao.refresh.expiration}")
     private long REFRESH_TOKEN_EXPIRE_TIME;
+
+    @Autowired
+    private GamerLoginRedisRepository gamerLoginRedisRepository;
 
     public JwtProvider() {
         String secret = "b2b3ac692d4e4c68f608bfa880dbb6e5855c7e4ebadaf544b4417fe591066268";
@@ -40,7 +47,9 @@ public class JwtProvider {
 
     public String generateRefreshToken(GamerDTO gamerDTO) {
         JwtPayload jwtPayload = new JwtPayload(new Date(), REFRESH_TOKEN_EXPIRE_TIME, gamerDTO.getNickname(), gamerDTO.getGamerId());
-        return generateToken(jwtPayload);
+        String refreshToken = generateToken(jwtPayload);
+        saveRefreshTokenToRedis(refreshToken, gamerDTO.getGamerId());
+        return refreshToken;
     }
 
     public String generateToken(JwtPayload jwtPayload) {
@@ -63,6 +72,11 @@ public class JwtProvider {
         int gamerId = claims.get("your gamerId", Integer.class);
         log.info(gamerId);
         return new UsernamePasswordAuthenticationToken(gamerId, "Gamer");
+    }
+
+    public void saveRefreshTokenToRedis(String refreshToken,int gamerId) {
+        LoginTokenDTO refreshTokenDTO = new LoginTokenDTO(refreshToken,gamerId,REFRESH_TOKEN_EXPIRE_TIME);
+        gamerLoginRedisRepository.save(refreshTokenDTO);
     }
 
     public Claims validateToken(String accessToken) {
