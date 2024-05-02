@@ -10,37 +10,18 @@ import { useRouter } from 'next/navigation';
 // const { Kakao } = window;
 export default function LandingPage() {
   const router = useRouter();
+  // const redirectUri = "http://localhost:8081/oauth/code/kakao"
 
   const kakaoLogin = async () => {
-    // console.log(window.Kakao.Auth);
-  //   try {
-  //     await new Promise((resolve, reject) => {
-  //       window.Kakao.Auth.authorize({
-  //         redirectUri: process.env.NEXT_PUBLIC_KAKAO_LOGIN_REDIRECT_URI,
-  //         success: resolve,
-  //         fail: reject
-  //       });
-  //     });
-  //     const searchParams = useSearchParams();
-  //     const authCode = searchParams.get('code');
-  //     console.log(authCode)
-  //     router.push('/lobby');
-  // } catch (error) {
-  //   console.error('카카오 로그인 에러:', error);
-  // }
-  
-    const res = await fetch(window.Kakao.Auth.authorize({redirectUri: process.env.NEXT_PUBLIC_KAKAO_LOGIN_REDIRECT_URI}));
-    console.log(res)
-    console.log(res.headers.get('Access-Token'))
+    window.Kakao.Auth.authorize({redirectUri: process.env.NEXT_PUBLIC_KAKAO_LOGIN_REDIRECT_URI});
+    // console.log(redirectUri)
+    // window.Kakao.Auth.authorize({redirectUri:redirectUri});
     // if (res) {
     //   const body = await res.json()
     //   console.log(body)
     //   router.push('/lobby');
     // }
     // const body = await res.json()
-    if(res.status === 307){
-      router.push('/lobby');
-    }
   }
 
   const scrollDown = () => {
