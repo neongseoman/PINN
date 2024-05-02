@@ -4,6 +4,7 @@ import com.ssafy.be.auth.jwt.JwtProvider;
 import com.ssafy.be.common.response.BaseResponse;
 import com.ssafy.be.common.response.BaseResponseStatus;
 import com.ssafy.be.gamer.model.GamerDTO;
+import com.ssafy.be.oauth2.dto.KakaoOAuthConfig;
 import com.ssafy.be.oauth2.service.OAuth2Service;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,19 +27,20 @@ public class OAuth2Controller {
 
     private final OAuth2Service oAuth2Service;
     private final JwtProvider jwtProvider;
+    private final KakaoOAuthConfig kakaoOAuthConfig;
     @Value("${jwt.kakao.access.expiration}")
     private long ACCESS_TOKEN_EXPIRE_TIME;
     @Value("${jwt.kakao.refresh.expiration}")
     private long REFRESH_TOKEN_EXPIRE_TIME;
-
-    @GetMapping("/code/kakao")
-    public BaseResponse getAuthCode(HttpServletRequest req, HttpServletResponse res, @RequestParam("code") String code) throws IOException {
+//    http://www.pinn.kr/api/oauth/code/kakao/local
+    @GetMapping("/code/kakao/local")
+    public BaseResponse getAuthCodeToLocal(HttpServletRequest req, HttpServletResponse res, @RequestParam("code") String code) throws IOException {
 //        for (Cookie cookie : req.getCookies()) {
 //            log.info(cookie.getName() + " : " + cookie.getValue());
 //        }
         Map<String, String> token = new HashMap();
         log.info("getAuthCode : " + code);
-        String kakaoAccessToken = oAuth2Service.getAccessToken(code);
+        String kakaoAccessToken = oAuth2Service.getAccessTokenFromlocal(code);
         GamerDTO gamer = oAuth2Service.getUserInfo(kakaoAccessToken);
 
         String[] tokens = jwtProvider.generateAccessToken(gamer);
@@ -59,6 +61,76 @@ public class OAuth2Controller {
         token.put("accessToken", tokens[0]); // 테스트
 
         res.setHeader("Set-Cookie", rcookie.toString());
+        res.addHeader("auth",acookie.toString());
+        res.sendRedirect("http://localhost:3000/lobby?code=" + acookie.toString());
+
+        return new BaseResponse(BaseResponseStatus.SUCCESS, token); // 테스트
+    }
+
+    @GetMapping("/code/kakao/server")
+    public BaseResponse getAuthCodeToServer(HttpServletRequest req, HttpServletResponse res, @RequestParam("code") String code) throws IOException {
+//        for (Cookie cookie : req.getCookies()) {
+//            log.info(cookie.getName() + " : " + cookie.getValue());
+//        }
+        Map<String, String> token = new HashMap();
+        log.info("getAuthCode : " + code);
+        String kakaoAccessToken = oAuth2Service.getAccessTokenFromServer(code);
+        GamerDTO gamer = oAuth2Service.getUserInfo(kakaoAccessToken);
+
+        String[] tokens = jwtProvider.generateAccessToken(gamer);
+
+        ResponseCookie acookie = ResponseCookie.from("access_token", tokens[0])
+                .maxAge((int) ACCESS_TOKEN_EXPIRE_TIME)
+                .secure(true)
+                .httpOnly(true)
+                .path("/")
+                .sameSite("None").build();
+
+        ResponseCookie rcookie = ResponseCookie.from("refresh_token", tokens[1])
+                .maxAge((int) REFRESH_TOKEN_EXPIRE_TIME)
+                .secure(true)
+                .httpOnly(true)
+                .path("/")
+                .sameSite("None").build();
+        token.put("accessToken", tokens[0]); // 테스트
+
+        res.setHeader("Set-Cookie", rcookie.toString());
+        res.addHeader("auth",acookie.toString());
+        res.sendRedirect("http://pinn.kr/lobby?code=" + acookie.toString());
+
+        return new BaseResponse(BaseResponseStatus.SUCCESS, token); // 테스트
+    }
+
+    @GetMapping("/code/kakao/test")
+    public BaseResponse getAuthCodeToTest(HttpServletRequest req, HttpServletResponse res, @RequestParam("code") String code) throws IOException {
+//        for (Cookie cookie : req.getCookies()) {
+//            log.info(cookie.getName() + " : " + cookie.getValue());
+//        }
+        Map<String, String> token = new HashMap();
+        log.info("getAuthCode : " + code);
+        String kakaoAccessToken = oAuth2Service.getAccessTokenFromTest(code,kakaoOAuthConfig.redirect_uri());
+        GamerDTO gamer = oAuth2Service.getUserInfo(kakaoAccessToken);
+
+        String[] tokens = jwtProvider.generateAccessToken(gamer);
+
+        ResponseCookie acookie = ResponseCookie.from("access_token", tokens[0])
+                .maxAge((int) ACCESS_TOKEN_EXPIRE_TIME)
+                .secure(true)
+                .httpOnly(true)
+                .path("/")
+                .sameSite("None").build();
+
+        ResponseCookie rcookie = ResponseCookie.from("refresh_token", tokens[1])
+                .maxAge((int) REFRESH_TOKEN_EXPIRE_TIME)
+                .secure(true)
+                .httpOnly(true)
+                .path("/")
+                .sameSite("None").build();
+        token.put("accessToken", tokens[0]); // 테스트
+
+        res.setHeader("Set-Cookie", rcookie.toString());
+        res.addHeader("auth",acookie.toString());
+        res.sendRedirect("http://localhost:3000/lobby?code=" + acookie.toString());
 
         return new BaseResponse(BaseResponseStatus.SUCCESS, token); // 테스트
     }
