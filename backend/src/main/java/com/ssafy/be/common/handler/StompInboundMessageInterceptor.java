@@ -35,6 +35,8 @@ public class StompInboundMessageInterceptor implements ChannelInterceptor {
             log.info(headerAccessor.getSessionId() + " connected");
         }
         if (StompCommand.MESSAGE.equals(headerAccessor.getCommand())){
+//            String auth = headerAccessor.getNativeHeader("auth");
+//            headerAccessor.setUser(jwtProvider.validateToken(auth));
             System.out.println("auth:" + headerAccessor.getNativeHeader("auth header"));
         }
 //        if (StompCommand.CONNECT.equals(headerAccessor.getCommand())) {
