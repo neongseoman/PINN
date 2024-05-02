@@ -31,14 +31,12 @@ public class SecurityConfig {
     //jwt 처리 
     //oauth 처리
     private final JwtProvider jwtProvider;
-    private final OAuthServiceImpl oAuthServiceImpl;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
 
-    private static final String[] AUTH_BLACKLIST = { // 여기로 들어오려면 접근 권한이 있어야해. auth가
+    private static final String[] AUTH_BLACKLIST = { // 여기로 들어오려면 접근 권한이 있어야함. 아직 미정
             "/api"
     };
-
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -49,11 +47,11 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
-//                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(c ->
                         c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request ->
-                        request.requestMatchers("/lobby/**").permitAll()
+                        request.requestMatchers("/oauth/**").permitAll()
                                 .requestMatchers(AUTH_BLACKLIST).authenticated()
                 )
                 .exceptionHandling((exceptionHandling) -> exceptionHandling
@@ -61,6 +59,16 @@ public class SecurityConfig {
                         .accessDeniedHandler(accessDeniedHandler));
 
         return http.build();
+    }
+    
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer(){
+        return web -> {
+            web.ignoring()
+                    .requestMatchers("/app/game/**")
+                    .requestMatchers("/game/**")
+                    .requestMatchers("oauth/code/kakao");
+        };
     }
 
     CorsConfigurationSource corsConfigurationSource() {
@@ -73,14 +81,6 @@ public class SecurityConfig {
 //            config.addExposedHeader("accessToken");
 //            config.addExposedHeader("refreshToken");
             return config;
-        };
-    }
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer(){
-        return web -> {
-            web.ignoring()
-                    .requestMatchers("/game/**")
-                    .requestMatchers("oauth/code/kakao");
         };
     }
 

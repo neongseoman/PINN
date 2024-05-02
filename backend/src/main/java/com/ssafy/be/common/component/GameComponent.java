@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 @ToString
@@ -25,4 +26,7 @@ public class GameComponent {
     private LocalDateTime startedTime;
     private LocalDateTime finishedTime;
     private String password;
+
+    private List<QuestionComponent> questions; // 이 게임에서 출제될 문제 목록
+
 }

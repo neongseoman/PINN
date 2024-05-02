@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-public class GameManager{
+public class GameManager {
     // key : game_id
     private ConcurrentHashMap<Integer, GameComponent> games;
 

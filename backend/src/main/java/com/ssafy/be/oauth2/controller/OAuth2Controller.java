@@ -5,6 +5,7 @@ import com.ssafy.be.common.response.BaseResponse;
 import com.ssafy.be.common.response.BaseResponseStatus;
 import com.ssafy.be.gamer.model.GamerDTO;
 import com.ssafy.be.oauth2.service.OAuth2Service;
+import jakarta.servlet.ServletRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -57,7 +58,7 @@ public class OAuth2Controller {
                 .sameSite("None").build();
         token.put("accessToken", tokens[0]); // 테스트
 
-        res.setHeader("Set-Cookie", acookie.toString());
+        res.setHeader("Set-Cookie", rcookie.toString());
 
         return new BaseResponse(BaseResponseStatus.SUCCESS, token); // 테스트
     }
@@ -65,6 +66,10 @@ public class OAuth2Controller {
     @GetMapping("test")
     public void test(){
         log.info("Filter test clear");
+    }
+    @GetMapping("getAccessToken")
+    public void getToken(ServletRequest req, HttpServletResponse res) throws IOException {
+
     }
 
 }
