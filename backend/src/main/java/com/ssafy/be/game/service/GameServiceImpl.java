@@ -54,8 +54,10 @@ public class GameServiceImpl implements GameService {
 
         int gameId = gameInitRequestDTO.getGameId();
         ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
+        System.out.println(games.toString());
         GameComponent existGame = games.get(gameId);
         if (existGame == null) {
+            System.out.println("existGame이 gameManager에 없음");
             throw new BaseException(null);
         }
 

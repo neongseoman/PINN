@@ -3,6 +3,7 @@ package com.ssafy.be.game.model.domain;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -21,6 +22,8 @@ public class Hint {
     private String hintValue;
     private int offerStage;
     private boolean useOrNot;
+    @CreationTimestamp
     private LocalDateTime createdDate;
+    @CreationTimestamp
     private LocalDateTime updatedDate;
 }

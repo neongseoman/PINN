@@ -34,6 +34,7 @@ public class GameController {
 
     @MessageMapping("/game/init") // /app/game/init 으로 보내면 여기로 옴
     public void initGame(GameInitRequestDTO gameInitRequestDTO) {
+        System.out.println(gameInitRequestDTO.toString());
         GameInitResponseDTO gameInitResponseDTO = gameService.findGameInfo(gameInitRequestDTO);
 
         // /game/{gameId} 를 구독 중인 모든 사용자에게 publish
