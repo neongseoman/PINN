@@ -1,8 +1,9 @@
 package com.ssafy.be.lobby.service;
 
 import com.ssafy.be.common.component.GameComponent;
-import org.springframework.stereotype.Service;
+import com.ssafy.be.common.model.domain.Game;
+import com.ssafy.be.lobby.model.dto.CreateRoomDTO;
 
 public interface LobbyService {
-    void createRoom(GameComponent game);
+    GameComponent createRoom(CreateRoomDTO createRoomDTO);
 }
