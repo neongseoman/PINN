@@ -1,13 +1,13 @@
 // KakaoScript.tsx
 
-'use client';
+'use client'
 
-import Script from 'next/script';
+import Script from 'next/script'
 
 function KakaoScript() {
   const onLoad = () => {
-    window.Kakao.init(process.env.NEXT_PUBLIC_JAVASCRIPT_KEY);
-  };
+    window.Kakao.init(process.env.NEXT_PUBLIC_JAVASCRIPT_KEY)
+  }
 
   return (
     <Script
@@ -15,7 +15,7 @@ function KakaoScript() {
       async
       onLoad={onLoad}
     />
-  );
+  )
 }
 
-export default KakaoScript;
+export default KakaoScript
