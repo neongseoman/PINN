@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @ToString
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class GameAndQuestionDTO {
-    private int gameAndQuestionId;
+    private int gameQuestionId;
     private int gameId;
     private int questionId;
     private int roundNumber;
@@ -22,7 +22,7 @@ public class GameAndQuestionDTO {
 
     @Builder
     public GameAndQuestionDTO(GameAndQuestion gameAndQuestion) {
-        this.gameAndQuestionId = gameAndQuestion.getGameAndQuestionId();
+        this.gameQuestionId = gameAndQuestion.getGameQuestionId();
         this.gameId = gameAndQuestion.getGameId();
         this.questionId = gameAndQuestion.getQuestionId();
         this.roundNumber = gameAndQuestion.getRoundNumber();
@@ -31,7 +31,7 @@ public class GameAndQuestionDTO {
 
     public GameAndQuestion toEntity() {
         return GameAndQuestion.builder()
-                .gameAndQuestionId(this.gameAndQuestionId)
+                .gameQuestionId(this.gameQuestionId)
                 .gameId(this.gameId)
                 .questionId(this.questionId)
                 .roundNumber(this.roundNumber)
