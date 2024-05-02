@@ -31,7 +31,7 @@ public class LobbyController {
     * */
     @MessageMapping("/game")
     public void createRoom(@Payload GameComponent game){
-        ConcurrentHashMap<String, GameComponent> games = gameManager.getGames();
+        ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
         // gamer_id, 즉 방을 생성한 방리더의 '검증된' id 추출하여 game에 삽입
 
         // 생성된 초기 게임 설정을 DB에 저장
