@@ -4,22 +4,43 @@ import Link from 'next/link'
 import styles from './landing.module.css'
 import { FaAnglesDown } from "react-icons/fa6";
 import { useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+// import { useState } from 'react';
 
 // const { Kakao } = window;
 export default function LandingPage() {
+  const router = useRouter();
 
-  const KAKAO_AUTH_URI = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_KAKAO_REST_KEY}&redirect_uri=${process.env.NEXT_PUBLIC_KAKAO_LOGIN_REDIRECT_URI}&response_type=code`;
-
-  const kakaoLogin = () => {
-    console.log(window.Kakao.Auth);
-    window.Kakao.Auth.authorize({
-      redirectUri: process.env.NEXT_PUBLIC_KAKAO_LOGIN_REDIRECT_URI,
-    });
-    // const url = new URL('https://kauth.kakao.com/oauth/authorize')
-    // console.log(url.searchParams.get("code"))
-    const searchParams = useSearchParams();
-    const authCode = searchParams.get('code')
-    console.log(authCode)
+  const kakaoLogin = async () => {
+    // console.log(window.Kakao.Auth);
+  //   try {
+  //     await new Promise((resolve, reject) => {
+  //       window.Kakao.Auth.authorize({
+  //         redirectUri: process.env.NEXT_PUBLIC_KAKAO_LOGIN_REDIRECT_URI,
+  //         success: resolve,
+  //         fail: reject
+  //       });
+  //     });
+  //     const searchParams = useSearchParams();
+  //     const authCode = searchParams.get('code');
+  //     console.log(authCode)
+  //     router.push('/lobby');
+  // } catch (error) {
+  //   console.error('카카오 로그인 에러:', error);
+  // }
+  
+    const res = await fetch(window.Kakao.Auth.authorize({redirectUri: process.env.NEXT_PUBLIC_KAKAO_LOGIN_REDIRECT_URI}));
+    console.log(res)
+    console.log(res.headers.get('Access-Token'))
+    // if (res) {
+    //   const body = await res.json()
+    //   console.log(body)
+    //   router.push('/lobby');
+    // }
+    // const body = await res.json()
+    if(res.status === 307){
+      router.push('/lobby');
+    }
   }
 
   const scrollDown = () => {
