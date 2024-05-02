@@ -1,5 +1,5 @@
 .landing {
-  background-image: url('/assets/images/LandingImage1.jpg'), url('/assets/images/LandingImage2.jpg');
+  background-image: url('/assets/images/LandingImageTop.jpg'), url('/assets/images/LandingImageBottom.jpg');
   background-repeat: no-repeat, no-repeat;
   background-position: top center, bottom center;
   display: flex;

@@ -1,6 +1,6 @@
 'use client'
 
-import KakaoScript from './KakaoScript'
+import KakaoScript from '@/utils/KakaoScript'
 import styles from './landing.module.css'
 import { FaAnglesDown } from 'react-icons/fa6'
 
@@ -30,7 +30,7 @@ export default function LandingPage() {
         <p className={styles.name}>지도 게임</p>
         <img className={styles.logo} src="/assets/images/logo.png" alt="로고" />
         <button className={styles.login} onClick={kakaoLogin}>
-          <img src="/assets/images/kakao_login.png" alt="카카오 로그인" />
+          <img src="/assets/images/KakaoLogin.png" alt="카카오 로그인" />
         </button>
         <button className={styles.scroll} onClick={scrollDown}>
           <FaAnglesDown />
@@ -39,7 +39,7 @@ export default function LandingPage() {
           <div className={styles.left}>
             <img
               className={styles.guide1}
-              src="/assets/images/guide1.png"
+              src="/assets/images/GuideLeft.png"
               alt="랜딩 페이지 설명 이미지 1"
             />
             <p className={styles.text}>스트리트 뷰와 힌트를 참고해</p>
@@ -49,7 +49,7 @@ export default function LandingPage() {
           <div className={styles.right}>
             <img
               className={styles.guide2}
-              src="/assets/images/guide2.png"
+              src="/assets/images/GuideRight.png"
               alt="랜딩 페이지 설명 이미지 2"
             />
             <p className={styles.text}>정답과 가장 가까운 곳에</p>
