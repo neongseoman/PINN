@@ -9,16 +9,8 @@ public enum BaseResponseStatus {
      */
     SUCCESS(true, 1000, "요청에 성공하였습니다."),
 
-    SUCCESS_DELETE_MOKKOJI(true, 1100, "정상적으로 삭제했습니다"),
-    SUCCESS_KICK_MOKKOJI_MEMBER(true, 1101, "회원을 정상적으로 강퇴했습니다"),
-    SUCCESS_CREATE_MOKKOJI(true, 1102, "정상적으로 생성했습니다"),
-    SUCCESS_LEAVE_MOKKOJI(true, 1103, "정상적으로 떠났습니다"),
-
-
-    SUCCESS_CREATE_TOKEN(true, 1200, "토큰 발급에 성공했습니다."),
-
-
-    SUCCESS_CREATE_PRODUCT(true,1401, "상품 추가에 성공했습니다."),
+    CHAT_SUCCESS(true, 1100, "채팅 성공"),
+    ENTER_SUCCESS(true, 1100, "방 입장 성공"),
 
     /**
      * 2000 : Request 오류

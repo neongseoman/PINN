@@ -3,6 +3,7 @@ package com.ssafy.be.lobby.controller;
 import com.ssafy.be.common.component.GameComponent;
 import com.ssafy.be.common.component.GameManager;
 import com.ssafy.be.common.model.domain.Game;
+import com.ssafy.be.common.model.dto.ChatDTO;
 import com.ssafy.be.common.response.BaseResponse;
 import com.ssafy.be.common.response.BaseResponseStatus;
 import com.ssafy.be.lobby.model.dto.CreateRoomDTO;
@@ -54,25 +55,43 @@ public class LobbyController {
     }
 
     /*
+     * Game Enter socket
+     * subscribe : /game/{gameId}
+     * send to : /app/game/{gameId}
+     * */
+    @MessageMapping("/game/enter/{gameId}")
+    @SendTo("/game/{gameId}")
+    public String enterRoom(@Payload String msg, @DestinationVariable String gameId){
+        ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
+
+        System.out.println(msg);
+
+        return msg;
+    }
+
+    /*
      * Game socket
      * subscribe : /game/{gameId}
      * send to : /app/game/{gameId}
      * */
-    @MessageMapping("/game/{gameId}")
-    @SendTo("/app/game/{gameId}")
-    public String createRoom(@Payload String msg, @DestinationVariable String gameId){
+    @MessageMapping("/game/chat/{gameId}")
+    @SendTo("/game/{gameId}")
+    public BaseResponse<?> createRoom(ChatDTO chatDTO, @DestinationVariable String gameId){
         ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
+        // nickname 검증
 
-        System.out.println(msg);
-//        simpMessagingTemplate.convertAndSend(des , game);
+        //
 
-        return msg;
+        // 대방 채팅, 팀 채팅
+//        System.out.println(msg);
+
+        return new BaseResponse<>(BaseResponseStatus.CHAT_SUCCESS, chatDTO);
     }
 
     @GetMapping("checkGameManager")
     public BaseResponse<?> checkGameManager(){
         System.out.println(gameManager.getGames());
-        return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+        return new BaseResponse<>(BaseResponseStatus.ENTER_SUCCESS);
     }
 
 }
