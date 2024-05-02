@@ -103,17 +103,11 @@ class JwtProviderTest {
 
         String accessToken = jwtProvider.generateToken(jwtPayload);
         String[] tokens = accessToken.split("\\.");
-//        for (String token : tokens) {
-//            System.out.println(token);
-//        }
         tokens[1] = "setaedrqwerewasfasefasefasfas";
-//        for (String token : tokens) {
-//            System.out.println(token);
-//        }
         StringBuilder sb = new StringBuilder();
         sb.append(tokens[0]).append(".").append(tokens[1]).append(".").append(tokens[2]);
         String newToken = sb.toString();
-//        Claims claims = jwtProvider.validateToken(accessToken);
+
         Assertions.assertThrows(SignatureException.class,()->{
             jwtProvider.validateToken(newToken);
         });

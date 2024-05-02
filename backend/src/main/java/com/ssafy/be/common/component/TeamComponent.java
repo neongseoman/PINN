@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class TeamComponent {
-    ConcurrentHashMap<Long, TeamGamer> teamGamers;
+    ConcurrentHashMap<Long, TeamGamerComponent> teamGamers;
     private int teamId;
     private int gameId;
     private int colorId;
