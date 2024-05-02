@@ -5,19 +5,23 @@ import com.ssafy.be.gamer.model.GamerDTO;
 import com.ssafy.be.gamer.model.LoginTokenDTO;
 import com.ssafy.be.gamer.repository.GamerLoginRedisRepository;
 import com.ssafy.be.gamer.repository.GamerRepository;
+import jakarta.persistence.Id;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.ExceptionMappingAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -25,12 +29,14 @@ import java.util.Arrays;
 import java.util.Optional;
 
 @Slf4j
-@RequiredArgsConstructor
+@Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    private final JwtProvider jwtProvider;
-    private final GamerLoginRedisRepository gamerLoginRedisRepository;
-    private final GamerRepository gamerRepository;
-
+    @Autowired
+    private  JwtProvider jwtProvider;
+    @Autowired
+    private  GamerLoginRedisRepository gamerLoginRedisRepository;
+    @Autowired
+    private  GamerRepository gamerRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

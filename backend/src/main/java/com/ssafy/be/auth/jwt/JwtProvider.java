@@ -10,6 +10,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
@@ -22,13 +23,14 @@ import java.util.Map;
 
 @Component
 @Log4j2
-
 public class JwtProvider {
     private SecretKey key;
     @Value("${jwt.kakao.access.expiration}")
     private long ACCESS_TOKEN_EXPIRE_TIME;
     @Value("${jwt.kakao.refresh.expiration}")
     private long REFRESH_TOKEN_EXPIRE_TIME;
+
+    @Autowired
     private GamerLoginRedisRepository gamerLoginRedisRepository;
 
     public JwtProvider() {
