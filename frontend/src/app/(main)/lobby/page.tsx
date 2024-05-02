@@ -3,23 +3,16 @@
 import styles from './lobby.module.css'
 import Image from 'next/image'
 import RoomCard from './_components/RoomCard';
-import CreateRoom from './_components/CreateRoom';
+import CreateRoomModal from './_components/CreateRoomModal';
+import RuleModal from './_components/RuleModal';
 
 export default function LobbyPage() {
   const profileModal = () => {
     // 프로필 수정 모달 띄우기
   };
 
-  const createGame = () => {
-    // 게임 생성
-  };
-
   const fastStart = () => {
     // 빠른 시작
-  };
-
-  const ruleModal = () => {
-    // 게임 설명 모달 띄우기
   };
 
   return (
@@ -34,10 +27,10 @@ export default function LobbyPage() {
         </div>
         <div className={styles.medium}>
           <div style={{ display: 'flex' }}>
-            <CreateRoom />
+            <CreateRoomModal />
             <p className={styles.buttons} onClick={fastStart}>빠른 시작</p>
           </div>
-          <p className={styles.buttons} onClick={ruleModal}>게임 설명</p>
+            <RuleModal />
         </div>
         <div className={styles.bottom}>
           <RoomCard />

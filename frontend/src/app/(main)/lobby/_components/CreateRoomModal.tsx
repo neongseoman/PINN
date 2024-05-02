@@ -6,7 +6,7 @@ import { FaArrowCircleRight } from "react-icons/fa";
 import { TiArrowSortedDown } from "react-icons/ti";
 import Image from "next/image";
 
-export default function CreateRoom() {
+export default function CreateRoomModal() {
   // dialog 참조 ref
   const dialogRef = useRef<HTMLDialogElement>(null);
   // 방 제목
