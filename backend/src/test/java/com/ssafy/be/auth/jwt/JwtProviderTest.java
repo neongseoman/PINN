@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -111,5 +112,20 @@ class JwtProviderTest {
         Assertions.assertThrows(SignatureException.class,()->{
             jwtProvider.validateToken(newToken);
         });
+    }
+
+    @DisplayName("Authentication 테스트")
+    @Test
+    void _Authentication_test(){
+        //given
+        Date issueDate = new Date(System.currentTimeMillis());
+        JwtPayload jwtPayload = new JwtPayload(issueDate,10000,"testname",1234);
+
+        String accessToken = jwtProvider.generateToken(jwtPayload);
+
+        UsernamePasswordAuthenticationToken authenticationToken = jwtProvider.getAuthentication(accessToken);
+
+        Assertions.assertEquals(authenticationToken.getPrincipal(),1234);
+        Assertions.assertEquals(authenticationToken.getCredentials(),"testname");
     }
 }

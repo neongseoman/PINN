@@ -35,7 +35,8 @@ public class SecurityConfig {
     private final CustomAccessDeniedHandler accessDeniedHandler;
 
     private static final String[] AUTH_BLACKLIST = { // 여기로 들어오려면 접근 권한이 있어야함. 아직 미정
-            "/api"
+            "/api",
+            "/gamer/userInfo"
     };
 
     @Bean
@@ -47,12 +48,12 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
-                .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(c ->
                         c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request ->
-                        request.requestMatchers("/oauth/**").permitAll()
-                                .requestMatchers(AUTH_BLACKLIST).authenticated()
+                        request.requestMatchers("/gamer/**").authenticated()
+                                .requestMatchers("/oauth/code/kakao/**").permitAll()
                 );
 //                .exceptionHandling((exceptionHandling) -> exceptionHandling
 //                        .authenticationEntryPoint(authenticationEntryPoint)
@@ -60,26 +61,16 @@ public class SecurityConfig {
 
         return http.build();
     }
-    
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer(){
-        return web -> {
-            web.ignoring()
-                    .requestMatchers("/app/game/**")
-                    .requestMatchers("/game/**")
-                    .requestMatchers("oauth/code/kakao");
-        };
-    }
 
     CorsConfigurationSource corsConfigurationSource() {
         return request -> {
             CorsConfiguration config = new CorsConfiguration();
-//            config.setAllowedHeaders(Collections.singletonList("*"));
-//            config.setAllowedMethods(Collections.singletonList("*"));
-//            config.setAllowedOriginPatterns(Arrays.asList("https://www.pinn.kr", "http://localhost:3000"));
+            config.setAllowedHeaders(Collections.singletonList("*"));
+            config.setAllowedMethods(Collections.singletonList("*"));
+            config.setAllowedOriginPatterns(Arrays.asList("https://www.pinn.kr", "http://localhost:3000"));
             config.setAllowCredentials(true);
-//            config.addExposedHeader("accessToken");
-//            config.addExposedHeader("refreshToken");
+            config.addExposedHeader("accessToken");
+            config.addExposedHeader("refreshToken");
             return config;
         };
     }

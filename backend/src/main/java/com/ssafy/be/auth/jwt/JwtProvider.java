@@ -1,25 +1,23 @@
 package com.ssafy.be.auth.jwt;
 
-import com.nimbusds.jwt.JWT;
 import com.ssafy.be.auth.model.JwtPayload;
 import com.ssafy.be.gamer.model.GamerDTO;
-import com.ssafy.be.gamer.model.LoginTokenDTO;
+import com.ssafy.be.gamer.model.GamerPrincipalVO;
 import com.ssafy.be.gamer.repository.GamerLoginRedisRepository;
-import com.ssafy.be.gamer.repository.GamerRedisRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import lombok.RequiredArgsConstructor;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Component
 @Log4j2
@@ -69,14 +67,16 @@ public class JwtProvider {
 
     public UsernamePasswordAuthenticationToken getAuthentication(String accessToken) {
         Claims claims = validateToken(accessToken);
-        int gamerId = claims.get("your gamerId", Integer.class);
-        log.info(gamerId);
-        return new UsernamePasswordAuthenticationToken(gamerId, "Gamer");
+        int gamerId = claims.get("gamerId", Integer.class);
+        String nickname = claims.get("nickname", String.class);
+        GamerPrincipalVO gamerPrincipalVO = new GamerPrincipalVO(gamerId,nickname);
+        log.info("{} 유저 인증 성공 : " , nickname);
+        return new UsernamePasswordAuthenticationToken(gamerPrincipalVO, "",List.of(new SimpleGrantedAuthority("USER")));
     }
 
     public void saveRefreshTokenToRedis(String refreshToken,int gamerId) {
-        LoginTokenDTO refreshTokenDTO = new LoginTokenDTO(refreshToken,gamerId,REFRESH_TOKEN_EXPIRE_TIME);
-        gamerLoginRedisRepository.save(refreshTokenDTO);
+//        GamerInfoVO refreshTokenDTO = new GamerInfoVO(refreshToken,gamerId,REFRESH_TOKEN_EXPIRE_TIME);
+//        gamerLoginRedisRepository.save(refreshTokenDTO);
     }
 
     public Claims validateToken(String accessToken) {
@@ -98,4 +98,7 @@ public class JwtProvider {
         }
     }
 
+    public String resolveToken(HttpServletRequest request) {
+        return request.getHeader(HttpHeaders.AUTHORIZATION);
+    }
 }

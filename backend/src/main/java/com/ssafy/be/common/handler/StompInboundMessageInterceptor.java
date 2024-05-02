@@ -21,7 +21,7 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 @Log4j2
-@Order(Ordered.HIGHEST_PRECEDENCE + 99)
+//@Order(Ordered.HIGHEST_PRECEDENCE + 99)
 public class StompInboundMessageInterceptor implements ChannelInterceptor {
     private final JwtProvider jwtProvider;
     //https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/messaging/support/ChannelInterceptor.html
