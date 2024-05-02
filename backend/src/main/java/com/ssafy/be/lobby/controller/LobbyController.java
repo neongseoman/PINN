@@ -4,6 +4,7 @@ import com.ssafy.be.common.component.GameComponent;
 import com.ssafy.be.common.component.GameManager;
 import com.ssafy.be.common.model.domain.Game;
 import com.ssafy.be.common.response.BaseResponse;
+import com.ssafy.be.common.response.BaseResponseStatus;
 import com.ssafy.be.lobby.model.dto.CreateRoomDTO;
 import com.ssafy.be.lobby.service.LobbyService;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,7 +40,7 @@ public class LobbyController {
     * URL : /lobby/create
     * return : game_id
     * */
-    @GetMapping("create")
+    @PostMapping("create")
     public BaseResponse<?> createRoom(@RequestBody CreateRoomDTO createRoomDTO){
         // gamer_id, 즉 방을 생성한 방리더의 '검증된' id 추출하여 game에 삽입
         // TODO : leader_id 수정
@@ -52,9 +54,9 @@ public class LobbyController {
     }
 
     /*
-     * 방 생성을 위한 API
-     * URL : /lobby/create
-     * return :
+     * Game socket
+     * subscribe : /game/{gameId}
+     * send to : /app/game/{gameId}
      * */
     @MessageMapping("/game/{gameId}")
     @SendTo("/app/game/{gameId}")
@@ -64,7 +66,14 @@ public class LobbyController {
         System.out.println(msg);
 //        simpMessagingTemplate.convertAndSend(des , game);
 
-        return msg.toString();
+        return msg;
     }
+
+    @GetMapping("checkGameManager")
+    public BaseResponse<?> checkGameManager(){
+        System.out.println(gameManager.getGames());
+        return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+    }
+
 }
 

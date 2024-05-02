@@ -52,6 +52,7 @@ public class Game {
                 .stage1Time(this.stage1Time)
                 .stage2Time(this.stage2Time)
                 .roundCount(this.roundCount)
+                .status("ready")
                 .build();
     }
 }
