@@ -1,6 +1,6 @@
 package com.ssafy.be.common.component;
 
-public class TeamGamer {
+public class TeamGamerComponent {
     private Long teamGamerId;
     private int teamId;
     private int colorId;
