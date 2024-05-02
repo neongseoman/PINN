@@ -31,13 +31,11 @@ export default function LoadingPage({ params }: { params: { id: number } }) {
         return () => clearInterval(timer)
     }, [count, router])
 
-
-
-    // api받아오기
+    // 어디로 라우팅할지만 추가하면 끝
     return (
         <main className={styles.background}>
             <div className={styles.container}>
-                <div className={styles.round}>라운드 {1}</div>
+                <div className={styles.round}>라운드 1</div>
                 <div className={styles.count}>{count}</div>
                 <div className={styles['rank-container']}>
                     <div className={styles.trophy}>
@@ -52,39 +50,39 @@ export default function LoadingPage({ params }: { params: { id: number } }) {
                             <div>00,000</div>
                         </div>
                         <div className={styles.teamList}>
-                            <div>2. TEAM 1</div>
+                            <div>2. TEAM 2</div>
                             <div>00,000</div>
                         </div>
                         <div className={styles.teamList}>
-                            <div>3. TEAM 1</div>
+                            <div>3. TEAM 3</div>
                             <div>00,000</div>
                         </div>
                         <div className={styles.teamList}>
-                            <div>4. TEAM 1</div>
+                            <div>4. TEAM 4</div>
                             <div>00,000</div>
                         </div>
                         <div className={styles.teamList}>
-                            <div>5. TEAM 1</div>
+                            <div>5. TEAM 5</div>
                             <div>00,000</div>
                         </div>
                         <div className={styles.teamList}>
-                            <div>6. TEAM 1</div>
+                            <div>6. TEAM 6</div>
                             <div>00,000</div>
                         </div>
                         <div className={styles.teamList}>
-                            <div>7. TEAM 1</div>
+                            <div>7. TEAM 7</div>
                             <div>00,000</div>
                         </div>
                         <div className={styles.teamList}>
-                            <div>8. TEAM 1</div>
+                            <div>8. TEAM 8</div>
                             <div>00,000</div>
                         </div>
                         <div className={styles.teamList}>
-                            <div>9. TEAM 1</div>
+                            <div>9. TEAM 9</div>
                             <div>00,000</div>
                         </div>
                         <div className={styles.teamList}>
-                            <div>10. TEAM 1</div>
+                            <div>10. TEAM 10</div>
                             <div>00,000</div>
                         </div>
                     </div>
