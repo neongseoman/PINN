@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import KakaoScript from './(landing)/KakaoScript';
 
 export const metadata: Metadata = {
   title: 'PINN',
@@ -7,6 +8,12 @@ export const metadata: Metadata = {
   icons: {
     icon: '/assets/images/favicon.png',
   },
+}
+
+declare global{
+  interface Window{
+    Kakao: any;
+  }
 }
 
 export default function RootLayout({
@@ -17,6 +24,7 @@ export default function RootLayout({
   return (
     <html lang="ko-KR">
       <body>{children}</body>
+      <KakaoScript />
     </html>
   )
 }
