@@ -13,7 +13,7 @@ export default function LobbyPage() {
     console.log(token) //code == token
     if(token !== undefined){
         localStorage.setItem("access-token", accessToken)
-        router.push("/room")
+        router.push("/lobby")
       }
   }, [accessToken]);
 
