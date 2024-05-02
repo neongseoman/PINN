@@ -1,15 +1,14 @@
 "use client"
 
-import { useCallback, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { string } from 'prop-types'
 
 export default function LobbyPage() {
   const router = useRouter();
   const param = new URLSearchParams(window.location.search);
   const token:any = param.get('code');
   const accessToken = token.split('=')[1]
-  useEffect(()=>{
+  useEffect(() => {
     console.log(token) //code == token
     if(token !== undefined){
         localStorage.setItem("access-token", accessToken)
