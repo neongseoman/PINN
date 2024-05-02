@@ -32,8 +32,32 @@ public class OAuth2Service {
     WebClient.Builder userApi = WebClient.builder()
             .baseUrl(kakaoUserURL);
 
-    public String getAccessToken(String authCode) {
-        MultiValueMap<String, String> params = queryParam(authCode);
+    public String getAccessTokenFromlocal(String authCode) {
+        MultiValueMap<String, String> params = queryParam(authCode,kakaoOAuthConfig.local_redirect_uri());
+        Map<String,Object> response = tokenApi.build()
+                .post()
+                .bodyValue(params)
+                .retrieve()
+                .bodyToMono(Map.class)
+                .block();
+
+        String acessToken = response.get("access_token").toString();
+        return acessToken;
+    }
+    public String getAccessTokenFromTest(String authCode, String redirectUri) {
+        MultiValueMap<String, String> params = queryParam(authCode,redirectUri);
+        Map<String,Object> response = tokenApi.build()
+                .post()
+                .bodyValue(params)
+                .retrieve()
+                .bodyToMono(Map.class)
+                .block();
+
+        String acessToken = response.get("access_token").toString();
+        return acessToken;
+    }
+    public String getAccessTokenFromServer(String authCode) {
+        MultiValueMap<String, String> params = queryParam(authCode,kakaoOAuthConfig.server_redirect_uri());
         Map<String,Object> response = tokenApi.build()
                 .post()
                 .bodyValue(params)
@@ -63,12 +87,13 @@ public class OAuth2Service {
         return getOrSave(userDTO);
     }
 
-    private MultiValueMap<String,String> queryParam(String authCode){
-//        log.info("re uri" + kakaoOAuthConfig.redirect_uri());
+
+    private MultiValueMap<String,String> queryParam(String authCode,String uri){
+//        log.info("re uri" + kakaoOAuthConfig.localRedirectUri());
         MultiValueMap<String,String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
         params.add("client_id", kakaoOAuthConfig.client_id());
-        params.add("redirect_uri", kakaoOAuthConfig.redirect_uri());
+        params.add("redirectUri", uri);
         params.add("code", authCode);
         params.add("client_secret",kakaoOAuthConfig.client_secret());
 

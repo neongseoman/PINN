@@ -53,26 +53,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
         } else { // 토큰이 없으면 refresh_token을 찾는다.
-            log.info("No Auth Token");
-            if (cookies != null) {
-                for (Cookie cookie : cookies) {
-                    if (cookie.getName().equals("refresh_token")) { //refresh가 있으면 access만들고 돌려보내.
-                        String refreshToken = cookie.getValue();
-                        Optional<LoginTokenDTO> tokenDTO = gamerLoginRedisRepository.findById(refreshToken);
-                        if (tokenDTO.isPresent()) {
-                            int gamerId = tokenDTO.get().getGamerId();
-                            GamerDTO gamerDTO = gamerRepository.findById(gamerId).orElseThrow(IllegalAccessError::new);
-                            String accessToken = jwtProvider.generateAccessToken(gamerDTO)[0];
-                            response.setHeader("access-token", accessToken);
-                        } else {
-                            response.sendRedirect("www.pinn.kr");
-                        }
-                        filterChain.doFilter(request, response);
-
-                    }
+//            log.info("No Auth Token");
+//            if (cookies != null) {
+//                for (Cookie cookie : cookies) {
+//                    if (cookie.getName().equals("refresh_token")) { //refresh가 있으면 access만들고 돌려보내.
+//                        String refreshToken = cookie.getValue();
+//                        Optional<LoginTokenDTO> tokenDTO = gamerLoginRedisRepository.findById(refreshToken);
+//                        if (tokenDTO.isPresent()) {
+//                            int gamerId = tokenDTO.get().getGamerId();
+//                            GamerDTO gamerDTO = gamerRepository.findById(gamerId).orElseThrow(IllegalAccessError::new);
+//                            String accessToken = jwtProvider.generateAccessToken(gamerDTO)[0];
+//                            response.setHeader("access-token", accessToken);
+//                        } else {
+//                            response.sendRedirect("www.pinn.kr");
+//                        }
+//                        filterChain.doFilter(request, response);
+//
+//                    }
 //                throw new ServletException("No cookies found"); // 로그인 시켜
-                }
-            }
+//                }
+//            }
         }
 
         filterChain.doFilter(request, response);
