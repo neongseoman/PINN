@@ -2,10 +2,7 @@ package com.ssafy.be.game.model.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.ssafy.be.common.component.HintComponent;
 import lombok.*;
-
-import java.util.List;
 
 @Getter
 @Setter
@@ -13,9 +10,6 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class Stage2InitResponseDTO {
+public class GameStartResponseDTO {
     private int gameId;
-    private int round;
-    private int stage;
-    private List<HintComponent> hints;
 }
