@@ -1,11 +1,9 @@
 package com.ssafy.be.lobby.service;
 
-import static com.ssafy.be.common.response.BaseResponseStatus.CREATE_GAME_ERROR;
-
 import com.ssafy.be.common.component.GameComponent;
-import com.ssafy.be.common.exception.BaseException;
 import com.ssafy.be.common.model.domain.Game;
 import com.ssafy.be.common.model.repository.GameRepository;
+import com.ssafy.be.lobby.model.dto.CreateRoomDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,18 +14,19 @@ public class LobbyServiceImpl implements LobbyService {
     GameRepository gameRepository;
 
     @Override
-    public void createRoom(GameComponent game) {
-        Integer game_id = gameRepository.save(Game.builder()
-                        .themeId(game.getThemeId())
-                        .hasPassword(game.isHasPassword())
-                        .stage1Time(game.getStage1Time())
-                        .stage2Time(game.getStage2Time())
-                        .roundCount(game.getRoundCount())
-                        .leaderId(game.getLeaderId())
-                        .roomName(game.getRoomName())
-                .build()).getGameId();
-        if (game_id == null){
-            throw new BaseException(CREATE_GAME_ERROR);
-        }
+    public GameComponent createRoom(CreateRoomDTO createRoomDTO) {
+        boolean hasPassword = !createRoomDTO.getPassword().isEmpty();
+        System.out.println(createRoomDTO);
+        Game savedGame = gameRepository.save(Game.builder()
+                        .themeId(createRoomDTO.getThemeId())
+                        .stage1Time(createRoomDTO.getStage1Time())
+                        .stage2Time(createRoomDTO.getStage2Time())
+                        .roundCount(createRoomDTO.getRoundCount())
+                        .leaderId(createRoomDTO.getLeader_id())
+                        .roomName(createRoomDTO.getRoomName())
+                        .hasPassword(hasPassword)
+                .build());
+//        System.out.println(savedGame.getGameId());
+        return savedGame.toGameComponent();
     }
 }
