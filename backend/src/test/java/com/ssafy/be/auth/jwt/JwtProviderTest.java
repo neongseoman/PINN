@@ -129,4 +129,17 @@ class JwtProviderTest {
         Assertions.assertEquals(authGamerPirncipal.getGamerId(),gamerPrincipalVO.getGamerId());
         Assertions.assertEquals(authGamerPirncipal.getNickname(),gamerPrincipalVO.getNickname());
     }
+
+    @DisplayName("개발자용 토큰 생성 및 테스트")
+    @Test
+    void _Development_TokenCreate(){
+        Date issueDate = new Date(System.currentTimeMillis());
+        JwtPayload jwtPayload = new JwtPayload(issueDate,100000000,"개발자",12341123);
+//        GamerPrincipalVO gamerPrincipalVO = new GamerPrincipalVO(1234,"testname");
+        String accessToken = jwtProvider.generateToken(jwtPayload);
+        System.out.println(accessToken);
+        UsernamePasswordAuthenticationToken authenticationToken = jwtProvider.getAuthentication(accessToken);
+
+
+    }
 }
