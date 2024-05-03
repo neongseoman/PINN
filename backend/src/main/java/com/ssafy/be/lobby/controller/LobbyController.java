@@ -76,22 +76,24 @@ public class LobbyController {
      * */
     @MessageMapping("/game/chat/{gameId}")
     @SendTo("/game/{gameId}")
-    public BaseResponse<?> createRoom(ChatDTO chatDTO, @DestinationVariable String gameId){
+    public ChatDTO createRoom(ChatDTO chatDTO, @DestinationVariable String gameId){
         ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
         // nickname 검증
 
-        //
+        System.out.println(chatDTO);
 
-        // 대방 채팅, 팀 채팅
-//        System.out.println(msg);
+        // 방 채팅, 팀 채팅
+        // code & msg 삽입
+        chatDTO.setCodeAndMsg(1001, "방 채팅이 성공적으로 보내졌습니다.");
 
-        return new BaseResponse<>(BaseResponseStatus.CHAT_SUCCESS, chatDTO);
+        return chatDTO;
     }
 
+    // TODO : 배포시 리턴 객체 지우기!!!
     @GetMapping("checkGameManager")
     public BaseResponse<?> checkGameManager(){
         System.out.println(gameManager.getGames());
-        return new BaseResponse<>(BaseResponseStatus.ENTER_SUCCESS);
+        return new BaseResponse<>(BaseResponseStatus.ENTER_SUCCESS, gameManager.getGames());
     }
 
 }
