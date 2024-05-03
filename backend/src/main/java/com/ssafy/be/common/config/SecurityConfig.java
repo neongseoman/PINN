@@ -36,7 +36,7 @@ public class SecurityConfig {
 
     private static final String[] AUTH_BLACKLIST = { // 여기로 들어오려면 접근 권한이 있어야함. 아직 미정
             "/api",
-            "/gamer/userInfo",
+            "/gamer/**",
             "/lobby/**",
             "/room/**"
     };
@@ -69,7 +69,7 @@ public class SecurityConfig {
             CorsConfiguration config = new CorsConfiguration();
             config.setAllowedHeaders(Collections.singletonList("*"));
             config.setAllowedMethods(Collections.singletonList("*"));
-            config.setAllowedOriginPatterns(Arrays.asList("https://www.pinn.kr", "http://localhost:3000"));
+            config.setAllowedOriginPatterns(Arrays.asList("https://www.pinn.kr", "http://localhost:3000","http://www.localhost:3000"));
             config.setAllowCredentials(true);
             config.addExposedHeader("accessToken");
             config.addExposedHeader("refreshToken");
