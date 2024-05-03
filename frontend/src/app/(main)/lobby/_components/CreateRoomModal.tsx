@@ -1,10 +1,9 @@
 'use client'
 
-import React, { useRef, useState } from "react";
-import styles from '../lobby.module.css'
-import { FaArrowCircleRight } from "react-icons/fa";
-import { TiArrowSortedDown } from "react-icons/ti";
 import Image from "next/image";
+import React, { useRef, useState } from "react";
+import { TiArrowSortedDown } from "react-icons/ti";
+import styles from '../lobby.module.css';
 
 export default function CreateRoomModal() {
   // dialog 참조 ref
@@ -67,7 +66,42 @@ export default function CreateRoomModal() {
 
   // 생성 요청 함수
   const handleSubmit = async () => {
-    
+    if (!roomName || roomName.length > 20 || roomName.length < 1) {
+      alert('방 제목은 1글자 이상, 20글자 이하여야 합니다.');
+      return;
+    } else if (roomPassword.length > 8) {
+      alert('비밀번호는 8글자 이하여야 합니다.');
+      return;
+    }
+
+    const data = {
+      roomName: roomName,
+      password: roomPassword,
+      roundCount: round,
+      stage1Time: stage1,
+      stage2Time: stage2,
+      theme: theme,
+      // leaderId:
+    };
+
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/lobby/create`, {
+        method: 'POST',
+        // headers: {
+        //   'Content-Type': 'application/json'
+        // },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        const responseData = await response.json();
+        console.log('Response from server:', responseData);
+      } else {
+        console.error('Error:', response);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   return (
@@ -94,7 +128,7 @@ export default function CreateRoomModal() {
               <label><input type="radio" name="options" value="3" checked={round === 3} onChange={handleRoundChange} />3</label>
             </p>
           </div>
-          <p className={styles.stageInputBox}>
+          <div className={styles.stageInputBox}>
             스테이지 1 :
             <div className={styles.dropdown}>
               <button className={styles.dropbtn}>{stage1}&nbsp;초&nbsp;&nbsp;<TiArrowSortedDown /></button>
@@ -105,8 +139,8 @@ export default function CreateRoomModal() {
                 <a href="#" onClick={handleStage1Change}>60</a>
               </div>
             </div>
-          </p>
-          <p className={styles.stageInputBox}>
+          </div>
+          <div className={styles.stageInputBox}>
             스테이지 2 :
             <div className={styles.dropdown}>
               <button className={styles.dropbtn}>{stage2}&nbsp;초&nbsp;&nbsp;<TiArrowSortedDown /></button>
@@ -117,25 +151,25 @@ export default function CreateRoomModal() {
                 <a href="#" onClick={handleStage2Change}>50</a>
               </div>
             </div>
-          </p>
+          </div>
         </div>
         <div className={styles.themeInputBox}>
-          <p style={{ marginTop: '0px' }}>테마 선택</p>
+          <p style={{ margin: '0px' }}>테마 선택</p>
           <div className={styles.themeList}>
-          <div className={`${styles.themeItem} ${theme === 1 ? styles.selectedTheme : ''}`} onClick={() => handleThemeChange(1)}>
-              <Image className={styles.shadow} width={100} height={100} src="/assets/images/themes/RandomTheme.jpg" alt="랜드마크 이미지" />
+            <div className={`${styles.themeItem} ${theme === 1 ? styles.selectedTheme : ''}`} onClick={() => handleThemeChange(1)}>
+              <Image className={styles.shadow} width={100} height={100} src="/assets/images/themes/RandomTheme.jpg" alt="랜덤 이미지" />
               <p className={styles.themeName}>랜덤</p>
             </div>
             <div className={`${styles.themeItem} ${theme === 2 ? styles.selectedTheme : ''}`} onClick={() => handleThemeChange(2)}>
-              <Image className={styles.shadow} width={100} height={100} src="/assets/images/themes/KoreaTheme.jpg" alt="랜드마크 이미지" />
+              <Image className={styles.shadow} width={100} height={100} src="/assets/images/themes/KoreaTheme.jpg" alt="한국 이미지" />
               <p className={styles.themeName}>한국</p>
             </div>
             <div className={`${styles.themeItem} ${theme === 3 ? styles.selectedTheme : ''}`} onClick={() => handleThemeChange(3)}>
-              <Image className={styles.shadow} width={100} height={100} src="/assets/images/themes/GreekTheme.jpg" alt="랜드마크 이미지" />
+              <Image className={styles.shadow} width={100} height={100} src="/assets/images/themes/GreekTheme.jpg" alt="그리스 이미지" />
               <p className={styles.themeName}>그리스</p>
             </div>
             <div className={`${styles.themeItem} ${theme === 4 ? styles.selectedTheme : ''}`} onClick={() => handleThemeChange(4)}>
-              <Image className={styles.shadow} width={100} height={100} src="/assets/images/themes/EgyptTheme.jpg" alt="랜드마크 이미지" />
+              <Image className={styles.shadow} width={100} height={100} src="/assets/images/themes/EgyptTheme.jpg" alt="이집트 이미지" />
               <p className={styles.themeName}>이집트</p>
             </div>
             <div className={`${styles.themeItem} ${theme === 5 ? styles.selectedTheme : ''}`} onClick={() => handleThemeChange(5)}>
@@ -146,7 +180,7 @@ export default function CreateRoomModal() {
         </div>
         <div className={styles.modalButtons}>
           <p className={styles.exit} onClick={closeModal}>취소</p>
-          <p className={styles.start} onClick={handleSubmit}>시작 <FaArrowCircleRight /></p>
+          <p className={styles.start} onClick={handleSubmit}>시작 ➜</p>
         </div>
       </dialog>
     </div>
