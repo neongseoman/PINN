@@ -1,4 +1,4 @@
-package com.ssafy.be.gamer;
+package com.ssafy.be.gamer.service;
 
 import com.ssafy.be.gamer.model.GamerDTO;
 import com.ssafy.be.gamer.repository.GamerRepository;

@@ -20,6 +20,7 @@ public class testController {
 
     @MessageMapping("/game/test")
     public void test2(@Payload String payload, SimpMessageHeaderAccessor accessor){
+        accessor.getUser();
         simpMessagingTemplate.convertAndSend("/game/test",payload);
     }
 
