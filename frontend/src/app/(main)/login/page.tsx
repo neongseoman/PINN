@@ -8,18 +8,24 @@ export default function LoginSuccessPage() {
 
   const router = useRouter()
   const param = new URLSearchParams(window.location.search)
-  const token: any = param.get('code')
-  const accessToken = token.split('=')[1]
+  const token: string | null = param.get('code')
+  // const accessToken = token.split('=')[1]
+  let accessToken: string | null = null;
+
+  if (token !== null) {
+    accessToken = token.split('=')[1];
+  }
 
   useEffect(() => {
     console.log(token)  // code == token
-    if (token !== undefined) {
-      localStorage.setItem('access-token', accessToken)
+    // if (token !== undefined) {
+    if (accessToken !== null) {
+      localStorage.setItem('accessToken', accessToken)
     }
   }, [accessToken])
 
   const getUserInfo = async () => {
-    const res = await fetch('http://localhost:8081' + '/gamer/userInfo', {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}` + '/gamer/userInfo', {
       method: 'GET',
       headers:{'Authorization': `Bearer ${accessToken}`}
     })
