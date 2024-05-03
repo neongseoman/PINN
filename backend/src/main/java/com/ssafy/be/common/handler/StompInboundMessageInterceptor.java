@@ -1,6 +1,7 @@
 package com.ssafy.be.common.handler;
 
 import com.ssafy.be.auth.jwt.JwtProvider;
+import com.ssafy.be.gamer.model.GamerPrincipalVO;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -29,8 +30,9 @@ public class StompInboundMessageInterceptor implements ChannelInterceptor {
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
-//        System.out.println(headerAccessor.getMessageHeaders());
-//        System.out.println("full message:" + message);
+//        headerAccessor.getHeader("Authrozation");
+//        String Auth = (String) headerAccessor.getNativeHeader("Authrozation");
+//        GamerPrincipalVO gamer = jwtProvider.getAuthentication(auth)
         if (StompCommand.CONNECT.equals(headerAccessor.getCommand())) {
             log.info(headerAccessor.getSessionId() + " connected");
         }
