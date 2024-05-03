@@ -69,3 +69,7 @@ management:
     web:
       exposure:
         include: prometheus
+
+weather_map:
+  url : ${WEATHER_URL}
+  api : ${WEATHER_API}
