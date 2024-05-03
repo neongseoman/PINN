@@ -1,16 +1,14 @@
 'use client'
 
-import Timer from '@/app/components/Timer'
-import ThemeInfo from './_components/ThemeInfo'
+import themeStyles from '@/app/components/theme.module.css'
+import Timer from '@/components/Timer'
+import { Loader } from '@googlemaps/js-api-loader'
 import GameInfo from './_components/GameInfo'
 import Hints from './_components/Hints'
-
-import styles from './game.module.css'
-import themeStyles from '@/app/components/theme.module.css'
 import IngameMap from './_components/IngameMap'
 import StreetView from './_components/StreetView'
-
-import { Loader } from '@googlemaps/js-api-loader'
+import ThemeInfo from './_components/ThemeInfo'
+import styles from './game.module.css'
 
 export default function GamePage() {
   //힌트

@@ -1,5 +1,5 @@
-import styles from './hints.module.css'
 import themeStyles from '@/app/components/theme.module.css'
+import styles from './hints.module.css'
 
 interface HintProps {
   theme: string
