@@ -20,7 +20,7 @@ export default function CreateRoomModal() {
   // stage2 시간
   const [stage2, setStage2] = useState<number>(20);
   // 테마
-  const [theme, setTheme] = useState<number>(0);
+  const [theme, setTheme] = useState<number>(1);
 
   // 방 제목 변경 이벤트 핸들러
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,6 +63,11 @@ export default function CreateRoomModal() {
   // Modal 닫기 함수
   const closeModal = () => {
     dialogRef.current?.close(); // 모달창 닫기
+  };
+
+  // 생성 요청 함수
+  const handleSubmit = async () => {
+    
   };
 
   return (
@@ -117,31 +122,31 @@ export default function CreateRoomModal() {
         <div className={styles.themeInputBox}>
           <p style={{ marginTop: '0px' }}>테마 선택</p>
           <div className={styles.themeList}>
-            <div className={styles.themeItem} onClick={() => handleThemeChange(1)}>
-              <Image className={styles.themeImage} width={100} height={100} src="/assets/images/themes/RandomTheme.jpg" alt="랜드마크 이미지" />
+          <div className={`${styles.themeItem} ${theme === 1 ? styles.selectedTheme : ''}`} onClick={() => handleThemeChange(1)}>
+              <Image className={styles.shadow} width={100} height={100} src="/assets/images/themes/RandomTheme.jpg" alt="랜드마크 이미지" />
               <p className={styles.themeName}>랜덤</p>
             </div>
-            <div className={styles.themeItem} onClick={() => handleThemeChange(2)}>
-              <Image className={styles.themeImage} width={100} height={100} src="/assets/images/themes/KoreaTheme.jpg" alt="랜드마크 이미지" />
+            <div className={`${styles.themeItem} ${theme === 2 ? styles.selectedTheme : ''}`} onClick={() => handleThemeChange(2)}>
+              <Image className={styles.shadow} width={100} height={100} src="/assets/images/themes/KoreaTheme.jpg" alt="랜드마크 이미지" />
               <p className={styles.themeName}>한국</p>
             </div>
-            <div className={styles.themeItem} onClick={() => handleThemeChange(3)}>
-              <Image className={styles.themeImage} width={100} height={100} src="/assets/images/themes/GreekTheme.jpg" alt="랜드마크 이미지" />
+            <div className={`${styles.themeItem} ${theme === 3 ? styles.selectedTheme : ''}`} onClick={() => handleThemeChange(3)}>
+              <Image className={styles.shadow} width={100} height={100} src="/assets/images/themes/GreekTheme.jpg" alt="랜드마크 이미지" />
               <p className={styles.themeName}>그리스</p>
             </div>
-            <div className={styles.themeItem} onClick={() => handleThemeChange(4)}>
-              <Image className={styles.themeImage} width={100} height={100} src="/assets/images/themes/EgyptTheme.jpg" alt="랜드마크 이미지" />
+            <div className={`${styles.themeItem} ${theme === 4 ? styles.selectedTheme : ''}`} onClick={() => handleThemeChange(4)}>
+              <Image className={styles.shadow} width={100} height={100} src="/assets/images/themes/EgyptTheme.jpg" alt="랜드마크 이미지" />
               <p className={styles.themeName}>이집트</p>
             </div>
-            <div className={styles.themeItem} onClick={() => handleThemeChange(5)}>
-              <Image className={styles.themeImage} width={100} height={100} src="/assets/images/themes/LandmarkTheme.jpg" alt="랜드마크 이미지" />
+            <div className={`${styles.themeItem} ${theme === 5 ? styles.selectedTheme : ''}`} onClick={() => handleThemeChange(5)}>
+              <Image className={styles.shadow} width={100} height={100} src="/assets/images/themes/LandmarkTheme.jpg" alt="랜드마크 이미지" />
               <p className={styles.themeName}>랜드마크</p>
             </div>
           </div>
         </div>
         <div className={styles.modalButtons}>
           <p className={styles.exit} onClick={closeModal}>취소</p>
-          <p className={styles.start}>시작 <FaArrowCircleRight /></p>
+          <p className={styles.start} onClick={handleSubmit}>시작 <FaArrowCircleRight /></p>
         </div>
       </dialog>
     </div>

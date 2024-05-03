@@ -23,7 +23,7 @@ export default function RuleModal() {
     <div>
       <p className={styles.buttons} onClick={showModal}>게임 설명</p>
 
-      <dialog className={styles.ruleWrapper} ref={dialogRef}>
+      <dialog className={ruleStyles.ruleWrapper} ref={dialogRef}>
         <div >
           참여 방법
         </div>

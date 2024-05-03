@@ -163,6 +163,9 @@
   background-color: var(--Main-Navy);
   color: var(--Main-Yellow);
   box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+  &::backdrop {
+    background-color: rgba(0, 0, 0, 0.9);
+  }
 }
 
 .modalTitle {
@@ -301,14 +304,27 @@
 }
 
 .themeItem {
+  width: 110px;
+  height: 130px;
+  padding: 15px 10px 10px 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   margin: 20px 0px;
+  
+  &:hover {
+    cursor: pointer;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+  }
 }
 
-.themeImage {
+.selectedTheme {
+  background-color: var(--Main-Yellow);
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+}
+
+.shadow {
   box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
 }
 
@@ -316,7 +332,6 @@
   margin: 0px;
   font-size: 16px;
   color: white;
-  font-weight: normal;
 }
 
 .modalButtons {
@@ -329,6 +344,7 @@
   padding: 10px;
   border-radius: 10px;
   background-color: var(--Main-Red);
+  margin-bottom: 0px;
   &:hover {
     cursor: pointer;
   }
@@ -339,16 +355,8 @@
   padding: 10px;
   border-radius: 10px;
   background-color: var(--Main-Green);
-}
-
-
-/* RuleModal.tsx */
-.ruleWrapper {
-  width: 900px;
-  height: 500px;
-  padding: 25px;
-  border: none;
-  background-color: rgba(255, 255, 255, 1);
-  color: var(--Main-Yellow);
-  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+  margin-bottom: 0px;
+  &:hover {
+    cursor: pointer;
+  }
 }
