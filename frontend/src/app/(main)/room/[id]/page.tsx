@@ -3,8 +3,13 @@
 import styles from './room.module.css'
 
 import TeamList from './_components/TeamList'
-import Option from './_components/option'
-import { useState } from 'react'
+import Option from './_components/Option'
+import BtnReady from './_components/BtnReady'
+import BtnReadyCancel from './_components/BtnReadyCancel'
+import BtnStart from './_components/BtnStart'
+import BtnStartCancel from './_components/BtnStartCancel'
+
+import { useEffect, useState } from 'react'
 
 interface Team {
   teamNumber: number
@@ -26,6 +31,10 @@ export default function RoomPage({ params }: { params: { id: number } }) {
     { teamNumber: 9, teamColor: 'rgba(188, 157, 157, 1)', teamMember: ['', '', ''], isReady: 0 },
     { teamNumber: 10, teamColor: 'rgba(85, 85, 85, 1)', teamMember: ['', '', ''], isReady: 0 },
   ])
+  useEffect(() => {
+
+  }, teams)
+  const isTeamReady = teams.some(team => team.teamNumber === 1 && team.isReady === 0);
 
   return (
     <main className={styles.background}>
@@ -37,7 +46,11 @@ export default function RoomPage({ params }: { params: { id: number } }) {
         <div className={styles['chat-ready-out']}>
           <div className={styles.chat}>chatting</div>
           <div className={styles['ready-out']}>
-            <button className={styles.ready}>준비</button>
+            {isTeamReady ? (
+              <BtnReady teams={teams} setTeams={setTeams} />
+            ) : (
+              <BtnReadyCancel teams={teams} setTeams={setTeams} />
+            )}
             <button className={styles.out}>나가기</button>
           </div>
         </div>
