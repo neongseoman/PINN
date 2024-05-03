@@ -4,11 +4,15 @@ import com.ssafy.be.common.component.GameComponent;
 import com.ssafy.be.common.component.GameManager;
 import com.ssafy.be.common.model.domain.Game;
 import com.ssafy.be.common.model.dto.ChatDTO;
+import com.ssafy.be.common.model.dto.SocketDTO;
 import com.ssafy.be.common.response.BaseResponse;
 import com.ssafy.be.common.response.BaseResponseStatus;
+import com.ssafy.be.gamer.model.GamerPrincipalVO;
 import com.ssafy.be.lobby.model.dto.CreateRoomDTO;
 import com.ssafy.be.lobby.service.LobbyService;
+import jakarta.servlet.ServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -26,6 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @RestController
 @RequestMapping("lobby")
 @RequiredArgsConstructor
+@Log4j2
 public class LobbyController {
 
     @Autowired
@@ -38,39 +43,80 @@ public class LobbyController {
 
     /*
     * 방 생성을 위한 API
+    * method : POST
     * URL : /lobby/create
-    * return : game_id
+    * return : GameComponent
     * */
     @PostMapping("create")
-    public BaseResponse<?> createRoom(@RequestBody CreateRoomDTO createRoomDTO){
+    public BaseResponse<?> createRoom(@RequestBody CreateRoomDTO createRoomDTO, ServletRequest req){
         // gamer_id, 즉 방을 생성한 방리더의 '검증된' id 추출하여 game에 삽입
         // TODO : leader_id 수정
-        createRoomDTO.setLeader_id(2);
+        GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
+        createRoomDTO.setLeader_id(gamerPrincipalVO.getGamerId());
+        log.info(gamerPrincipalVO);
         // 생성된 초기 게임 설정을 DB에 저장
         GameComponent savedGame = lobbyService.createRoom(createRoomDTO);
-        // GameManager에 해당 데이터 추가
+        // 게임 내 팀을 생성
+        lobbyService.createTeams(savedGame);
+        // GameManager에 게임 추가
         gameManager.addGame(savedGame);
 
         return new BaseResponse<>(savedGame);
     }
 
     /*
-     * Game Enter socket
+     * 방 입장을 위한 API
+     * method : POST
+     * URL : /lobby/enter
+     * return : GameComponent
+     * */
+    @PostMapping("enter")
+    public BaseResponse<?> enterRoom(@RequestBody CreateRoomDTO createRoomDTO, ServletRequest req){
+        // gamer_id, 즉 방을 생성한 방리더의 '검증된' id 추출하여 game에 삽입
+        // TODO : leader_id 수정
+        GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
+        createRoomDTO.setLeader_id(gamerPrincipalVO.getGamerId());
+        log.info(gamerPrincipalVO);
+
+
+        return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+    }
+
+
+    /*
+     * 현재 실행 중인 게임을 확인하기 위한 메서드
+     * method : GET
+     * URI : lobby/checkGameManager
+     * */
+    // TODO : 배포시 리턴 객체 지우기!!!
+    @GetMapping("checkGameManager")
+    public BaseResponse<?> checkGameManager(){
+        System.out.println(gameManager.getGames());
+        return new BaseResponse<>(BaseResponseStatus.ENTER_SUCCESS, gameManager.getGames());
+    }
+
+
+    // ---------------------------------- SOCKET ---------------------------------------------
+
+    /*
+     * 룸 입장을 위한 Socket 메서드
      * subscribe : /game/{gameId}
      * send to : /app/game/{gameId}
      * */
     @MessageMapping("/game/enter/{gameId}")
     @SendTo("/game/{gameId}")
-    public String enterRoom(@Payload String msg, @DestinationVariable String gameId){
+    public SocketDTO enterRoom(@Payload SocketDTO socketDTO, @DestinationVariable String gameId){
         ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
 
-        System.out.println(msg);
+        // 오름차순으로 비어있는 팀에 할당
 
-        return msg;
+
+        System.out.println(socketDTO);
+        return socketDTO;
     }
 
     /*
-     * Game socket
+     * 대기방 내 채팅을 위한 Socket 메서드
      * subscribe : /game/{gameId}
      * send to : /app/game/{gameId}
      * */
@@ -89,12 +135,7 @@ public class LobbyController {
         return chatDTO;
     }
 
-    // TODO : 배포시 리턴 객체 지우기!!!
-    @GetMapping("checkGameManager")
-    public BaseResponse<?> checkGameManager(){
-        System.out.println(gameManager.getGames());
-        return new BaseResponse<>(BaseResponseStatus.ENTER_SUCCESS, gameManager.getGames());
-    }
+
 
 }
 

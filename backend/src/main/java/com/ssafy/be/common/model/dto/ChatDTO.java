@@ -1,10 +1,12 @@
 package com.ssafy.be.common.model.dto;
 
 import lombok.Getter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
 @Getter
+@ToString
 public class ChatDTO extends SocketDTO {
     private String content;
 

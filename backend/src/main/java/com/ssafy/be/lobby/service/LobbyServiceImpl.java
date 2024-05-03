@@ -29,4 +29,10 @@ public class LobbyServiceImpl implements LobbyService {
 //        System.out.println(savedGame.getGameId());
         return savedGame.toGameComponent();
     }
+
+    @Override
+    public void createTeams(GameComponent savedGame) {
+
+    }
+
 }
