@@ -8,20 +8,17 @@ interface MessageFormat {
   content: string
 }
 
-export default function Chatting() {
+interface ChattingProps {
+  subscribeUrl: string
+  publishUrl: string
+}
+
+export default function Chatting({ subscribeUrl, publishUrl }: ChattingProps) {
   const [messages, setMessages] = useState<string[]>([])
   const [newMessage, setNewMessage] = useState<string>('')
 
-  const socketUrl = 'aa'
-  const subscribeUrl = 'aa'
-  const destinationUrl = 'aa'
-
   const client = new Client({
-    brokerURL: socketUrl,
-    connectHeaders: {
-      login: 'user',
-      passcode: 'password',
-    },
+    brokerURL: process.env.NEXT_PUBLIC_SOCKET_URL,
     debug: function (str: string) {
       console.log(str)
     },
@@ -48,13 +45,13 @@ export default function Chatting() {
 
     client.activate()
     return () => {
-      client.deactivate() // Cleanup on unmount
+      client.deactivate()
     }
   }, [])
 
   const handleSendMessage = () => {
     client.publish({
-      destination: destinationUrl,
+      destination: publishUrl,
       body: JSON.stringify({ newMessage: newMessage }),
     })
   }
