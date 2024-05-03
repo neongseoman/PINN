@@ -2,14 +2,13 @@
 
 import themeStyles from '@/app/components/theme.module.css'
 import Timer from '@/components/Timer'
+import { Loader } from '@googlemaps/js-api-loader'
 import GameInfo from './_components/GameInfo'
 import Hints from './_components/Hints'
 import IngameMap from './_components/IngameMap'
 import StreetView from './_components/StreetView'
 import ThemeInfo from './_components/ThemeInfo'
 import styles from './game.module.css'
-
-import { Loader } from '@googlemaps/js-api-loader'
 
 export default function GamePage() {
   //힌트

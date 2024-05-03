@@ -1,9 +1,9 @@
 'use client'
 
-import styles from './ingamemap.module.css'
 import themeStyles from '@/app/components/theme.module.css'
 import { Loader } from '@googlemaps/js-api-loader'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
+import styles from './ingamemap.module.css'
 
 interface IngameMapProps {
   theme: string
