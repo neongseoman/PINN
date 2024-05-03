@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class SocketDTO {
-    private LocalDateTime senderDateTime;  // 송신자가 보낸 시간
+    private LocalDateTime senderDateTime;  // 송신자가 보낸 시간(Java 내 서버 시간)
     private String senderNickname;
     private int senderGameId;
     private int senderTeamId;
