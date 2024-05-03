@@ -51,7 +51,7 @@ public class SecurityConfig {
                 .sessionManagement(c ->
                         c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request ->
-                        request.requestMatchers("/oauth/**").permitAll()
+                        request.requestMatchers("/lobby/**").permitAll()
                                 .requestMatchers(AUTH_BLACKLIST).authenticated()
                 );
 //                .exceptionHandling((exceptionHandling) -> exceptionHandling
