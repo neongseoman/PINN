@@ -1,6 +1,6 @@
 package com.ssafy.be.game;
 
-public class HintDTO {
+public class QeustionHintDTO {
 
     private int elevator; //고도
     private int temp; // 켈빈
