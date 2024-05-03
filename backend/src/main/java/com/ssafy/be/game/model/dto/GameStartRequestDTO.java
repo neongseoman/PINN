@@ -2,14 +2,20 @@ package com.ssafy.be.game.model.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import lombok.*;
+import com.ssafy.be.common.model.dto.SocketDTO;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
+@ToString
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class GameStartRequestDTO {
+public class GameStartRequestDTO extends SocketDTO {
+
     private int gameId;
+
+    public GameStartRequestDTO(String senderNickname, int senderGameId, int senderTeamId) {
+        super(senderNickname, senderGameId, senderTeamId);
+    }
 }
