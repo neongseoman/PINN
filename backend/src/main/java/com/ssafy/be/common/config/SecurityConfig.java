@@ -53,10 +53,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request ->
                         request.requestMatchers("/oauth/**").permitAll()
                                 .requestMatchers(AUTH_BLACKLIST).authenticated()
-                )
-                .exceptionHandling((exceptionHandling) -> exceptionHandling
-                        .authenticationEntryPoint(authenticationEntryPoint)
-                        .accessDeniedHandler(accessDeniedHandler));
+                );
+//                .exceptionHandling((exceptionHandling) -> exceptionHandling
+//                        .authenticationEntryPoint(authenticationEntryPoint)
+//                        .accessDeniedHandler(accessDeniedHandler));
 
         return http.build();
     }

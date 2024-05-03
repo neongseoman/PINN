@@ -53,6 +53,8 @@ oauth2:
         client_id: ${KAKAO_CLIENT_ID} # REST API 키
         client_secret: ${KAKAO_CLIENT_SECRET} # Client Secret 키
         redirect_uri: ${KAKAO_REDIRECT_URI}
+        local_redirect_uri: ${KAKAO_CLIENT_REDIRECT_URI}
+        server_redirect_uri: ${KAKAO_SERVER_REDIRECT_URI}
         client-name: kakao
         authorization-grant-type: authorization_code
 
