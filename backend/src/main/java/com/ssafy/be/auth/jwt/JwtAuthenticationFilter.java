@@ -34,9 +34,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             UsernamePasswordAuthenticationToken authenticationToken = jwtProvider.getAuthentication(token);
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-            log.info(authenticationToken.getAuthorities().toString());
+
             GamerPrincipalVO gamerPrincipalVO =(GamerPrincipalVO)authenticationToken.getPrincipal();
-            log.info(gamerPrincipalVO.toString());
             request.setAttribute("gamerPrincipal", gamerPrincipalVO);
 //            request.setAttribute("nickname", gamerPrincipalVO.getNickname());
 //            request.setAttribute("gamerPrincipal",(GamerPrincipal)authenticationToken.getPrincipal());
