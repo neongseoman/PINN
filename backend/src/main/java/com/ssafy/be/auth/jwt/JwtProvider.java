@@ -11,6 +11,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
@@ -96,6 +97,13 @@ public class JwtProvider {
             throw new ExpiredJwtException(e.getHeader(),e.getClaims(),e.getMessage());
             // 만료 exception 처리
         }
+    }
+
+    public GamerPrincipalVO getGamerPrincipalVOByMessageHeader(StompHeaderAccessor accessor){
+        String token = accessor.getNativeHeader("Auth").get(0);
+        UsernamePasswordAuthenticationToken authentication = getAuthentication(token);
+        GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) authentication.getPrincipal();
+        return gamerPrincipalVO;
     }
 
     public String resolveToken(HttpServletRequest request) {
