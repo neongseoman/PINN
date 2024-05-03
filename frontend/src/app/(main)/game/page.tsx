@@ -1,14 +1,13 @@
 'use client'
 
-import Timer from '@/app/components/Timer'
-import ThemeInfo from './_components/ThemeInfo'
+import themeStyles from '@/app/components/theme.module.css'
+import Timer from '@/components/Timer'
 import GameInfo from './_components/GameInfo'
 import Hints from './_components/Hints'
-
-import styles from './game.module.css'
-import themeStyles from '@/app/components/theme.module.css'
 import IngameMap from './_components/IngameMap'
 import StreetView from './_components/StreetView'
+import ThemeInfo from './_components/ThemeInfo'
+import styles from './game.module.css'
 
 import { Loader } from '@googlemaps/js-api-loader'
 
