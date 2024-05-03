@@ -1,14 +1,11 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
-
-interface User {
-  gamerId: number,
-  nickname: string,
-}
+import useUserStore from '@/stores/userStore';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function LoginSuccessPage() {
+
   const router = useRouter()
   const param = new URLSearchParams(window.location.search)
   const token: any = param.get('code')
@@ -32,6 +29,10 @@ export default function LoginSuccessPage() {
 
     const gamerId = data.result.gamerId
     const nickname = data.result.nickname
+    useUserStore((state) => state.setGamerId(gamerId));
+    useUserStore((state) => state.setNickname(nickname));
+    console.log(gamerId)
+    console.log(nickname)
 
     localStorage.setItem('gamerId', gamerId)
     localStorage.setItem('nickname', nickname)

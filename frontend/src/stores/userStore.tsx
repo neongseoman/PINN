@@ -1,23 +1,19 @@
 // 유저 정보 상태관리
-// import { create } from 'zustand';
 
-// interface infoState {
-//   gamerId: number;
-//   setGamerId: (gamerId: number) => void;
-//   nickname: string;
-//   setNickname: (nickname: string) => void;
-// }
+import create from 'zustand';
 
-// interface userInfoState {
-//   info: infoState;
-//   addInfo: (gamerInfo: { gamerId: number; nickname: string; }) => void;
-// }
+interface UserState {
+  gamerId: string | null;
+  nickname: string | null;
+  setGamerId: (gamerId: string) => void;
+  setNickname: (nickname: string) => void;
+}
 
-// export const userStore = create<userInfoState>((set) => ({
-//   info
-//   addInfo: ({ gamerId, nickname }) =>
-//     set((state) => ({
-//       gamerId,
-//       nickname
-//     })),
-// }));
+const useUserStore = create<UserState>((set) => ({
+  gamerId: null,
+  nickname: null,
+  setGamerId: (gamerId: string) => set({ gamerId }),
+  setNickname: (nickname: string) => set({ nickname }),
+}));
+
+export default useUserStore;
