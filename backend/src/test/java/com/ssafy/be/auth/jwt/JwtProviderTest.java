@@ -1,6 +1,7 @@
 package com.ssafy.be.auth.jwt;
 
 import com.ssafy.be.auth.model.JwtPayload;
+import com.ssafy.be.gamer.model.GamerPrincipalVO;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.Assertions;
@@ -120,12 +121,12 @@ class JwtProviderTest {
         //given
         Date issueDate = new Date(System.currentTimeMillis());
         JwtPayload jwtPayload = new JwtPayload(issueDate,10000,"testname",1234);
-
+        GamerPrincipalVO gamerPrincipalVO = new GamerPrincipalVO(1234,"testname");
         String accessToken = jwtProvider.generateToken(jwtPayload);
 
         UsernamePasswordAuthenticationToken authenticationToken = jwtProvider.getAuthentication(accessToken);
-
-        Assertions.assertEquals(authenticationToken.getPrincipal(),1234);
-        Assertions.assertEquals(authenticationToken.getCredentials(),"testname");
+        GamerPrincipalVO authGamerPirncipal = (GamerPrincipalVO) authenticationToken.getPrincipal();
+        Assertions.assertEquals(authGamerPirncipal.getGamerId(),gamerPrincipalVO.getGamerId());
+        Assertions.assertEquals(authGamerPirncipal.getNickname(),gamerPrincipalVO.getNickname());
     }
 }

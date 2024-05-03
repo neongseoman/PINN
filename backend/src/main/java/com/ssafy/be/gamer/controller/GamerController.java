@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Log4j2
-@RequestMapping("gamer")
+@RequestMapping("/gamer")
 public class GamerController {
 
-    @GetMapping("userInfo")
+    @GetMapping("/userInfo")
     public BaseResponse getGamerInfo(ServletRequest req){
         log.info("controller in");
         GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");

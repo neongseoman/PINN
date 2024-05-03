@@ -36,7 +36,9 @@ public class SecurityConfig {
 
     private static final String[] AUTH_BLACKLIST = { // 여기로 들어오려면 접근 권한이 있어야함. 아직 미정
             "/api",
-            "/gamer/userInfo"
+            "/gamer/userInfo",
+            "/lobby/**",
+            "/room/**"
     };
 
     @Bean
@@ -52,7 +54,7 @@ public class SecurityConfig {
                 .sessionManagement(c ->
                         c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request ->
-                        request.requestMatchers("/gamer/**").authenticated()
+                        request.requestMatchers(AUTH_BLACKLIST).authenticated()
                                 .requestMatchers("/oauth/code/kakao/**").permitAll()
                 );
 //                .exceptionHandling((exceptionHandling) -> exceptionHandling
