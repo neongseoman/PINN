@@ -26,6 +26,7 @@ public class GameComponent {
     private LocalDateTime startedTime;
     private LocalDateTime finishedTime;
     private String password;
+    private String status;
 
     private List<QuestionComponent> questions; // 이 게임에서 출제될 문제 목록
 

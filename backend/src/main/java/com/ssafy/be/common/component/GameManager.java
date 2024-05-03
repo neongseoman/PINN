@@ -18,7 +18,7 @@ public class GameManager {
         return games;
     }
     public boolean addGame(GameComponent game){
-        if (games.getOrDefault(game.getGameId(), null) != null){
+        if (games.getOrDefault(game.getGameId(), null) == null){
             games.put(game.getGameId(), game);
             return true;
         }
