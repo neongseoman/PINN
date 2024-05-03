@@ -1,4 +1,4 @@
-import themeStyles from '@/app/components/theme.module.css'
+import themeStyles from '@/components/theme.module.css'
 import styles from './hints.module.css'
 
 interface HintProps {

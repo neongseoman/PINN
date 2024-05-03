@@ -1,7 +1,7 @@
 'use client'
 
-import themeStyles from '@/app/components/theme.module.css'
 import Timer from '@/components/Timer'
+import themeStyles from '@/components/theme.module.css'
 import { Loader } from '@googlemaps/js-api-loader'
 import GameInfo from './_components/GameInfo'
 import Hints from './_components/Hints'
