@@ -15,10 +15,11 @@ import java.util.concurrent.TimeUnit;
 @AllArgsConstructor
 @Builder
 @ToString
-public class LoginTokenDTO {
+public class GamerInfoVO {
     @Id
-    private String id;
+    private int id;
     private int gamerId;
+    private String nickname;
 
     @TimeToLive(unit = TimeUnit.MILLISECONDS)
     private long expiration;

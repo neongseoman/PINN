@@ -1,12 +1,14 @@
 package com.ssafy.be.auth.jwt;
 
 import com.ssafy.be.auth.model.JwtPayload;
+import com.ssafy.be.gamer.model.GamerPrincipalVO;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -111,5 +113,20 @@ class JwtProviderTest {
         Assertions.assertThrows(SignatureException.class,()->{
             jwtProvider.validateToken(newToken);
         });
+    }
+
+    @DisplayName("Authentication 테스트")
+    @Test
+    void _Authentication_test(){
+        //given
+        Date issueDate = new Date(System.currentTimeMillis());
+        JwtPayload jwtPayload = new JwtPayload(issueDate,10000,"testname",1234);
+        GamerPrincipalVO gamerPrincipalVO = new GamerPrincipalVO(1234,"testname");
+        String accessToken = jwtProvider.generateToken(jwtPayload);
+
+        UsernamePasswordAuthenticationToken authenticationToken = jwtProvider.getAuthentication(accessToken);
+        GamerPrincipalVO authGamerPirncipal = (GamerPrincipalVO) authenticationToken.getPrincipal();
+        Assertions.assertEquals(authGamerPirncipal.getGamerId(),gamerPrincipalVO.getGamerId());
+        Assertions.assertEquals(authGamerPirncipal.getNickname(),gamerPrincipalVO.getNickname());
     }
 }

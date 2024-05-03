@@ -1,6 +1,7 @@
 package com.ssafy.be.common.handler;
 
 import com.ssafy.be.auth.jwt.JwtProvider;
+import com.ssafy.be.gamer.model.GamerPrincipalVO;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -21,7 +22,7 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 @Log4j2
-@Order(Ordered.HIGHEST_PRECEDENCE + 99)
+//@Order(Ordered.HIGHEST_PRECEDENCE + 99)
 public class StompInboundMessageInterceptor implements ChannelInterceptor {
     private final JwtProvider jwtProvider;
     //https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/messaging/support/ChannelInterceptor.html
@@ -29,12 +30,15 @@ public class StompInboundMessageInterceptor implements ChannelInterceptor {
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
-//        System.out.println(headerAccessor.getMessageHeaders());
-//        System.out.println("full message:" + message);
+//        headerAccessor.getHeader("Authrozation");
+//        String Auth = (String) headerAccessor.getNativeHeader("Authrozation");
+//        GamerPrincipalVO gamer = jwtProvider.getAuthentication(auth)
         if (StompCommand.CONNECT.equals(headerAccessor.getCommand())) {
             log.info(headerAccessor.getSessionId() + " connected");
         }
         if (StompCommand.MESSAGE.equals(headerAccessor.getCommand())){
+//            String auth = headerAccessor.getNativeHeader("auth");
+//            headerAccessor.setUser(jwtProvider.validateToken(auth));
             System.out.println("auth:" + headerAccessor.getNativeHeader("auth header"));
         }
 //        if (StompCommand.CONNECT.equals(headerAccessor.getCommand())) {

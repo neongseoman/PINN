@@ -21,7 +21,7 @@ import java.util.Map;
 
 @Log4j2
 @RestController
-@RequestMapping("oauth")
+@RequestMapping("/oauth")
 @RequiredArgsConstructor
 public class OAuth2Controller {
 
