@@ -21,7 +21,7 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 @Log4j2
-@Order(Ordered.HIGHEST_PRECEDENCE + 99)
+//@Order(Ordered.HIGHEST_PRECEDENCE + 99)
 public class StompInboundMessageInterceptor implements ChannelInterceptor {
     private final JwtProvider jwtProvider;
     //https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/messaging/support/ChannelInterceptor.html
@@ -35,6 +35,8 @@ public class StompInboundMessageInterceptor implements ChannelInterceptor {
             log.info(headerAccessor.getSessionId() + " connected");
         }
         if (StompCommand.MESSAGE.equals(headerAccessor.getCommand())){
+//            String auth = headerAccessor.getNativeHeader("auth");
+//            headerAccessor.setUser(jwtProvider.validateToken(auth));
             System.out.println("auth:" + headerAccessor.getNativeHeader("auth header"));
         }
 //        if (StompCommand.CONNECT.equals(headerAccessor.getCommand())) {

@@ -21,7 +21,7 @@ import java.util.Map;
 
 @Log4j2
 @RestController
-@RequestMapping("oauth")
+@RequestMapping("/oauth")
 @RequiredArgsConstructor
 public class OAuth2Controller {
 
@@ -62,7 +62,7 @@ public class OAuth2Controller {
 
         res.setHeader("Set-Cookie", rcookie.toString());
         res.addHeader("auth",acookie.toString());
-        res.sendRedirect("http://localhost:3000/lobby?code=" + acookie.toString());
+        res.sendRedirect("http://localhost:3000/loginSuccess?code=" + acookie.toString());
 
         return new BaseResponse(BaseResponseStatus.SUCCESS, token); // 테스트
     }
@@ -96,7 +96,7 @@ public class OAuth2Controller {
 
         res.setHeader("Set-Cookie", rcookie.toString());
         res.addHeader("auth",acookie.toString());
-        res.sendRedirect("http://pinn.kr/lobby?code=" + acookie.toString());
+        res.sendRedirect("http://pinn.kr/loginSuccess?code=" + acookie.toString());
 
         return new BaseResponse(BaseResponseStatus.SUCCESS, token); // 테스트
     }
@@ -130,7 +130,7 @@ public class OAuth2Controller {
 
         res.setHeader("Set-Cookie", rcookie.toString());
         res.addHeader("auth",acookie.toString());
-        res.sendRedirect("http://localhost:3000/lobby?code=" + acookie.toString());
+        res.sendRedirect("http://localhost:3000/loginSuccess?code=" + acookie.toString());
 
         return new BaseResponse(BaseResponseStatus.SUCCESS, token); // 테스트
     }
