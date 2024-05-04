@@ -2,6 +2,7 @@ package com.ssafy.be.common.controller;
 
 import com.ssafy.be.auth.jwt.JwtProvider;
 import com.ssafy.be.gamer.model.GamerPrincipalVO;
+import jakarta.servlet.ServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -27,7 +28,8 @@ public class TestController {
     }
 
     @MessageMapping("/game/test01")
-    public void test01(@Payload String game) {
+    public void test01(@Payload String game, ServletRequest req) {
+        GamerPrincipalVO gamerPrincipalVO  = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
         System.out.println(game);
     }
 }
