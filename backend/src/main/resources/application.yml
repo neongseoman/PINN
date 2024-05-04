@@ -71,5 +71,5 @@ management:
         include: prometheus
 
 weather_map:
-  url : ${WEATHER_URL}
-  api : ${WEATHER_API}
+  url : ${WEATHER_STATISTICAL_URL}
+  api : ${WEATHER_STATISTICAL_API}
