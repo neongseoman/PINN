@@ -2,7 +2,7 @@
 
 import useUserStore from '@/stores/userStore'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect } from 'react'
+import { Suspense, useEffect } from 'react'
 
 export default function LoginSuccessPage() {
   const router = useRouter()
@@ -58,9 +58,11 @@ export default function LoginSuccessPage() {
   getUserInfo()
 
   return (
-    <main>
-      {/*<button onClick={getUserInfo}>유저정보 주세요.</button>*/}
-      <h1>로그인 성공 페이지</h1>
-    </main>
+    <Suspense fallback={<div>Loading...</div>}>
+      <main>
+        {/*<button onClick={getUserInfo}>유저정보 주세요.</button>*/}
+        <h1>로그인 성공 페이지</h1>
+      </main>
+    </Suspense>
   )
 }
