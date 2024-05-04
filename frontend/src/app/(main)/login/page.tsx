@@ -1,21 +1,24 @@
 'use client'
 
 import useUserStore from '@/stores/userStore'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 
 export default function LoginSuccessPage() {
   const router = useRouter()
-  const param = new URLSearchParams(window.location.search)
-  const token: string | null = param.get('code')
+  const { setGamerId, setNickname } = useUserStore()
+
+  // const param = new URLSearchParams(window.location.search)
+  const params = useSearchParams()
+
+  const token: string | null = params.get('code')
+
   // const accessToken = token.split('=')[1]
   let accessToken: string | null = null
 
   if (token !== null) {
     accessToken = token.split('=')[1]
   }
-
-  const { setGamerId, setNickname } = useUserStore()
 
   useEffect(() => {
     console.log(token) // code == token
