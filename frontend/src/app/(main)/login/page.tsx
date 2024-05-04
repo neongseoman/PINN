@@ -4,23 +4,23 @@ import useUserStore from '@/stores/userStore'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Suspense, useEffect } from 'react'
 
-export default function LoginSuccessPage() {
+export default function LoginPage() {
   const router = useRouter()
   const { setGamerId, setNickname } = useUserStore()
-
-  // const param = new URLSearchParams(window.location.search)
-  const params = useSearchParams()
-
-  const token: string | null = params.get('code')
-
-  // const accessToken = token.split('=')[1]
-  let accessToken: string | null = null
-
-  if (token !== null) {
-    accessToken = token.split('=')[1]
-  }
+  let accessToken = "";
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    // const params = useSearchParams()
+
+    const token: string | null = params.get('code')
+
+    // const accessToken = token.split('=')[1]
+    let accessToken: string | null = null
+
+    if (token !== null) {
+      accessToken = token.split('=')[1]
+    }
     console.log(token) // code == token
     // if (token !== undefined) {
     if (accessToken !== null) {
@@ -31,6 +31,7 @@ export default function LoginSuccessPage() {
   const getUserInfo = async () => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}` + '/gamer/userInfo',
+      // `localhost:8081` + '/gamer/userInfo',
       {
         method: 'GET',
         headers: { Authorization: `Bearer ${accessToken}` },
