@@ -1,13 +1,13 @@
 'use client'
 
 import useUserStore from '@/stores/userStore'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { Suspense, useEffect } from 'react'
 
 export default function LoginPage() {
   const router = useRouter()
   const { setGamerId, setNickname } = useUserStore()
-  let accessToken = "";
+  let accessToken = ''
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
