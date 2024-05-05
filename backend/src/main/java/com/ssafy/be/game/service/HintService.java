@@ -69,8 +69,8 @@ public class HintService {
 
 
     }
-    public Mono<Double> getAnnualTemperatureRange( Mono<List<WeatherAPIResponseDTO>> weatherDat){
-        return weatherDat.map(dataList ->{
+    public Mono<Double> getAnnualTemperatureRange( Mono<List<WeatherAPIResponseDTO>> weatherDat) {
+        Mono<Double> annualTemperatureRange = weatherDat.map(dataList -> {
             double highest = dataList.stream().map(data -> data.getResult().getTemp().getRecordMax())
                     .max(Comparator.naturalOrder()).orElse(Double.NEGATIVE_INFINITY);
 
@@ -79,8 +79,8 @@ public class HintService {
                     .min(Comparator.naturalOrder())
                     .orElse(Double.POSITIVE_INFINITY);
 
-            return highest-lowestTemperature;
+            return highest - lowestTemperature;
         });
-
+        return annualTemperatureRange;
     }
 }
