@@ -5,11 +5,15 @@ import com.ssafy.be.game.model.WeatherAPIResponseDTO;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Arrays;
+
 @RequiredArgsConstructor
+@Service
 public class HintService {
     @Value("${weather_map.url}")
     private String weatherURL;
@@ -31,17 +35,28 @@ public class HintService {
                         .path("/month")
                         .queryParam("lat", lat)
                         .queryParam("lon", lon)
+                        .queryParam("month",2)
                         .queryParam("appid", weatherAPI)
                         .build())
-                .retrieve().bodyToMono(WeatherAPIResponseDTO.class);
+                .exchangeToMono(clientResponse -> {
+                    // 요청 및 응답 정보 기록
+                    System.out.println("Request URL: " + clientResponse.request().getURI());
+                    System.out.println("Request Method: " + clientResponse.request().getMethod());
+                    System.out.println("Request Headers: " + clientResponse.request().getHeaders());
+
+                    return clientResponse.bodyToMono(WeatherAPIResponseDTO.class);
+                });
 
         response.subscribe(
                 data -> {
                     System.out.println("Received Data : " + data);
-                    // 추가적으로 data 객체를 사용하여 필요한 정보를 처리
-                    System.out.println("Temperature Mean: " + data.getResult().getTemp().getMean());
+                    System.out.println(data.getResult());
                 },
-                error -> System.out.println("Error occurred : " + error.getMessage()),
+                error -> {
+                    System.out.println("Error occurred : " + error.getMessage());
+                    System.out.println(Arrays.toString(error.getStackTrace()));
+                    System.out.println(error.getCause());
+                },
                 () -> System.out.println("Request complete"));
 
     }

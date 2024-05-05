@@ -3,10 +3,12 @@ package com.ssafy.be.game.model;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @AllArgsConstructor
+@ToString
 public class CloudDTO  { //구름
     private int min;
     private int max;
