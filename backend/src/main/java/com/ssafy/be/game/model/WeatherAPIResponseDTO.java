@@ -10,7 +10,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 public class WeatherAPIResponseDTO {
-    private int cod;
+    private int code;
     private long cityId;
     private double calctime;
     private ResultDTO result;
