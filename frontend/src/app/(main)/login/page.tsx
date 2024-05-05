@@ -21,17 +21,21 @@ export default function LoginPage() {
     if (token !== null) {
       accessToken = token.split('=')[1]
     }
-    console.log(token) // code == token
+    // console.log(token) // code == token
     // if (token !== undefined) {
     if (accessToken !== null) {
       localStorage.setItem('accessToken', accessToken)
     }
+    if (accessToken != null ){
+      getUserInfo(accessToken)
+
+    }
   }, [accessToken])
 
-  const getUserInfo = async () => {
+  const getUserInfo = async (accessToken:string) => {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}` + '/gamer/userInfo',
-      // `localhost:8081` + '/gamer/userInfo',
+      // `${process.env.NEXT_PUBLIC_API_URL}` + '/gamer/userInfo',
+      `http://localhost:8081` + '/gamer/userInfo',
       {
         method: 'GET',
         headers: { Authorization: `Bearer ${accessToken}` },
@@ -56,7 +60,6 @@ export default function LoginPage() {
     router.push('/lobby')
   }
 
-  getUserInfo()
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
