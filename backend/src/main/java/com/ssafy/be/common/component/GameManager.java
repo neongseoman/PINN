@@ -24,4 +24,19 @@ public class GameManager {
         }
         return false;
     }
+
+    /*
+    * gameId가 GameManager에 존재하는 게임인지 확인하는 메서드
+    * */
+    public boolean isGame(Integer gameId) {
+        GameComponent gameComponent = games.getOrDefault(gameId, null);
+        if (gameComponent == null){
+            // 존재하지 않는 게임
+            return false;
+        } else if (!gameComponent.getStatus().equals("ready")) {
+            // 게임 실행 중인 게임
+            return false;
+        }
+        return true;
+    }
 }

@@ -20,6 +20,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -66,20 +67,23 @@ public class LobbyController {
 
     /*
      * 방 입장을 위한 API
-     * method : POST
-     * URL : /lobby/enter
-     * return : GameComponent
+     * method : GET
+     * URL : /lobby/{gameId}
+     * return :
      * */
-    @PostMapping("enter")
-    public BaseResponse<?> enterRoom(@RequestBody CreateRoomDTO createRoomDTO, ServletRequest req){
+    @PostMapping("{gameId}")
+    public BaseResponse<?> enterRoom(@PathVariable Integer gameId, ServletRequest req){
         // gamer_id, 즉 방을 생성한 방리더의 '검증된' id 추출하여 game에 삽입
         // TODO : leader_id 수정
         GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
-        createRoomDTO.setLeader_id(gamerPrincipalVO.getGamerId());
+//        createRoomDTO.setLeader_id(gamerPrincipalVO.getGamerId());
         log.info(gamerPrincipalVO);
 
+        if(gameManager.isGame(gameId)){
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+        }
+        return new BaseResponse<>(BaseResponseStatus.NOT_EXIST_GAME);
 
-        return new BaseResponse<>(BaseResponseStatus.SUCCESS);
     }
 
 
