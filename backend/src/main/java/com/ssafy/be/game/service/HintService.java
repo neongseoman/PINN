@@ -9,11 +9,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.CoreSubscriber;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 
 
 @RequiredArgsConstructor
@@ -41,29 +44,43 @@ public class HintService {
         });
     }
 
-    public void fetchWeatherDataWithMonth(float lat, float lon) {
+    public  Mono<List<WeatherAPIResponseDTO>> fetchWeatherDataWithMonth(float lat, float lon) {
         log.info("API Start Time : {}", LocalDateTime.now());
-
         Flux<Integer> months = Flux.range(1, 12);
-        Flux<WeatherAPIResponseDTO> response = months.flatMap(month ->webClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/month")
-                        .queryParam("lat", lat)
-                        .queryParam("lon", lon)
-                        .queryParam("month", month)
-                        .queryParam("appid", weatherAPI)
-                        .build())
-                .retrieve()
-                .bodyToFlux(WeatherAPIResponseDTO.class));
-
-        response.subscribe(
-                data -> {
-                    System.out.println("Received Data : " + data.getResult());
+        Mono<List<WeatherAPIResponseDTO>> responses = months.flatMap(month -> webClient.get()
+                        .uri(uriBuilder -> uriBuilder
+                                .path("/month")
+                                .queryParam("lat", lat)
+                                .queryParam("lon", lon)
+                                .queryParam("month", month)
+                                .queryParam("appid", weatherAPI)
+                                .build())
+                        .retrieve()
+                        .bodyToMono(WeatherAPIResponseDTO.class))
+                .collectList()  // 모든 결과를 리스트로 모음
+                .doOnSuccess(dataList -> {
+                    System.out.println("Received Data: " + dataList);
                     log.info("API End Time : {}", LocalDateTime.now());
-                },
-                error -> {
-                    System.out.println("Error occurred : " + error.getMessage());
-                },
-                () -> System.out.println("Request complete"));
+                })
+                .doOnError(error -> {
+                    System.out.println("Error occurred: " + error.getMessage());
+                });
+        return responses;
+
+
+    }
+    public Mono<Double> getAnnualTemperatureRange( Mono<List<WeatherAPIResponseDTO>> weatherDat){
+        return weatherDat.map(dataList ->{
+            double highest = dataList.stream().map(data -> data.getResult().getTemp().getRecordMax())
+                    .max(Comparator.naturalOrder()).orElse(Double.NEGATIVE_INFINITY);
+
+            double lowestTemperature = dataList.stream()
+                    .map(weatherData -> weatherData.getResult().getTemp().getRecordMin())
+                    .min(Comparator.naturalOrder())
+                    .orElse(Double.POSITIVE_INFINITY);
+
+            return highest-lowestTemperature;
+        });
+
     }
 }

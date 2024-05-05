@@ -14,5 +14,4 @@ public class WeatherAPIResponseDTO {
     private long cityId;
     private double calctime;
     private ResultDTO result;
-
 }
