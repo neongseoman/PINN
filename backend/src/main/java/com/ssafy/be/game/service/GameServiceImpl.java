@@ -43,8 +43,10 @@ public class GameServiceImpl implements GameService {
 
             GameStartResponseDTO gameStartResponseDTO = new GameStartResponseDTO(gameStartRequestDTO.getSenderDateTime(), gameStartRequestDTO.getSenderNickname(), gameStartRequestDTO.getSenderGameId(), gameStartRequestDTO.getSenderTeamId(), gameStartRequestDTO.getCode(), gameStartRequestDTO.getMsg());
             gameStartResponseDTO.setCodeAndMsg(1111, "game start");
+
             // 시작 시작 기록
             existGame.setStartedTime(gameStartRequestDTO.getSenderDateTime());
+
             // status "start"로 변경
             if (existGame.getStatus() == GameStatus.READY) {
                 existGame.setStatus(GameStatus.START);
@@ -73,25 +75,24 @@ public class GameServiceImpl implements GameService {
             throw new BaseException(null);
         }
 
-        GameInitResponseDTO gameInitResponseDTO = new GameInitResponseDTO(gameInitRequestDTO.getSenderDateTime(), gameInitRequestDTO.getSenderNickname(), gameInitRequestDTO.getSenderGameId(), gameInitRequestDTO.getSenderTeamId(), gameInitRequestDTO.getCode(), gameInitRequestDTO.getMsg());
-        gameInitResponseDTO.setCodeAndMsg(1112, "game init 성공");
-
         try {
             // 요청 보낸 gamer_id가 GM/game의 leader_id와 일치하는지 확인
             if (gamerId != existGame.getLeaderId()) {
                 throw new BaseException(null);
             }
 
-            // game의 정보 중 필요한 것들을 gIRD에 담아서 return
-//            gameInitResponseDTO.setGameId(existGame.getGameId());
-//            gameInitResponseDTO.setRoomName(existGame.getRoomName());
-//            gameInitResponseDTO.setLeaderId(existGame.getLeaderId());
-//            gameInitResponseDTO.setRoundCount(existGame.getRoundCount());
-//            gameInitResponseDTO.setThemeId(existGame.getThemeId());
-//            gameInitResponseDTO.setStage1Time(existGame.getStage1Time());
-//            gameInitResponseDTO.setStage2Time(existGame.getStage2Time());
-//            gameInitResponseDTO.setStartedTime(existGame.getStartedTime());
+            GameInitResponseDTO gameInitResponseDTO = new GameInitResponseDTO(gameInitRequestDTO.getSenderDateTime(), gameInitRequestDTO.getSenderNickname(), gameInitRequestDTO.getSenderGameId(), gameInitRequestDTO.getSenderTeamId(), gameInitRequestDTO.getCode(), gameInitRequestDTO.getMsg());
+            gameInitResponseDTO.setCodeAndMsg(1112, "game init 성공");
 
+            // game의 정보 중 필요한 것들을 gIRD에 담아서 return
+            gameInitResponseDTO.setGameId(existGame.getGameId());
+            gameInitResponseDTO.setRoomName(existGame.getRoomName());
+            gameInitResponseDTO.setLeaderId(existGame.getLeaderId());
+            gameInitResponseDTO.setRoundCount(existGame.getRoundCount());
+            gameInitResponseDTO.setThemeId(existGame.getThemeId());
+            gameInitResponseDTO.setStage1Time(existGame.getStage1Time());
+            gameInitResponseDTO.setStage2Time(existGame.getStage2Time());
+            gameInitResponseDTO.setStartedTime(existGame.getStartedTime());
 
             return gameInitResponseDTO;
         } catch (Exception e) {
