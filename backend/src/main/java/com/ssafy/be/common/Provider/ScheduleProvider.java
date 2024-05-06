@@ -30,33 +30,33 @@ public class ScheduleProvider {
         return future;
     }
 
-    public CompletableFuture<Integer> roundStart(int gameId){
+    public CompletableFuture<Integer> roundStart(int gameId,int delayTime){
         CompletableFuture<Integer> future = new CompletableFuture<>();
         executorService.schedule(() ->{
             log.info("{} at {} is round Start", LocalDateTime.now(),gameId);
             future.complete(gameId);
-        },5, TimeUnit.SECONDS);
+        },delayTime, TimeUnit.SECONDS);
         return future;
     }
 
-    @Async // stage 1 끝나고 힌트 주기.
-    public void sendHint(int gameId,int delayTime, Consumer<Integer> onComplete){
+     // stage 1 끝나고 힌트 주기.
+    public CompletableFuture<Integer> sendHint(int gameId,int delayTime){
+        CompletableFuture<Integer> future = new CompletableFuture<>();
         executorService.schedule(() ->{
             log.info("{} at {} receive Hint", LocalDateTime.now(),gameId);
-            onComplete.accept(gameId);
+            future.complete(gameId);
         },delayTime, TimeUnit.SECONDS); // 게임 시간 인자로 받으면 수정할 수 있음.
+        return future;
     }
 
     // 스테이지 2까지 끝나고 라운드 종료 -> 결산 페이지로 넘어가세요.
     // GameComponent에 있는 모든 팀들의 pin을 정산해서 점수로 환산함.
-    @Async
-    public void roundEnd(int gameId, int delayTime, Consumer<Integer> onComplete, GameComponent gameComponent){
+    public  CompletableFuture<Integer> roundEnd(int gameId, int delayTime){
+        CompletableFuture<Integer> future = new CompletableFuture<>();
         executorService.schedule(() ->{
-            // 점수 계산하기
-//            List<Integer> result = gameComponent.getTeams().entrySet().stream().map(r -> r.getValue().)
             log.info("{} at {} Round is Over", LocalDateTime.now(),gameId);
-            onComplete.accept(gameId);
         },delayTime, TimeUnit.SECONDS); // 게임 시간 인자로 받으면 수정할 수 있음.
+        return future;
     }
 
     @Async // 결산 페이지 끝났고 다음 라운드로 넘어가세요.

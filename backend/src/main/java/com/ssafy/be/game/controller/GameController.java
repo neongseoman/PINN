@@ -16,6 +16,7 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -43,14 +44,33 @@ public class GameController {
 
     @MessageMapping("/game/start") // 단순 game status 변경 + 참가자들에게 시작 소식 broadcast 하여 로딩 화면으로 넘어갈 수 있도록 함
     public void startGame(GameStartRequestDTO gameStartRequestDTO, StompHeaderAccessor accessor) throws ExecutionException, InterruptedException {
+        log.info("Is this async? Start of Method : {}", LocalDateTime.now());
         int gamerId = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor).getGamerId();
         GameStartResponseDTO gameStartResponseDTO = gameService.startGame(gamerId, gameStartRequestDTO);
-        CompletableFuture<Integer> startGameFuture = scheduleProvider.startGame(gamerId)
-                .toCompletableFuture();
-//        CompletableFuture<Integer> round1StartFuture = startGameFuture.thenAccept(startGameId -> {
-//            sendingOperations.convertAndSend("/game/"+startGameId,new ServerSendEvent(ServerEvent.START));
-//            scheduleProvider.roundStart(startGameId);
-//        });
+        int gameId = gameStartResponseDTO.getGameId();
+        scheduleProvider.startGame(gameId)
+                .thenCompose((result) -> {
+                    log.info("{} : Starting gameId : {} at {}",result, gameId, LocalDateTime.now());
+                    ServerSendEvent serverMsg = new ServerSendEvent(ServerEvent.START);
+                    sendingOperations.convertAndSend("/game/"+result,serverMsg);
+                    return scheduleProvider.roundStart(result,5);
+                }).thenCompose((result)->{
+                    log.info("{} : round start: {}  at {}",result, gameId, LocalDateTime.now());
+                    ServerSendEvent serverMsg = new ServerSendEvent(ServerEvent.ROUND_START);
+                    sendingOperations.convertAndSend("/game/"+result,serverMsg);
+                    return scheduleProvider.sendHint(result,5);
+                }).thenCompose((result) ->{
+                    log.info("{} : Hint send: {}  at {}",result, gameId, LocalDateTime.now());
+                    ServerSendEvent serverMsg = new ServerSendEvent(ServerEvent.HINT);
+                    sendingOperations.convertAndSend("/game/"+result,serverMsg);
+                    return scheduleProvider.roundEnd(result,5);
+                }).exceptionally(ex -> {
+                    log.error("Error occurred in the CompletableFuture chain: ", ex);
+                    return null;
+                });
+
+//        sendingOperations.convertAndSend("/game/"+result,new ServerSendEvent(ServerEvent.START));
+        log.info("Is this async? End of Method : {}", LocalDateTime.now());
         sendingOperations.convertAndSend("/game/" + gameStartResponseDTO.getGameId(), gameStartResponseDTO);
     }
 
