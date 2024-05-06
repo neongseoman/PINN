@@ -3,12 +3,17 @@ package com.ssafy.be.game.service;
 import com.ssafy.be.common.component.*;
 import com.ssafy.be.common.exception.BaseException;
 import com.ssafy.be.common.model.repository.GameRepository;
+import com.ssafy.be.game.model.domain.Hint;
+import com.ssafy.be.game.model.domain.Question;
 import com.ssafy.be.game.model.dto.*;
+import com.ssafy.be.game.model.repository.HintRepository;
+import com.ssafy.be.game.model.repository.QuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -16,11 +21,15 @@ public class GameServiceImpl implements GameService {
 
     private final GameRepository gameRepository;
     private final GameManager gameManager;
+    private final QuestionRepository questionRepository;
+    private final HintRepository hintRepository;
 
     @Autowired
-    private GameServiceImpl(GameRepository gameRepository, GameManager gameManager) {
+    private GameServiceImpl(GameRepository gameRepository, GameManager gameManager, QuestionRepository questionRepository, HintRepository hintRepository) {
         this.gameRepository = gameRepository;
         this.gameManager = gameManager;
+        this.questionRepository = questionRepository;
+        this.hintRepository = hintRepository;
     }
 
     /////
@@ -31,6 +40,8 @@ public class GameServiceImpl implements GameService {
         try {
             int gameId = gameStartRequestDTO.getGameId();
             ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
+
+            // 존재하는 게임인지 확인
             GameComponent existGame = games.get(gameId);
             if (existGame == null) {
                 throw new BaseException(null);
@@ -44,7 +55,7 @@ public class GameServiceImpl implements GameService {
             GameStartResponseDTO gameStartResponseDTO = new GameStartResponseDTO(gameStartRequestDTO.getSenderDateTime(), gameStartRequestDTO.getSenderNickname(), gameStartRequestDTO.getSenderGameId(), gameStartRequestDTO.getSenderTeamId(), gameStartRequestDTO.getCode(), gameStartRequestDTO.getMsg());
             gameStartResponseDTO.setCodeAndMsg(1111, "game start");
 
-            // 시작 시작 기록
+            // 시작 시간 gameManager에 기록
             existGame.setStartedTime(gameStartRequestDTO.getSenderDateTime());
 
             // status "start"로 변경
@@ -53,9 +64,8 @@ public class GameServiceImpl implements GameService {
             } else {
                 throw new BaseException(null);
             }
-            //
 
-            gameStartResponseDTO.setGameId(gameStartResponseDTO.getGameId());
+            gameStartResponseDTO.setGameId(existGame.getGameId());
             return gameStartResponseDTO;
         } catch (Exception e) {
             throw new BaseException(null);
@@ -63,7 +73,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public GameInitResponseDTO findGameInfo(int gamerId, GameInitRequestDTO gameInitRequestDTO) throws BaseException {
+    public GameInitResponseDTO initGame(int gamerId, GameInitRequestDTO gameInitRequestDTO) throws BaseException {
 
         // TODO: 게임 시작 요청 시 테마에 해당하는 문제 랜덤 배정 + GameAndQuestion table에 insert
         // 지금은 GameAndQuestion table에 이미 문제가 배정되어 들어있다고 가정!
@@ -83,6 +93,43 @@ public class GameServiceImpl implements GameService {
 
             GameInitResponseDTO gameInitResponseDTO = new GameInitResponseDTO(gameInitRequestDTO.getSenderDateTime(), gameInitRequestDTO.getSenderNickname(), gameInitRequestDTO.getSenderGameId(), gameInitRequestDTO.getSenderTeamId(), gameInitRequestDTO.getCode(), gameInitRequestDTO.getMsg());
             gameInitResponseDTO.setCodeAndMsg(1112, "game init 성공");
+
+            /*
+             themeId 보고 question 배정
+             */
+            int themeId = existGame.getThemeId();
+            List<Question> questionCands = questionRepository.findByUseOrNotAndThemeId(1, themeId); // 사용 중이고 + themeId 일치하는 것만 가져오기
+
+            // 랜덤 (roundCount)개의 인덱스 선택
+            List<Integer> randomIndices = getRandomIndices(questionCands.size(), existGame.getRoundCount());
+
+            // 선택된 랜덤 인덱스로 question 구성 & questionId 보고 힌트 배정
+            List<QuestionComponent> questions = new ArrayList<>();
+            int tmp=1;
+            for (int index : randomIndices) {
+                QuestionDTO questionDTO = new QuestionDTO(questionCands.get(index));
+                QuestionComponent question = new QuestionComponent();
+
+                List<Hint> hintDatas = hintRepository.findByUseOrNotAndQuestionId(1, questionDTO.getQuestionId());
+                List<HintComponent> hints = new ArrayList<>();
+                for(Hint hintData: hintDatas) {
+                    HintComponent hint = new HintComponent();
+                    hint.setHintId(hintData.getHintId());
+                    hint.setHintTypeId(hintData.getHintTypeId());
+                    hint.setHintValue(hintData.getHintValue());
+                    hint.setOfferStage(hintData.getOfferStage());
+                    hint.setHintTypeName("임시 힌트명");
+                    hints.add(hint);
+                }
+
+                question.setRound(tmp++);
+                question.setLat(questionDTO.getLat());
+                question.setLat(questionDTO.getLng());
+                question.setQuestionName(questionDTO.getQuestionName());
+                question.setQuestionId(questionDTO.getQuestionId());
+                question.setHints(hints);
+            }
+            existGame.setQuestions(questions);
 
             // game의 정보 중 필요한 것들을 gIRD에 담아서 return
             gameInitResponseDTO.setGameId(existGame.getGameId());
@@ -189,5 +236,21 @@ public class GameServiceImpl implements GameService {
         }
     }
 
+    ///////
+
+    public static List<Integer> getRandomIndices(int maxIndex, int count) {
+        List<Integer> randomIndices = new ArrayList<>();
+        Random random = new Random();
+
+        // 중복되지 않는 랜덤한 인덱스 선택
+        while (randomIndices.size() < count) {
+            int randomIndex = random.nextInt(maxIndex);
+            if (!randomIndices.contains(randomIndex)) {
+                randomIndices.add(randomIndex);
+            }
+        }
+
+        return randomIndices;
+    }
 
 }

@@ -30,7 +30,7 @@ public class GameController {
     }
 
     /////
-    // TODO: 요청 보낸 사용자가 해당 게임의 방장인지 확인 & 한 게임에 대해 중복 요청 검증 처리 필요
+    // TODO: 한 게임에 대해 중복 요청 검증 처리 필요
 
 
     @MessageMapping("/game/start") // 단순 game status 변경 + 참가자들에게 시작 소식 broadcast 하여 로딩 화면으로 넘어갈 수 있도록 함
@@ -41,11 +41,11 @@ public class GameController {
         sendingOperations.convertAndSend("/game/" + gameStartResponseDTO.getGameId(), gameStartResponseDTO);
     }
 
-    @MessageMapping("/game/init")
+    @MessageMapping("/game/init") // 게임
     public void initGame(GameInitRequestDTO gameInitRequestDTO, StompHeaderAccessor accessor) {
         int gamerId = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor).getGamerId();
 
-        GameInitResponseDTO gameInitResponseDTO = gameService.findGameInfo(gamerId, gameInitRequestDTO);
+        GameInitResponseDTO gameInitResponseDTO = gameService.initGame(gamerId, gameInitRequestDTO);
 
         // /game/{gameId} 를 구독 중인 모든 사용자에게 publish
         sendingOperations.convertAndSend("/game/" + gameInitResponseDTO.getGameId(), gameInitResponseDTO);
