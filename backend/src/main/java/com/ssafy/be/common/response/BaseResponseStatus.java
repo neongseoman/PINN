@@ -39,7 +39,9 @@ public enum BaseResponseStatus {
     /**
      * 5000 : 잡지 못 한 서버 오류
      */
-    OOPS(false, 5000, "Oops...");
+    OOPS(false, 5000, "Oops..."),
+
+    INVALID_CREDENTIAL(false,4003,"AUTH CODE IS INVALID");
 
 
     private final boolean isSuccess;

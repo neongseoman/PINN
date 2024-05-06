@@ -1,4 +1,4 @@
-package com.ssafy.be.game;
+package com.ssafy.be.game.model;
 
 public class QuestionHintDTO {
 
