@@ -37,8 +37,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             GamerPrincipalVO gamerPrincipalVO =(GamerPrincipalVO)authenticationToken.getPrincipal();
             request.setAttribute("gamerPrincipal", gamerPrincipalVO);
-//            request.setAttribute("nickname", gamerPrincipalVO.getNickname());
-//            request.setAttribute("gamerPrincipal",(GamerPrincipal)authenticationToken.getPrincipal());
         }
 //        log.info("pass");
         filterChain.doFilter(request, response);

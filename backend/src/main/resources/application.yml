@@ -48,7 +48,7 @@ jwt:
   kakao:
     secret_key: ${KAKAO_JWT_KEY}
     access:
-      expiration: 60000000 # 100 분
+      expiration: 6000000000 # 100 분
     refresh:
       expiration: 86400000 # 240 시간
 
@@ -71,5 +71,5 @@ management:
         include: prometheus
 
 weather_map:
-  url : ${WEATHER_URL}
-  api : ${WEATHER_API}
+  url : ${WEATHER_STATISTICAL_URL}
+  api : ${WEATHER_STATISTICAL_API}

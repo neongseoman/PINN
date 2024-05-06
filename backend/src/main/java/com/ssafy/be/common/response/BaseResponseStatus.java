@@ -28,6 +28,7 @@ public enum BaseResponseStatus {
     SEND_MESSAGE_ERROR(false, 3001, "메시지를 발송하는 과정 중 오류가 발생했습니다."),
 
     CREATE_GAME_ERROR(false, 3100, "방(게임) 생성 중 문제가 발생했습니다."),
+    NOT_EXIST_GAME(false, 3100, "이미 게임 시작했거나 존재하지 않는 게임입니다."),
 
     /**
      * 4000 : Database, Server 오류
@@ -39,7 +40,9 @@ public enum BaseResponseStatus {
     /**
      * 5000 : 잡지 못 한 서버 오류
      */
-    OOPS(false, 5000, "Oops...");
+    OOPS(false, 5000, "Oops..."),
+
+    INVALID_CREDENTIAL(false,4003,"AUTH CODE IS INVALID");
 
 
     private final boolean isSuccess;
