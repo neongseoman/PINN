@@ -74,7 +74,7 @@ public class JwtProvider {
             int gamerId = claims.get("gamerId", Integer.class);
             String nickname = claims.get("nickname", String.class);
             GamerPrincipalVO gamerPrincipalVO = new GamerPrincipalVO(gamerId,nickname);
-            log.info("{} 유저 인증 성공 : " , nickname);
+            log.info("{} 유저 인증 성공 " , nickname);
             return new UsernamePasswordAuthenticationToken(gamerPrincipalVO, "",List.of(new SimpleGrantedAuthority("USER")));
         } catch (BaseException e){
             throw new BaseException(BaseResponseStatus.INVALID_CREDENTIAL);
