@@ -24,7 +24,7 @@ public class GameDTO {
     private LocalDateTime roomCreateTime;
     private LocalDateTime startedTime;
     private LocalDateTime finishedTime;
-    private boolean hasPassword;
+    private int hasPassword;
 
     @Builder
     public GameDTO(Game game) {
@@ -38,7 +38,7 @@ public class GameDTO {
         this.roomCreateTime = game.getRoomCreateTime();
         this.startedTime = game.getStartedTime();
         this.finishedTime = game.getFinishedTime();
-        this.hasPassword = game.isHasPassword();
+        this.hasPassword = game.getHasPassword();
     }
 
     public Game toEntity() {

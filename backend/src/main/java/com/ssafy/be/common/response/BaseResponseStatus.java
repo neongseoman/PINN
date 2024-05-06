@@ -28,7 +28,10 @@ public enum BaseResponseStatus {
     SEND_MESSAGE_ERROR(false, 3001, "메시지를 발송하는 과정 중 오류가 발생했습니다."),
 
     CREATE_GAME_ERROR(false, 3100, "방(게임) 생성 중 문제가 발생했습니다."),
-    NOT_EXIST_GAME(false, 3100, "이미 게임 시작했거나 존재하지 않는 게임입니다."),
+    NOT_EXIST_GAME(false, 3101, "존재하지 않는 게임입니다."),
+    ALREADY_START_GAME(false, 3102, "게임을 시작한 방입니다. 다른 방을 선택해주세요."),
+    NOT_MATCH_PASSWORD(false, 3103, "방 비밀번호를 다시 확인해주세요"),
+    NOT_EXIST_UNREADY_TEAM(false, 3104, "모든 팀이 준비 중이라서 방에 들어갈 수 없습니다."),
 
     /**
      * 4000 : Database, Server 오류

@@ -3,6 +3,7 @@ package com.ssafy.be.common.component;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
@@ -12,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Builder
 @ToString
 @Getter
+@Setter
 public class TeamComponent {
     ConcurrentHashMap<Long, TeamGamerComponent> teamGamers;
     private int teamId;
