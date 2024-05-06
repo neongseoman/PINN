@@ -11,6 +11,7 @@ import com.ssafy.be.gamer.model.GamerPrincipalVO;
 import com.ssafy.be.lobby.model.dto.CreateRoomDTO;
 import com.ssafy.be.lobby.service.LobbyService;
 import jakarta.servlet.ServletRequest;
+import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -55,6 +57,7 @@ public class LobbyController {
         GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
         createRoomDTO.setLeader_id(gamerPrincipalVO.getGamerId());
         log.info(gamerPrincipalVO);
+        log.info("createRoomDTO : " + createRoomDTO);
         // 생성된 초기 게임 설정을 DB에 저장
         GameComponent savedGame = lobbyService.createRoom(createRoomDTO);
         // 게임 내 팀 객체를 생성
@@ -72,14 +75,15 @@ public class LobbyController {
      * return :
      * */
     @PostMapping("{gameId}")
-    public BaseResponse<?> enterRoom(@PathVariable Integer gameId, ServletRequest req){
+    public BaseResponse<?> enterRoom(@PathVariable Integer gameId, @RequestBody(required = false) HashMap<String,String> body, ServletRequest req){
         // gamer_id, 즉 방을 생성한 방리더의 '검증된' id 추출하여 game에 삽입
         // TODO : leader_id 확인
         GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
         log.info(gamerPrincipalVO.getGamerId());
 
         // 존재하는 게임인지, 비밀번호 맞는지,
-        if(gameManager.isGame(gameId)){
+        log.info("client Password : " + body.get("password"));
+        if(gameManager.isGame(gameId, body.get("password"))){
             return new BaseResponse<>(BaseResponseStatus.SUCCESS);
         }
 
@@ -114,9 +118,6 @@ public class LobbyController {
         ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
 
         // 오름차순으로 비어있는 팀에 할당
-        if(gameManager.isGame(gameId)){
-//            return new BaseResponse<>();
-        }
 
 
         System.out.println(socketDTO);
