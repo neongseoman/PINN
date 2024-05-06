@@ -71,7 +71,7 @@ public class LobbyController {
      * URL : /lobby/{gameId}
      * return :
      * */
-    @PostMapping("{gameId}")
+    @GetMapping("{gameId}")
     public BaseResponse<?> enterRoom(@PathVariable Integer gameId, ServletRequest req){
         // gamer_id, 즉 방을 생성한 방리더의 '검증된' id 추출하여 game에 삽입
         // TODO : leader_id 수정
@@ -103,16 +103,19 @@ public class LobbyController {
     // ---------------------------------- SOCKET ---------------------------------------------
 
     /*
-     * 룸 입장을 위한 Socket 메서드
+     * 룸 입장을 위한 Socket 메서드 - [GET] lobby/{gameId} 이후 요청해야 함
      * subscribe : /game/{gameId}
      * send to : /app/game/{gameId}
      * */
     @MessageMapping("/game/enter/{gameId}")
     @SendTo("/game/{gameId}")
-    public SocketDTO enterRoom(@Payload SocketDTO socketDTO, @DestinationVariable String gameId){
+    public SocketDTO enterRoom(@Payload SocketDTO socketDTO, @DestinationVariable Integer gameId){
         ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
 
         // 오름차순으로 비어있는 팀에 할당
+        if(gameManager.isGame(gameId)){
+//            return new BaseResponse<>();
+        }
 
 
         System.out.println(socketDTO);

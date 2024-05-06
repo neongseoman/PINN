@@ -33,7 +33,7 @@ public class GameManager {
         if (gameComponent == null){
             // 존재하지 않는 게임
             return false;
-        } else if (!gameComponent.getStatus().equals("ready")) {
+        } else if (!gameComponent.getStatus().name().equals("READY")) {
             // 게임 실행 중인 게임
             return false;
         }
