@@ -34,8 +34,8 @@ export default function LoginPage() {
 
   const getUserInfo = async (accessToken:string) => {
     const res = await fetch(
-      // `${process.env.NEXT_PUBLIC_API_URL}` + '/gamer/userInfo',
-      `http://localhost:8081` + '/gamer/userInfo',
+      `${process.env.NEXT_PUBLIC_API_URL}` + '/gamer/userInfo',
+      // `http://localhost:8081` + '/gamer/userInfo',
       {
         method: 'GET',
         headers: { Authorization: `Bearer ${accessToken}` },
