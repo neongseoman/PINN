@@ -163,6 +163,7 @@ public class GameServiceImpl implements GameService {
             gameInitResponseDTO.setStage2Time(existGame.getStage2Time());
             gameInitResponseDTO.setStartedTime(existGame.getStartedTime());
 
+            log.info(gameInitResponseDTO);
             return gameInitResponseDTO;
         } catch (Exception e) {
             throw new BaseException(null);
