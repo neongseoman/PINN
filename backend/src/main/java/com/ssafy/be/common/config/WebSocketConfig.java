@@ -25,6 +25,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer  {
         registry.addEndpoint(endPoint).setAllowedOriginPatterns("*");
     }
 
+    // 들어오는 메세지나 나가는 메세지의 구독자, 발행자의 상태를 확인하는 시큐리티 작업이 필요할 것 같다.
+    // 추후 개발을 할 수 있다면.
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(stompInboundMessageInterceptor);
