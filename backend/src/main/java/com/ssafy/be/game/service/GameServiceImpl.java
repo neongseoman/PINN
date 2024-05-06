@@ -8,6 +8,7 @@ import com.ssafy.be.game.model.domain.Question;
 import com.ssafy.be.game.model.dto.*;
 import com.ssafy.be.game.model.repository.HintRepository;
 import com.ssafy.be.game.model.repository.QuestionRepository;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
+@Log4j2
 public class GameServiceImpl implements GameService {
 
     private final GameRepository gameRepository;
@@ -38,6 +40,8 @@ public class GameServiceImpl implements GameService {
     @Override
     public GameStartResponseDTO startGame(int gamerId, GameStartRequestDTO gameStartRequestDTO) throws BaseException {
         try {
+            log.info(gameStartRequestDTO);
+            log.info(gamerId);
             int gameId = gameStartRequestDTO.getGameId();
             ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
 
@@ -66,8 +70,11 @@ public class GameServiceImpl implements GameService {
             }
 
             gameStartResponseDTO.setGameId(existGame.getGameId());
+
+            log.info(gameStartRequestDTO);
             return gameStartResponseDTO;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new BaseException(null);
         }
     }
