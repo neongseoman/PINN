@@ -1,5 +1,6 @@
 'use client'
 
+import Chatting from '@/components/Chatting'
 import Timer from '@/components/Timer'
 import themeStyles from '@/components/theme.module.css'
 import { Loader } from '@googlemaps/js-api-loader'
@@ -31,6 +32,9 @@ export default function GamePage() {
     // ...additionalOptions,
   })
 
+  // 임시 게임 아이디
+  const gameId = 1
+
   return (
     <main>
       <div className={styles.infos}>
@@ -44,7 +48,7 @@ export default function GamePage() {
         <Timer initialTime={initialTime} theme={theme} />
       </div>
       <div className={`${styles.chat} ${styles.opacity} ${themeStyles[theme]}`}>
-        Chatting
+        <Chatting gameId={gameId} />
       </div>
       <div className={`${styles.map} ${styles.opacity}`}>
         <IngameMap theme={theme} loader={loader} />
