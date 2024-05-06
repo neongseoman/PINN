@@ -36,6 +36,8 @@ public class GameManager {
         } else if (!gameComponent.getStatus().name().equals("READY")) {
             // 게임 실행 중인 게임
             return false;
+        } else if (!gameComponent.getPassword().equals("")){
+
         }
         return true;
     }

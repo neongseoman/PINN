@@ -57,7 +57,7 @@ public class LobbyController {
         log.info(gamerPrincipalVO);
         // 생성된 초기 게임 설정을 DB에 저장
         GameComponent savedGame = lobbyService.createRoom(createRoomDTO);
-        // 게임 내 팀을 생성
+        // 게임 내 팀 객체를 생성
         lobbyService.createTeams(savedGame);
         // GameManager에 게임 추가
         gameManager.addGame(savedGame);
@@ -71,17 +71,18 @@ public class LobbyController {
      * URL : /lobby/{gameId}
      * return :
      * */
-    @GetMapping("{gameId}")
+    @PostMapping("{gameId}")
     public BaseResponse<?> enterRoom(@PathVariable Integer gameId, ServletRequest req){
         // gamer_id, 즉 방을 생성한 방리더의 '검증된' id 추출하여 game에 삽입
-        // TODO : leader_id 수정
+        // TODO : leader_id 확인
         GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
-//        createRoomDTO.setLeader_id(gamerPrincipalVO.getGamerId());
-        log.info(gamerPrincipalVO);
+        log.info(gamerPrincipalVO.getGamerId());
 
+        // 존재하는 게임인지, 비밀번호 맞는지,
         if(gameManager.isGame(gameId)){
             return new BaseResponse<>(BaseResponseStatus.SUCCESS);
         }
+
         return new BaseResponse<>(BaseResponseStatus.NOT_EXIST_GAME);
 
     }
