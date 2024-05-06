@@ -1,7 +1,9 @@
 package com.ssafy.be.lobby.controller;
 
+import com.ssafy.be.auth.jwt.JwtProvider;
 import com.ssafy.be.common.component.GameComponent;
 import com.ssafy.be.common.component.GameManager;
+import com.ssafy.be.common.component.TeamGamerComponent;
 import com.ssafy.be.common.model.domain.Game;
 import com.ssafy.be.common.model.dto.ChatDTO;
 import com.ssafy.be.common.model.dto.SocketDTO;
@@ -20,6 +22,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,6 +46,7 @@ public class LobbyController {
     private GameManager gameManager;
 
     private final SimpMessagingTemplate simpMessagingTemplate;
+    private final JwtProvider jwtProvider;
 
     /*
     * 방 생성을 위한 API
@@ -69,7 +73,7 @@ public class LobbyController {
     }
 
     /*
-     * 방 입장을 위한 API
+     * 방 입장이 가능한지 확인하는 API
      * method : GET
      * URL : /lobby/{gameId}
      * return :
@@ -77,7 +81,6 @@ public class LobbyController {
     @PostMapping("{gameId}")
     public BaseResponse<?> enterRoom(@PathVariable Integer gameId, @RequestBody(required = false) HashMap<String,String> body, ServletRequest req){
         // gamer_id, 즉 방을 생성한 방리더의 '검증된' id 추출하여 game에 삽입
-        // TODO : leader_id 확인
         GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
         log.info(gamerPrincipalVO.getGamerId());
 
@@ -104,19 +107,25 @@ public class LobbyController {
     // ---------------------------------- SOCKET ---------------------------------------------
 
     /*
-     * 룸 입장을 위한 Socket 메서드 - [GET] lobby/{gameId} 이후 요청해야 함
+     * 룸 입장을 위한 Socket 메서드 - [GET] lobby/{gameId} 로 검증 이후 요청해야 함
      * subscribe : /game/{gameId}
      * send to : /app/game/{gameId}
      * */
     @MessageMapping("/game/enter/{gameId}")
     @SendTo("/game/{gameId}")
-    public SocketDTO enterRoom(@Payload SocketDTO socketDTO, @DestinationVariable Integer gameId){
+    public SocketDTO enterRoom(@Payload SocketDTO socketDTO, @DestinationVariable Integer gameId, StompHeaderAccessor accessor){
+        GamerPrincipalVO gamerPrincipalVO = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor);
+        log.info(gamerPrincipalVO.getGamerId());
         ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
 
         // 오름차순으로 비어있는 팀에 할당
+        TeamGamerComponent teamGamerComponent = gameManager.enterTeam(games.get(gameId), gamerPrincipalVO.getGamerId());
 
-
-        System.out.println(socketDTO);
+        // code & msg 삽입
+        socketDTO.setCodeAndMsg(1002, "gameId : " + gameId + " 방에 " + gamerPrincipalVO.getGamerId() + "님이 들어왔습니다.");
+        // 팀 할당
+        socketDTO.setSenderTeamId(teamGamerComponent.getTeamId());
+        log.info(socketDTO);
         return socketDTO;
     }
 

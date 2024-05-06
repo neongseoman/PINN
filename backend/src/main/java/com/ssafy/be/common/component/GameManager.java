@@ -56,13 +56,43 @@ public class GameManager {
                 throw new BaseException(NOT_MATCH_PASSWORD);
             }
         }
-        for (TeamComponent team : gameComponent.teams.values()) {
-            if(!team.isReady() || team.getTeamGamers()==null){
-                // 준비 안 한 팀이 있거나 팀멤버 객체가 없다면 입장 가능
-                return new BaseResponse<>(BaseResponseStatus.SUCCESS);
-            }
-            // 모든 팀이 준비 중
+        if(canEnterTeam(gameComponent) != null){
+            return new BaseResponse<>(BaseResponseStatus.SUCCESS);
         }
+        // 모든 팀이 준비 중
         throw new BaseException(NOT_EXIST_UNREADY_TEAM);
+    }
+
+    public Integer canEnterTeam(GameComponent gameComponent){
+        for (Entry<Integer, TeamComponent> team : gameComponent.teams.entrySet()) {
+            if(!team.getValue().isReady() || team.getValue().getTeamGamers()==null){
+                // 준비 안 한 팀이 있거나 팀멤버 객체가 없다면 입장 가능
+                return team.getKey();
+            }
+        }
+        return null;
+    }
+
+    public TeamGamerComponent enterTeam(GameComponent gameComponent, Integer gamerId){
+        for (Entry<Integer, TeamComponent> team : gameComponent.teams.entrySet()) {
+            if(!team.getValue().isReady()){
+                // 준비 안 한 팀이 있거나 팀멤버 객체가 없다면 입장 가능
+                if(team.getValue().getTeamGamers() == null){
+                    team.getValue().setTeamGamers(new ConcurrentHashMap<>());
+                }
+                // 팀 내 멤버 수 + 1번째 (원래는 DB에 넣고 해당 key id를 넣어야 했음)
+                Long teamGamerNumber = (long) team.getValue().getTeamGamers().size() + 1;
+                TeamGamerComponent teamGamerComponent = TeamGamerComponent.builder()
+                        .teamGamerId(teamGamerNumber)
+                        .gamerId(gamerId)
+                        .teamId(team.getValue().getTeamId())
+                        .build();
+                // 멤버를 팀에 삽입
+                log.info(team.getValue().getTeamId() + "팀에 들어간 " + teamGamerComponent);
+                team.getValue().getTeamGamers().put(teamGamerNumber, teamGamerComponent);
+                return teamGamerComponent;
+            }
+        }
+        return null;
     }
 }
