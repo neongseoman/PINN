@@ -137,7 +137,7 @@ public class LobbyController {
         TeamGamerComponent teamGamerComponent = gameManager.enterTeam(games.get(gameId), gamerPrincipalVO.getGamerId());
 
         // code & msg 삽입
-        socketDTO.setCodeAndMsg(1002, "gameId : " + gameId + " 방에 " + gamerPrincipalVO.getGamerId() + "님이 들어왔습니다.");
+        socketDTO.setCodeAndMsg(1002, "gameId : " + gameId + " 방에 " + teamGamerComponent.getTeamId() + "팀으로 " + gamerPrincipalVO.getGamerId() + "님이 들어왔습니다.");
         // 팀 할당
         socketDTO.setSenderTeamId(teamGamerComponent.getTeamId());
         log.info(socketDTO);

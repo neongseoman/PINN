@@ -16,6 +16,9 @@ public class SocketDTO {
     private int code;
     private String msg;
 
+    public SocketDTO() {
+    }
+
     // DTO 용도 사용 시 > 생성될 때 localdatetime.now()를 넣음
     public SocketDTO(String senderNickname, int senderGameId, int senderTeamId) {
         this.senderDateTime = LocalDateTime.now();
