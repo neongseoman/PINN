@@ -1,7 +1,75 @@
-.room {
-  background-color: var(--Main-Navy);
+.chatList {
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  height: 80%;
+  color: black;
+  padding: 0 8px 0 8px;
 }
 
-.chat {
-  border-radius: 20px;
+.chatContainer {
+  display: flex;
+  flex-direction: column;
+  margin-right: 40px;
+  margin-bottom: 16px;
+}
+
+.myChatContainer {
+  composes: chatContainer;
+  align-self: flex-end;
+  margin-right: 0;
+  margin-left: 40px;
+}
+
+.chatSender {
+  color: white;
+  font-size: smaller;
+  margin-bottom: 2px;
+}
+
+.chatContent {
+  border-radius: 8px;
+  background-color: white;
+  width: fit-content;
+  padding: 8px;
+  overflow-wrap: break-word;
+}
+
+.myChatContent {
+  composes: chatContent;
+  align-self: flex-end;
+  background-color: var(--Main-Yellow);
+}
+
+.chatTitle {
+  height: 10%;
+  font-size: large;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.send {
+  height: 10%;
+  width: 100%;
+  position: relative;
+  bottom: 0;
+  display: flex;
+  font-size: 24px;
+  border-top: solid white 1px;
+}
+
+.send input {
+  flex-grow: 1;
+  background-color: rgb(255, 255, 255, 0);
+  border: 0;
+  padding-left: 8px;
+  color: white;
+}
+
+.send div {
+  width: 10%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

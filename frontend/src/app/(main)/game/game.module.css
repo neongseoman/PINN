@@ -13,6 +13,11 @@
   height: 240px;
   width: 320px;
   z-index: 2;
+  transition: transform 0.3s ease, height 0.3s ease;
+}
+
+.chat:hover {
+  height: 360px;
 }
 
 .map {

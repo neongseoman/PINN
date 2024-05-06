@@ -2,6 +2,7 @@
 
 import { Client, IFrame } from '@stomp/stompjs'
 import { useEffect, useRef, useState } from 'react'
+import { IoIosSend } from 'react-icons/io'
 import styles from './chatting.module.css'
 
 interface MessageFormat {
@@ -19,8 +20,10 @@ interface ChattingProps {
 }
 
 export default function Chatting({ gameId }: ChattingProps) {
-  const [messages, setMessages] = useState<string[]>([])
+  const [messages, setMessages] = useState<MessageFormat[]>([])
   const [newMessage, setNewMessage] = useState<string>('')
+  const chatContainerRef = useRef<HTMLDivElement | null>(null)
+  const myId = useRef<string | null>(null)
 
   const clientRef = useRef<Client>(
     new Client({
@@ -35,13 +38,12 @@ export default function Chatting({ gameId }: ChattingProps) {
   )
 
   useEffect(() => {
+    myId.current = localStorage.getItem('gamerId')
     clientRef.current.onConnect = function (_frame: IFrame) {
       clientRef.current.subscribe(`/game/${gameId}`, (message: any) => {
         const messageResponse = JSON.parse(message.body) as MessageFormat
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          messageResponse.content,
-        ])
+        console.log(messageResponse)
+        setMessages((prevMessages) => [...prevMessages, messageResponse])
       })
     }
 
@@ -57,37 +59,80 @@ export default function Chatting({ gameId }: ChattingProps) {
     }
   }, [gameId])
 
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
+    }
+  }, [messages])
+
   const handleSendMessage = () => {
+    const trimmedMessage = newMessage.trim()
+    if (!trimmedMessage) {
+      setNewMessage('')
+      return
+    }
+
     if (clientRef.current) {
       clientRef.current.publish({
+        headers: {
+          Auth: localStorage.getItem('accessToken') as string,
+        },
         destination: `/app/game/chat/${gameId}`,
-        // destination: `wss://www.pinn.kr/app/game/chat/${gameId}`,
         body: JSON.stringify({
-          senderNickname: 'rockbison',
-          senderGameId: 1,
+          senderNickname: '노란목도리담비',
+          senderGameId: 6,
           senderTeamId: 1,
-          content: newMessage,
+          content: trimmedMessage,
         }),
       })
-      setNewMessage('')
+    }
+    setNewMessage('')
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSendMessage()
     }
   }
 
   return (
-    <div className={styles.room}>
-      <ul>
+    <>
+      <div className={styles.chatTitle}>팀 채팅</div>
+      <div className={styles.chatList} ref={chatContainerRef}>
         {messages.map((message, index) => (
-          <li className={styles.chat} key={index}>
-            {message}
-          </li>
+          <div
+            className={
+              message.senderGameId != Number(myId.current)
+                ? `${styles.chatContainer}`
+                : `${styles.myChatContainer}`
+            }
+            key={index}
+          >
+            <div className={styles.chatSender}>{message.senderNickname}</div>
+            <div
+              className={
+                message.senderGameId != Number(myId.current)
+                  ? `${styles.chatContent}`
+                  : `${styles.myChatContent}`
+              }
+            >
+              {message.content}
+            </div>
+          </div>
         ))}
-      </ul>
-      <input
-        type="text"
-        value={newMessage}
-        onChange={(e) => setNewMessage(e.target.value)}
-      />
-      <button onClick={handleSendMessage}>Send</button>
-    </div>
+      </div>
+      <div className={styles.send}>
+        <input
+          type="text"
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          placeholder="채팅을 입력하세요..."
+          onKeyDown={handleKeyDown}
+        />
+        <div onClick={handleSendMessage}>
+          <IoIosSend />
+        </div>
+      </div>
+    </>
   )
 }
