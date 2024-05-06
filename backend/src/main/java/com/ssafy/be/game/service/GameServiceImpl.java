@@ -4,6 +4,7 @@ import com.ssafy.be.common.component.*;
 import com.ssafy.be.common.exception.BaseException;
 import com.ssafy.be.common.model.repository.GameRepository;
 import com.ssafy.be.game.model.dto.*;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
+@Log4j2
 public class GameServiceImpl implements GameService {
 
     private final GameRepository gameRepository;
@@ -35,7 +37,7 @@ public class GameServiceImpl implements GameService {
             if (existGame == null) {
                 throw new BaseException(null);
             }
-
+            log.info(gameId);
             // 요청 보낸 gamer_id가 GM/game의 leader_id와 일치하는지 확인
             if (gamerId != existGame.getLeaderId()) {
                 throw new BaseException(null);
@@ -55,9 +57,10 @@ public class GameServiceImpl implements GameService {
             }
             //
 
-            gameStartResponseDTO.setGameId(gameStartResponseDTO.getGameId());
+            gameStartResponseDTO.setGameId(gameStartRequestDTO.getGameId());
             return gameStartResponseDTO;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new BaseException(null);
         }
     }
