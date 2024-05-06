@@ -4,6 +4,8 @@ import Chatting from '@/components/Chatting'
 import Timer from '@/components/Timer'
 import themeStyles from '@/components/theme.module.css'
 import { Loader } from '@googlemaps/js-api-loader'
+import { useState } from 'react'
+import { LuPin, LuPinOff } from 'react-icons/lu'
 import GameInfo from './_components/GameInfo'
 import Hints from './_components/Hints'
 import IngameMap from './_components/IngameMap'
@@ -12,6 +14,9 @@ import ThemeInfo from './_components/ThemeInfo'
 import styles from './game.module.css'
 
 export default function GamePage() {
+  const [chatFocus, setChatFocus] = useState<boolean>(false)
+  const [chatPin, setChatPin] = useState<boolean>(false)
+
   //힌트
   const hints = ['hint 1', 'hint 2', 'hint 3']
 
@@ -35,6 +40,10 @@ export default function GamePage() {
   // 임시 게임 아이디
   const gameId = 1
 
+  function handleChatFocus(bool: boolean) {
+    setChatFocus(bool)
+  }
+
   return (
     <main>
       <div className={styles.infos}>
@@ -47,7 +56,21 @@ export default function GamePage() {
       <div className={styles.timer}>
         <Timer initialTime={initialTime} theme={theme} />
       </div>
-      <div className={`${styles.chat} ${styles.opacity} ${themeStyles[theme]}`}>
+      <div
+        className={`${styles.chat} ${
+          chatFocus || chatPin ? '' : styles.opacity
+        } ${themeStyles[theme]}`}
+        onFocus={() => handleChatFocus(true)}
+        onBlur={() => handleChatFocus(false)}
+      >
+        <div className={styles.chatTitle}>
+          <span style={{ marginLeft: 'auto', marginRight: 'auto' }}>
+            팀 채팅
+          </span>
+          <span onClick={() => setChatPin((prev) => !prev)}>
+            {chatPin ? <LuPinOff /> : <LuPin />}
+          </span>
+        </div>
         <Chatting gameId={gameId} />
       </div>
       <div className={`${styles.map} ${styles.opacity}`}>

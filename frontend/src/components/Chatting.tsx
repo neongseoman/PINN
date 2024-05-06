@@ -97,7 +97,6 @@ export default function Chatting({ gameId }: ChattingProps) {
 
   return (
     <>
-      <div className={styles.chatTitle}>팀 채팅</div>
       <div className={styles.chatList} ref={chatContainerRef}>
         {messages.map((message, index) => (
           <div

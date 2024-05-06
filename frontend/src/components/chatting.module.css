@@ -43,14 +43,6 @@
   background-color: var(--Main-Yellow);
 }
 
-.chatTitle {
-  height: 10%;
-  font-size: large;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 .send {
   height: 10%;
   width: 100%;

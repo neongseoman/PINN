@@ -10,14 +10,18 @@
   position: fixed;
   bottom: 4vh;
   left: 2vw;
-  height: 240px;
+  height: 360px;
   width: 320px;
   z-index: 2;
   transition: transform 0.3s ease, height 0.3s ease;
 }
 
-.chat:hover {
-  height: 360px;
+.chatTitle {
+  height: 10%;
+  font-size: large;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .map {
