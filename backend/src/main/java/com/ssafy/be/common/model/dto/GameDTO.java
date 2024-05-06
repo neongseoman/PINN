@@ -17,7 +17,7 @@ public class GameDTO {
     private int gameId;
     private String roomName;
     private int themeId;
-    private String leaderId;
+    private int leaderId;
     private int roundCount;
     private int stage1Time;
     private int stage2Time;
