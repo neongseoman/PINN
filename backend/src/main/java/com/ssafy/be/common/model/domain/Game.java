@@ -38,7 +38,7 @@ public class Game {
     private LocalDateTime startedTime;
     @UpdateTimestamp
     private LocalDateTime finishedTime;
-    private boolean hasPassword;
+    private int hasPassword;
 
     public Game() {
     }

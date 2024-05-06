@@ -23,8 +23,15 @@ public class LobbyServiceImpl implements LobbyService {
 
     @Override
     public GameComponent createRoom(CreateRoomDTO createRoomDTO) {
-        boolean hasPassword = !createRoomDTO.getPassword().isEmpty();
-        System.out.println(createRoomDTO);
+        String password = createRoomDTO.getPassword();
+        int hasPassword = 0;
+        if(password != null && !password.isEmpty()){
+            hasPassword = 1;
+        }
+
+        log.info("password : " + password);
+        log.info("hasPassword : " + (password != null && !password.isEmpty()));
+
         Game savedGame = gameRepository.save(Game.builder()
                         .themeId(createRoomDTO.getThemeId())
                         .stage1Time(createRoomDTO.getStage1Time())
@@ -35,7 +42,10 @@ public class LobbyServiceImpl implements LobbyService {
                         .hasPassword(hasPassword)
                 .build());
 //        System.out.println(savedGame.getGameId());
-        return savedGame.toGameComponent();
+        // password 삽입
+        GameComponent gameComponent = savedGame.toGameComponent();
+        gameComponent.setPassword(createRoomDTO.getPassword());
+        return gameComponent;
     }
 
     @Override
