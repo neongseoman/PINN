@@ -21,7 +21,7 @@ public class Question {
     private String questionName;
     private double lat;
     private double lng;
-    private boolean useOrNot;
+    private int useOrNot;
     @CreationTimestamp
     private LocalDateTime createdDate;
     @CreationTimestamp
