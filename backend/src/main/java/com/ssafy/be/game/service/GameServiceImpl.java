@@ -98,21 +98,24 @@ public class GameServiceImpl implements GameService {
              themeId 보고 question 배정
              */
             int themeId = existGame.getThemeId();
-            List<Question> questionCands = questionRepository.findByUseOrNotAndThemeId(1, themeId); // 사용 중이고 + themeId 일치하는 것만 가져오기
+            List<Question> questionDatas = questionRepository.findByUsedAndThemeId(1, themeId); // 사용 중이고 + themeId 일치하는 것만 가져오기
 
             // 랜덤 (roundCount)개의 인덱스 선택
-            List<Integer> randomIndices = getRandomIndices(questionCands.size(), existGame.getRoundCount());
+            List<Integer> randomIndices = getRandomIndices(questionDatas.size(), existGame.getRoundCount());
 
             // 선택된 랜덤 인덱스로 question 구성 & questionId 보고 힌트 배정
             List<QuestionComponent> questions = new ArrayList<>();
             int tmp=1;
             for (int index : randomIndices) {
-                QuestionDTO questionDTO = new QuestionDTO(questionCands.get(index));
+                QuestionDTO questionDTO = new QuestionDTO(questionDatas.get(index));
                 QuestionComponent question = new QuestionComponent();
 
-                List<Hint> hintDatas = hintRepository.findByUseOrNotAndQuestionId(1, questionDTO.getQuestionId());
+                // questionId 바탕으로 hint 받아와서 배정
+                List<Hint> hintDatas = hintRepository.findByUsedAndQuestionId(1, questionDTO.getQuestionId());
                 List<HintComponent> hints = new ArrayList<>();
                 for(Hint hintData: hintDatas) {
+                    // TODO: hintTypeId 바탕으로 hintTypeName 받아오기
+
                     HintComponent hint = new HintComponent();
                     hint.setHintId(hintData.getHintId());
                     hint.setHintTypeId(hintData.getHintTypeId());

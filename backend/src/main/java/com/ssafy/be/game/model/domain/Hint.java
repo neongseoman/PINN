@@ -21,7 +21,7 @@ public class Hint {
     private int hintTypeId;
     private String hintValue;
     private int offerStage;
-    private int useOrNot;
+    private int used;
     @CreationTimestamp
     private LocalDateTime createdDate;
     @CreationTimestamp

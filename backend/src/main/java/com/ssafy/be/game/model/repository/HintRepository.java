@@ -8,5 +8,7 @@ import java.util.List;
 
 @Repository
 public interface HintRepository extends JpaRepository<Hint, Integer> {
-    List<Hint> findByUseOrNotAndQuestionId(int useOrNot, int questionId);
+    //    List<Hint> findByUseOrNotAndQuestionId(int useOrNot, int questionId);
+    List<Hint> findByUsedAndQuestionId(int used, int questionId);
 }
+

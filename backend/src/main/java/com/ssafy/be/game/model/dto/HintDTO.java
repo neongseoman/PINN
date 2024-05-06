@@ -19,7 +19,7 @@ public class HintDTO {
     private int hintTypeId;
     private String hintValue;
     private int offerStage;
-    private int useOrNot;
+    private int used;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
 
@@ -30,7 +30,7 @@ public class HintDTO {
         this.hintTypeId = hint.getHintTypeId();
         this.hintValue = hint.getHintValue();
         this.offerStage = hint.getOfferStage();
-        this.useOrNot = hint.getUseOrNot();
+        this.used = hint.getUsed();
         this.createdDate = hint.getCreatedDate();
         this.updatedDate = hint.getUpdatedDate();
     }
@@ -42,7 +42,7 @@ public class HintDTO {
                 .hintTypeId(this.hintTypeId)
                 .hintValue(this.hintValue)
                 .offerStage(this.offerStage)
-                .useOrNot(this.useOrNot)
+                .used(this.used)
                 .createdDate(this.createdDate)
                 .updatedDate(this.updatedDate)
                 .build();
