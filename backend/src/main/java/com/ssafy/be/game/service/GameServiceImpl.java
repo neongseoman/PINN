@@ -345,6 +345,12 @@ public class GameServiceImpl implements GameService {
         return pinMoveResponseDTO;
     }
 
+    @Override
+    public PinGuessResponseDTO guessPin(int gamerId, PinGuessRequestDTO pinGuessRequestDTO) throws BaseException {
+        // TODO: 구현 시작해야 함
+        return null;
+    }
+
 
     ///////
 

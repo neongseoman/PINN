@@ -83,4 +83,16 @@ public class GameController {
         sendingOperations.convertAndSend("/guess/" + pinMoveResponseDTO.getSenderGameId(), pinMoveResponseDTO);
     }
 
+    @MessageMapping("/team/guess")
+    public void guessPin(PinGuessRequestDTO pinGuessRequestDTO, StompHeaderAccessor accessor) {
+        int gamerId = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor).getGamerId();
+
+        PinGuessResponseDTO pinGuessResponseDTO = gameService.guessPin(gamerId, pinGuessRequestDTO);
+
+        // `/team/{gameId}/{teamId}` & `/guess/{gameId}`를 구독 중인 모든 사용자에게 publish
+        // TODO: 전달할 destination 재검토 필요. /team/~ 에서 gameId가 경로에 함께 들어가야 하는가?
+        // TODO: /guess/{gameId} 구독자에게도 broadcast해야 하는 정보인지 재검토 필요
+        sendingOperations.convertAndSend("/team/" + pinGuessResponseDTO.getSenderGameId() + "/" + pinGuessResponseDTO.getSenderTeamId(), pinGuessResponseDTO);
+        sendingOperations.convertAndSend("/guess/" + pinGuessResponseDTO.getSenderGameId(), pinGuessResponseDTO);
+    }
 }
