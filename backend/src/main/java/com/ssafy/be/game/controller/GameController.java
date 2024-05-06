@@ -41,7 +41,7 @@ public class GameController {
         sendingOperations.convertAndSend("/game/" + gameStartResponseDTO.getGameId(), gameStartResponseDTO);
     }
 
-    @MessageMapping("/game/init") // 게임
+    @MessageMapping("/game/init") // 게임 문제 배정 + 게임 초기 정보값 broadcast
     public void initGame(GameInitRequestDTO gameInitRequestDTO, StompHeaderAccessor accessor) {
         int gamerId = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor).getGamerId();
 
@@ -51,7 +51,7 @@ public class GameController {
         sendingOperations.convertAndSend("/game/" + gameInitResponseDTO.getGameId(), gameInitResponseDTO);
     }
 
-    @MessageMapping("/game/round/init")
+    @MessageMapping("/game/round/init") // 라운드 시작(문제의 lat, lng + stage1 hint broadcast)
     public void initStage1(RoundInitRequestDTO roundInitRequestDTO, StompHeaderAccessor accessor) {
         int gamerId = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor).getGamerId();
 
@@ -61,7 +61,7 @@ public class GameController {
         sendingOperations.convertAndSend("/game/" + roundInitResponseDTO.getGameId(), roundInitResponseDTO);
     }
 
-    @MessageMapping("/game/round/stage2/init")
+    @MessageMapping("/game/round/stage2/init") // stage2 hint broadcast
     public void initStage2(Stage2InitRequestDTO stage2InitRequestDTO, StompHeaderAccessor accessor) {
         int gamerId = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor).getGamerId();
 
@@ -71,5 +71,16 @@ public class GameController {
         sendingOperations.convertAndSend("/game/" + stage2InitResponseDTO.getGameId(), stage2InitResponseDTO);
     }
 
+    @MessageMapping("/team/pin") // 핀 위치 변경 시, 동일 팀원+guess 마친 팀들에게 변경한 핀 위치 broadcast
+    public void movePin(PinMoveRequestDTO pinMoveRequestDTO, StompHeaderAccessor accessor) {
+        int gamerId = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor).getGamerId();
+
+        PinMoveResponseDTO pinMoveResponseDTO = gameService.movePin(gamerId, pinMoveRequestDTO);
+
+        // `/team/{gameId}/{teamId}` & `/guess/{gameId}`를 구독 중인 모든 사용자에게 publish
+        // TODO: 전달할 destination 재검토 필요. /team/~ 에서 gameId가 경로에 함께 들어가야 하는가?
+        sendingOperations.convertAndSend("/team/" + pinMoveResponseDTO.getSenderGameId() + "/" + pinMoveResponseDTO.getSenderTeamId(), pinMoveResponseDTO);
+        sendingOperations.convertAndSend("/guess/" + pinMoveResponseDTO.getSenderGameId(), pinMoveResponseDTO);
+    }
 
 }

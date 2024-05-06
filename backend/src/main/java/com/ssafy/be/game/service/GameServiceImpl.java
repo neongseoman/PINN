@@ -3,6 +3,7 @@ package com.ssafy.be.game.service;
 import com.ssafy.be.common.component.*;
 import com.ssafy.be.common.exception.BaseException;
 import com.ssafy.be.common.model.repository.GameRepository;
+import com.ssafy.be.common.response.BaseResponseStatus;
 import com.ssafy.be.game.model.domain.Hint;
 import com.ssafy.be.game.model.domain.HintType;
 import com.ssafy.be.game.model.domain.Question;
@@ -53,16 +54,16 @@ public class GameServiceImpl implements GameService {
             // 존재하는 게임인지 확인
             GameComponent existGame = games.get(gameId);
             if (existGame == null) {
-                throw new BaseException(null);
+                throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
             }
 
             // 요청 보낸 gamer_id가 GM/game의 leader_id와 일치하는지 확인
             if (gamerId != existGame.getLeaderId()) {
-                throw new BaseException(null);
+                throw new BaseException(null); // TODO: exception 타입 정의
             }
 
             GameStartResponseDTO gameStartResponseDTO = new GameStartResponseDTO(gameStartRequestDTO.getSenderDateTime(), gameStartRequestDTO.getSenderNickname(), gameStartRequestDTO.getSenderGameId(), gameStartRequestDTO.getSenderTeamId(), gameStartRequestDTO.getCode(), gameStartRequestDTO.getMsg());
-            gameStartResponseDTO.setCodeAndMsg(1111, "game start");
+            gameStartResponseDTO.setCodeAndMsg(1111, "게임이 정상 시작되었습니다.");
 
             // 시작 시간 gameManager에 기록
             existGame.setStartedTime(gameStartRequestDTO.getSenderDateTime());
@@ -71,7 +72,7 @@ public class GameServiceImpl implements GameService {
             if (existGame.getStatus() == GameStatus.READY) {
                 existGame.setStatus(GameStatus.START);
             } else {
-                throw new BaseException(null);
+                throw new BaseException(BaseResponseStatus.ALREADY_START_GAME);
             }
 
             gameStartResponseDTO.setGameId(existGame.getGameId());
@@ -86,30 +87,63 @@ public class GameServiceImpl implements GameService {
     @Override
     public GameInitResponseDTO initGame(int gamerId, GameInitRequestDTO gameInitRequestDTO) throws BaseException {
 
-        // TODO: 게임 시작 요청 시 테마에 해당하는 문제 랜덤 배정 + GameAndQuestion table에 insert
-        // 지금은 GameAndQuestion table에 이미 문제가 배정되어 들어있다고 가정!
+        // TODO: 배정한 문제 GameAndQuestion table에 insert
+        // TODO: DB에 TeamGamer, Team 데이터 insert
 
         int gameId = gameInitRequestDTO.getGameId();
         ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
         GameComponent existGame = games.get(gameId);
+        // 존재하는 game인지 확인
         if (existGame == null) {
-            throw new BaseException(null);
+            throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
+        }
+
+        // 게임이 start 상태인지 확인
+        if (existGame.getStatus() != GameStatus.START) {
+            throw new BaseException(BaseResponseStatus.NOT_STARTED_GAME);
         }
 
         try {
             // 요청 보낸 gamer_id가 GM/game의 leader_id와 일치하는지 확인
             if (gamerId != existGame.getLeaderId()) {
-                throw new BaseException(null);
+                throw new BaseException(null); // TODO: exception 타입 정의
             }
 
             GameInitResponseDTO gameInitResponseDTO = new GameInitResponseDTO(gameInitRequestDTO.getSenderDateTime(), gameInitRequestDTO.getSenderNickname(), gameInitRequestDTO.getSenderGameId(), gameInitRequestDTO.getSenderTeamId(), gameInitRequestDTO.getCode(), gameInitRequestDTO.getMsg());
-            gameInitResponseDTO.setCodeAndMsg(1112, "game init 성공");
+            gameInitResponseDTO.setCodeAndMsg(1112, "게임 초기 설정이 정상적으로 완료되었습니다.");
+
+            /*
+             team 마다 roundCount개의 teamRounds 생성
+             */
+            // teamGamer를 1명 이상 보유한 경우 유효한 team으로 간주한다.
+            for (int i = 1; i <= existGame.getTeamCount(); ++i) {
+                TeamComponent team = existGame.getTeams().get(i);
+                ConcurrentHashMap<Long, TeamGamerComponent> teamGamers = team.getTeamGamers(); // 이게 null이라서 에러 발생 중...
+                log.info(team);
+                if (teamGamers == null) {
+                    throw new BaseException(null); // TODO: exception 타입 정의
+                }
+                if (!teamGamers.isEmpty()) { // 유효한 팀인 경우
+                    // 1. TeamRounds 생성
+                    ConcurrentHashMap<Integer, TeamRoundComponent> teamRounds = new ConcurrentHashMap<>();
+                    for (int j = 1; j <= existGame.getRoundCount(); ++j) {
+                        TeamRoundComponent teamRound = new TeamRoundComponent();
+                        teamRound.setRoundNumber(j); // roundNumber 제외한 값은 비워둔다.
+                        teamRounds.put(j, teamRound);
+                    }
+                    team.setTeamRounds(teamRounds);
+                    log.info(teamRounds);
+
+                    // TODO: 2. DB의 Team 테이블에 insert
+                }
+            }
 
             /*
              themeId 보고 question 배정
              */
             int themeId = existGame.getThemeId();
             List<Question> questionDatas = questionRepository.findByUsedAndThemeId(1, themeId); // 사용 중이고 + themeId 일치하는 것만 가져오기
+//            log.info(questionDatas);
 
             // 랜덤 (roundCount)개의 인덱스 선택
             List<Integer> randomIndices = getRandomIndices(questionDatas.size(), existGame.getRoundCount());
@@ -146,10 +180,13 @@ public class GameServiceImpl implements GameService {
                 // questionComponent에 정보 채우기
                 question.setRound(tmp++);
                 question.setLat(questionDTO.getLat());
-                question.setLat(questionDTO.getLng());
-                question.setQuestionName(questionDTO.getQuestionName());
+                question.setLng(questionDTO.getLng());
                 question.setQuestionId(questionDTO.getQuestionId());
+                question.setQuestionName(questionDTO.getQuestionName());
                 question.setHints(hints);
+
+                // 문제 완성. list에 넣기
+                questions.add(question);
             }
             existGame.setQuestions(questions);
 
@@ -166,7 +203,8 @@ public class GameServiceImpl implements GameService {
             log.info(gameInitResponseDTO);
             return gameInitResponseDTO;
         } catch (Exception e) {
-            throw new BaseException(null);
+            e.printStackTrace();
+            throw new BaseException(null); // TODO: exception 타입 정의
         }
     }
 
@@ -179,7 +217,7 @@ public class GameServiceImpl implements GameService {
         ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
         GameComponent existGame = games.get(gameId);
         if (existGame == null) {
-            throw new BaseException(null);
+            throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
         }
 
         try {
@@ -189,10 +227,10 @@ public class GameServiceImpl implements GameService {
             }
 
             RoundInitResponseDTO roundInitResponseDTO = new RoundInitResponseDTO(roundInitRequestDTO.getSenderDateTime(), roundInitRequestDTO.getSenderNickname(), roundInitRequestDTO.getSenderGameId(), roundInitRequestDTO.getSenderTeamId(), -1, null);
-            roundInitResponseDTO.setCodeAndMsg(1113, "round init 성공");
+            roundInitResponseDTO.setCodeAndMsg(1113, "라운드 초기 정보를 받아오는 데에 성공했습니다.");
 
             int round = roundInitRequestDTO.getRound();
-            QuestionComponent question = existGame.getQuestions().get(round + 1);
+            QuestionComponent question = existGame.getQuestions().get(round - 1);
 
             // stage1 힌트만 골라내기
             List<HintComponent> hints = question.getHints();
@@ -207,12 +245,14 @@ public class GameServiceImpl implements GameService {
             roundInitResponseDTO.setGameId(existGame.getGameId());
             roundInitResponseDTO.setRound(round);
             roundInitResponseDTO.setQuestionId(question.getQuestionId());
+            roundInitResponseDTO.setQuestionName(question.getQuestionName());
             roundInitResponseDTO.setLat(question.getLat());
             roundInitResponseDTO.setLng(question.getLng());
             roundInitResponseDTO.setHints(stage1Hints);
 
             return roundInitResponseDTO;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new BaseException(null);
         }
     }
@@ -224,7 +264,7 @@ public class GameServiceImpl implements GameService {
         ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
         GameComponent existGame = games.get(gameId);
         if (existGame == null) {
-            throw new BaseException(null);
+            throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
         }
 
         try {
@@ -234,10 +274,10 @@ public class GameServiceImpl implements GameService {
             }
 
             Stage2InitResponseDTO stage2InitResponseDTO = new Stage2InitResponseDTO(stage2InitRequestDTO.getSenderDateTime(), stage2InitRequestDTO.getSenderNickname(), stage2InitRequestDTO.getSenderGameId(), stage2InitRequestDTO.getSenderTeamId(), stage2InitRequestDTO.getCode(), stage2InitRequestDTO.getMsg());
-            stage2InitResponseDTO.setCodeAndMsg(1114, "stage2 init 성공");
+            stage2InitResponseDTO.setCodeAndMsg(1114, "stage2 추가 힌트를 받아오는 데에 성공했습니다.");
 
             int round = stage2InitRequestDTO.getRound();
-            QuestionComponent question = existGame.getQuestions().get(round + 1);
+            QuestionComponent question = existGame.getQuestions().get(round - 1);
 
             // stage2 힌트만 골라내기
             List<HintComponent> hints = question.getHints();
@@ -255,9 +295,56 @@ public class GameServiceImpl implements GameService {
 
             return stage2InitResponseDTO;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new BaseException(null);
         }
     }
+
+    @Override
+    public PinMoveResponseDTO movePin(int gamerId, PinMoveRequestDTO pinMoveRequestDTO) throws BaseException {
+
+        int gameId = pinMoveRequestDTO.getSenderGameId();
+        ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
+        GameComponent existGame = games.get(gameId);
+        if (existGame == null) { // 존재하는 게임인지 확인
+            throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
+        }
+
+        // TODO: 요청자가 해당 팀의 팀원인지 확인
+
+        // gameManager/team/teamRound에 정보 업데이트
+        // TODO: team마다 teamRound를 언제 new 해서 추가해둘 것인지 결정해야 한다. > 일단 game init하는 시점으로 구현
+        TeamComponent submitTeam = existGame.getTeams().get(pinMoveRequestDTO.getSenderTeamId());
+        ConcurrentHashMap<Integer, TeamRoundComponent> teamRounds = submitTeam.getTeamRounds();
+        if (teamRounds == null) {
+            throw new BaseException(null);
+        }
+        TeamRoundComponent submitTeamRound = teamRounds.get(pinMoveRequestDTO.getRoundNumber());
+        submitTeamRound.setSubmitTime(pinMoveRequestDTO.getSenderDateTime());
+        submitTeamRound.setSubmitStage(pinMoveRequestDTO.getSubmitStage());
+        submitTeamRound.setSubmitLat(pinMoveRequestDTO.getSubmitLat());
+        submitTeamRound.setSubmitLng(pinMoveRequestDTO.getSubmitLng());
+
+        // 입력된 lat, lng 기반 score 계산 + submitTeamRound에 저장
+        // TODO: 제출 스테이지별 점수 상한선 지정 필요
+        int round = pinMoveRequestDTO.getRoundNumber();
+        QuestionComponent answer = existGame.getQuestions().get(round - 1);
+        int submitScore = calculateScore(answer.getLat(), answer.getLng(), pinMoveRequestDTO.getSubmitLat(), pinMoveRequestDTO.getSubmitLng()); // 점수 계산
+        submitTeamRound.setRoundScore(submitScore);
+
+        // broadcast할 정보 responseDTO에 채우기
+        PinMoveResponseDTO pinMoveResponseDTO = new PinMoveResponseDTO(pinMoveRequestDTO.getSenderDateTime(), pinMoveRequestDTO.getSenderNickname(), pinMoveRequestDTO.getSenderGameId(), pinMoveRequestDTO.getSenderTeamId(), pinMoveRequestDTO.getCode(), pinMoveRequestDTO.getMsg());
+        pinMoveResponseDTO.setCodeAndMsg(1115, "변경한 핀 위치가 정상 제출 및 반영되었습니다.");
+        pinMoveResponseDTO.setGamerId(gamerId);
+        pinMoveResponseDTO.setRoundNumber(pinMoveRequestDTO.getRoundNumber());
+        pinMoveResponseDTO.setSubmitStage(pinMoveRequestDTO.getSubmitStage());
+        pinMoveResponseDTO.setSubmitLat(pinMoveRequestDTO.getSubmitLat());
+        pinMoveResponseDTO.setSubmitLng(pinMoveRequestDTO.getSubmitLng());
+
+        log.info(pinMoveResponseDTO);
+        return pinMoveResponseDTO;
+    }
+
 
     ///////
 
@@ -274,6 +361,27 @@ public class GameServiceImpl implements GameService {
         }
 
         return randomIndices;
+    }
+
+    // 위, 경도값 기반으로 두 지점 간의 거리(km)를 계산
+    public static double calculateDistance(double lat1, double lng1, double lat2, double lng2) {
+        final int R = 6371; // 지구의 반지름 (단위: 킬로미터)
+
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lngDistance = Math.toRadians(lng2 - lng1);
+
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lngDistance / 2) * Math.sin(lngDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        double distance = R * c;
+        return distance;
+    }
+
+    public static int calculateScore(double answerLat, double answerLng, double submitLat, double submitLng) {
+        // TODO: 계산된 거리+제출 스테이지에 따른 점수 계산 로직 추가 필요
+        return (int) calculateDistance(answerLat, answerLng, submitLat, submitLng);
     }
 
 }

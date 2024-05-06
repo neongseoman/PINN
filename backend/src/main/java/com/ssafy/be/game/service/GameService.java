@@ -13,4 +13,5 @@ public interface GameService {
 
     Stage2InitResponseDTO findStage2Info(int gamerId, Stage2InitRequestDTO stage2InitRequestDTO) throws BaseException;
 
+    PinMoveResponseDTO movePin(int gamerId, PinMoveRequestDTO pinMoveRequestDTO) throws BaseException;
 }
