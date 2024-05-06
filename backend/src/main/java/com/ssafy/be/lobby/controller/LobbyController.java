@@ -11,6 +11,7 @@ import com.ssafy.be.common.response.BaseResponse;
 import com.ssafy.be.common.response.BaseResponseStatus;
 import com.ssafy.be.gamer.model.GamerPrincipalVO;
 import com.ssafy.be.lobby.model.dto.CreateRoomDTO;
+import com.ssafy.be.lobby.model.vo.SearchVO;
 import com.ssafy.be.lobby.service.LobbyService;
 import jakarta.servlet.ServletRequest;
 import java.util.HashMap;
@@ -47,6 +48,7 @@ public class LobbyController {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final JwtProvider jwtProvider;
+
 
     /*
     * 방 생성을 위한 API
@@ -95,12 +97,25 @@ public class LobbyController {
      * 현재 실행 중인 게임을 확인하기 위한 메서드
      * method : GET
      * URI : lobby/checkGameManager
-     * */
     // TODO : 배포시 리턴 객체 지우기!!!
+     */
     @GetMapping("checkGameManager")
     public BaseResponse<?> checkGameManager(){
         System.out.println(gameManager.getGames());
         return new BaseResponse<>(BaseResponseStatus.ENTER_SUCCESS, gameManager.getGames());
+    }
+
+     /*
+     Ready 상태의 입장 가능한 방을 반환하는 메서드
+     method : GET
+     URI : lobby/checkGameManager
+     */
+    @GetMapping("search")
+    public BaseResponse<?> searchRoom(){
+
+        SearchVO searchVO = lobbyService.searchRoom();
+
+        return new BaseResponse<>(searchVO);
     }
 
 
