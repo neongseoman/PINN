@@ -1,6 +1,7 @@
 package com.ssafy.be.common.model.domain;
 
 import com.ssafy.be.common.component.GameComponent;
+import com.ssafy.be.common.component.GameStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -52,7 +53,7 @@ public class Game {
                 .stage1Time(this.stage1Time)
                 .stage2Time(this.stage2Time)
                 .roundCount(this.roundCount)
-                .status("ready")
+                .status(GameStatus.READY) //
                 .build();
     }
 }
