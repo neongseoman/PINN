@@ -83,11 +83,7 @@ public class LobbyController {
 
         // 존재하는 게임인지, 비밀번호 맞는지,
         log.info("client Password : " + body.get("password"));
-        if(gameManager.isGame(gameId, body.get("password"))){
-            return new BaseResponse<>(BaseResponseStatus.SUCCESS);
-        }
-
-        return new BaseResponse<>(BaseResponseStatus.NOT_EXIST_GAME);
+        return gameManager.isGame(gameId, body.get("password"));
 
     }
 

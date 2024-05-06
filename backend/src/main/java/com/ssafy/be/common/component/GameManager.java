@@ -2,9 +2,13 @@ package com.ssafy.be.common.component;
 
 import static com.ssafy.be.common.response.BaseResponseStatus.ALREADY_START_GAME;
 import static com.ssafy.be.common.response.BaseResponseStatus.NOT_EXIST_GAME;
+import static com.ssafy.be.common.response.BaseResponseStatus.NOT_EXIST_UNREADY_TEAM;
 import static com.ssafy.be.common.response.BaseResponseStatus.NOT_MATCH_PASSWORD;
 
 import com.ssafy.be.common.exception.BaseException;
+import com.ssafy.be.common.response.BaseResponse;
+import com.ssafy.be.common.response.BaseResponseStatus;
+import java.util.Map.Entry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
@@ -35,7 +39,7 @@ public class GameManager {
     /*
     * gameId가 GameManager에 존재하는 게임인지 확인하는 메서드
     * */
-    public boolean isGame(Integer gameId, String password) {
+    public BaseResponse<?> isGame(Integer gameId, String password) {
         GameComponent gameComponent = games.getOrDefault(gameId, null);
 //        log.info("server password" + gameComponent.getPassword());
         if (gameComponent == null){
@@ -43,7 +47,7 @@ public class GameManager {
             throw new BaseException(NOT_EXIST_GAME);
         }
         if (!gameComponent.getStatus().equals(GameStatus.READY)) {
-            // 게임 실행 중인 게임
+            // 게임 실행 중인 방
             throw new BaseException(ALREADY_START_GAME);
         }
         if (gameComponent.getPassword() != null){
@@ -52,6 +56,13 @@ public class GameManager {
                 throw new BaseException(NOT_MATCH_PASSWORD);
             }
         }
-        return true;
+        for (TeamComponent team : gameComponent.teams.values()) {
+            if(!team.isReady() || team.getTeamGamers()==null){
+                // 준비 안 한 팀이 있거나 팀멤버 객체가 없다면 입장 가능
+                return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+            }
+            // 모든 팀이 준비 중
+        }
+        throw new BaseException(NOT_EXIST_UNREADY_TEAM);
     }
 }
