@@ -1,6 +1,8 @@
 package com.ssafy.be.auth.jwt;
 
 import com.ssafy.be.auth.model.JwtPayload;
+import com.ssafy.be.common.exception.BaseException;
+import com.ssafy.be.common.response.BaseResponseStatus;
 import com.ssafy.be.gamer.model.GamerDTO;
 import com.ssafy.be.gamer.model.GamerPrincipalVO;
 import com.ssafy.be.gamer.repository.GamerLoginRedisRepository;
@@ -66,13 +68,17 @@ public class JwtProvider {
                 .compact();
     }
 
-    public UsernamePasswordAuthenticationToken getAuthentication(String accessToken) {
-        Claims claims = validateToken(accessToken);
-        int gamerId = claims.get("gamerId", Integer.class);
-        String nickname = claims.get("nickname", String.class);
-        GamerPrincipalVO gamerPrincipalVO = new GamerPrincipalVO(gamerId,nickname);
-        log.info("{} 유저 인증 성공 : " , nickname);
-        return new UsernamePasswordAuthenticationToken(gamerPrincipalVO, "",List.of(new SimpleGrantedAuthority("USER")));
+    public UsernamePasswordAuthenticationToken getAuthentication(String accessToken) throws BaseException {
+        try{
+            Claims claims = validateToken(accessToken);
+            int gamerId = claims.get("gamerId", Integer.class);
+            String nickname = claims.get("nickname", String.class);
+            GamerPrincipalVO gamerPrincipalVO = new GamerPrincipalVO(gamerId,nickname);
+            log.info("{} 유저 인증 성공 : " , nickname);
+            return new UsernamePasswordAuthenticationToken(gamerPrincipalVO, "",List.of(new SimpleGrantedAuthority("USER")));
+        } catch (BaseException e){
+            throw new BaseException(BaseResponseStatus.INVALID_CREDENTIAL);
+        }
     }
 
     public void saveRefreshTokenToRedis(String refreshToken,int gamerId) {

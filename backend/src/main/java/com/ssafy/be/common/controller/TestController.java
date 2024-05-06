@@ -1,6 +1,7 @@
 package com.ssafy.be.common.controller;
 
 import com.ssafy.be.auth.jwt.JwtProvider;
+import com.ssafy.be.game.service.HintService;
 import com.ssafy.be.gamer.model.GamerPrincipalVO;
 import jakarta.servlet.ServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -11,13 +12,16 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 @Log4j2
 @RequiredArgsConstructor
 public class TestController {
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final JwtProvider jwtProvider;
+    private final HintService hintService;
 
     @MessageMapping("/game/test")
     @SendTo("/game/to")
@@ -27,9 +31,17 @@ public class TestController {
         simpMessagingTemplate.convertAndSend("/game/test", payload);
     }
 
-    @MessageMapping("/game/test01")
-    public void test01(@Payload String game, ServletRequest req) {
+    @GetMapping("/game/test01")
+    public void test01(ServletRequest req) {
         GamerPrincipalVO gamerPrincipalVO  = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
-        System.out.println(game);
+        System.out.println(gamerPrincipalVO);
+    }
+
+    @GetMapping("/game/monthApiTest")
+    public void testMonthApi(ServletRequest req) {
+        GamerPrincipalVO gamerPrincipalVO  = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
+        log.info("Weather Month API Test");
+        hintService.fetchWeatherDataWithMonth(35,139);
+
     }
 }
