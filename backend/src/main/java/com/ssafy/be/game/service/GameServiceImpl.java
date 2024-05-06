@@ -4,9 +4,11 @@ import com.ssafy.be.common.component.*;
 import com.ssafy.be.common.exception.BaseException;
 import com.ssafy.be.common.model.repository.GameRepository;
 import com.ssafy.be.game.model.domain.Hint;
+import com.ssafy.be.game.model.domain.HintType;
 import com.ssafy.be.game.model.domain.Question;
 import com.ssafy.be.game.model.dto.*;
 import com.ssafy.be.game.model.repository.HintRepository;
+import com.ssafy.be.game.model.repository.HintTypeRepository;
 import com.ssafy.be.game.model.repository.QuestionRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +27,15 @@ public class GameServiceImpl implements GameService {
     private final GameManager gameManager;
     private final QuestionRepository questionRepository;
     private final HintRepository hintRepository;
+    private final HintTypeRepository hintTypeRepository;
 
     @Autowired
-    private GameServiceImpl(GameRepository gameRepository, GameManager gameManager, QuestionRepository questionRepository, HintRepository hintRepository) {
+    private GameServiceImpl(GameRepository gameRepository, GameManager gameManager, QuestionRepository questionRepository, HintRepository hintRepository, HintTypeRepository hintTypeRepository) {
         this.gameRepository = gameRepository;
         this.gameManager = gameManager;
         this.questionRepository = questionRepository;
         this.hintRepository = hintRepository;
+        this.hintTypeRepository = hintTypeRepository;
     }
 
     /////
@@ -40,8 +44,9 @@ public class GameServiceImpl implements GameService {
     @Override
     public GameStartResponseDTO startGame(int gamerId, GameStartRequestDTO gameStartRequestDTO) throws BaseException {
         try {
-            log.info(gameStartRequestDTO);
-            log.info(gamerId);
+//            log.info(gameStartRequestDTO);
+//            log.info(gamerId);
+
             int gameId = gameStartRequestDTO.getGameId();
             ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
 
@@ -74,7 +79,6 @@ public class GameServiceImpl implements GameService {
             log.info(gameStartRequestDTO);
             return gameStartResponseDTO;
         } catch (Exception e) {
-            e.printStackTrace();
             throw new BaseException(null);
         }
     }
@@ -112,7 +116,7 @@ public class GameServiceImpl implements GameService {
 
             // 선택된 랜덤 인덱스로 question 구성 & questionId 보고 힌트 배정
             List<QuestionComponent> questions = new ArrayList<>();
-            int tmp=1;
+            int tmp = 1;
             for (int index : randomIndices) {
                 QuestionDTO questionDTO = new QuestionDTO(questionDatas.get(index));
                 QuestionComponent question = new QuestionComponent();
@@ -120,18 +124,26 @@ public class GameServiceImpl implements GameService {
                 // questionId 바탕으로 hint 받아와서 배정
                 List<Hint> hintDatas = hintRepository.findByUsedAndQuestionId(1, questionDTO.getQuestionId());
                 List<HintComponent> hints = new ArrayList<>();
-                for(Hint hintData: hintDatas) {
-                    // TODO: hintTypeId 바탕으로 hintTypeName 받아오기
+                for (Hint hintData : hintDatas) {
+                    // hintTypeId 바탕으로 hintTypeName 받아오기
+                    HintType existHintType = hintTypeRepository.findById(hintData.getHintTypeId()).orElse(null);
+                    if (existHintType == null) {
+                        throw new BaseException(null); // TODO: exception 타입 정의
+                    }
+                    HintTypeDTO hintTypeDTO = new HintTypeDTO(existHintType);
 
+                    // hintComponent에 정보 채우기
                     HintComponent hint = new HintComponent();
                     hint.setHintId(hintData.getHintId());
                     hint.setHintTypeId(hintData.getHintTypeId());
                     hint.setHintValue(hintData.getHintValue());
                     hint.setOfferStage(hintData.getOfferStage());
-                    hint.setHintTypeName("임시 힌트명");
-                    hints.add(hint);
+                    hint.setHintTypeName(hintTypeDTO.getHintTypeName());
+
+                    hints.add(hint); // 다 채운 뒤 hints 리스트에 추가하기
                 }
 
+                // questionComponent에 정보 채우기
                 question.setRound(tmp++);
                 question.setLat(questionDTO.getLat());
                 question.setLat(questionDTO.getLng());
