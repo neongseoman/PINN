@@ -1,7 +1,7 @@
 'use client'
 
 import useUserStore from '@/stores/userStore'
-import { Client, IFrame } from '@stomp/stompjs'
+import { Client, IFrame, IMessage } from '@stomp/stompjs'
 import { useEffect, useRef, useState } from 'react'
 import { IoIosSend } from 'react-icons/io'
 import styles from './chatting.module.css'
@@ -35,7 +35,7 @@ export default function Chatting({
     new Client({
       brokerURL: process.env.NEXT_PUBLIC_SOCKET_URL,
       debug: function (str: string) {
-        // console.log(str)
+        console.log(str)
       },
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
@@ -43,11 +43,11 @@ export default function Chatting({
     }),
   )
 
-  const { gamerId, nickname } = useUserStore()
+  const { nickname } = useUserStore()
 
   useEffect(() => {
     clientRef.current.onConnect = function (_frame: IFrame) {
-      clientRef.current.subscribe(subsrcibeUrl, (message: any) => {
+      clientRef.current.subscribe(subsrcibeUrl, (message: IMessage) => {
         const messageResponse = JSON.parse(message.body) as MessageFormat
         // console.log(messageResponse)
         setMessages((prevMessages) => [...prevMessages, messageResponse])

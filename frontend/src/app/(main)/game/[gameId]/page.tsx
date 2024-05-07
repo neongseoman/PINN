@@ -3,17 +3,19 @@
 import Chatting from '@/components/Chatting'
 import Timer from '@/components/Timer'
 import themeStyles from '@/components/theme.module.css'
+import { IngameResponse } from '@/types/IngameTypes'
 import { Loader } from '@googlemaps/js-api-loader'
-import { useState } from 'react'
+import { Client, IFrame, IMessage } from '@stomp/stompjs'
+import { useEffect, useRef, useState } from 'react'
 import { LuPin, LuPinOff } from 'react-icons/lu'
-import GameInfo from './_components/GameInfo'
-import Hints from './_components/Hints'
-import IngameMap from './_components/IngameMap'
-import StreetView from './_components/StreetView'
-import ThemeInfo from './_components/ThemeInfo'
+import GameInfo from '../_components/GameInfo'
+import Hints from '../_components/Hints'
+import IngameMap from '../_components/IngameMap'
+import StreetView from '../_components/StreetView'
+import ThemeInfo from '../_components/ThemeInfo'
 import styles from './game.module.css'
 
-export default function GamePage() {
+export default function GamePage({ params }: { params: { gameId: string } }) {
   const [chatFocus, setChatFocus] = useState<boolean>(false)
   const [chatPin, setChatPin] = useState<boolean>(false)
   const [hintPin, setHintPin] = useState<boolean>(false)
@@ -40,12 +42,48 @@ export default function GamePage() {
   })
 
   // 임시 게임 아이디
-  const gameId = 1
+  // const gameId = 1
 
   // 채팅방 prop
   const chatTitle = '방 채팅 url로 임시구현'
-  const subscribeUrl = `/game/${gameId}`
-  const publishUrl = `/app/game/chat/${gameId}`
+  const subscribeUrl = `/game/${params.gameId}`
+  const publishUrl = `/app/game/chat/${params.gameId}`
+
+  // 소켓 코드
+
+  const clientRef = useRef<Client>(
+    new Client({
+      brokerURL: process.env.NEXT_PUBLIC_SOCKET_URL,
+      debug: function (str: string) {
+        console.log(str)
+      },
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
+    }),
+  )
+
+  useEffect(() => {
+    clientRef.current.onConnect = function (_frame: IFrame) {
+      clientRef.current.subscribe(
+        `/game/sse/${params.gameId}`,
+        (message: IMessage) => {
+          const IngameResponse = JSON.parse(message.body) as IngameResponse
+        },
+      )
+    }
+
+    clientRef.current.onStompError = function (frame: IFrame) {
+      console.log('Broker reported error: ' + frame.headers['message'])
+      console.log('Additional details: ' + frame.body)
+    }
+
+    clientRef.current.activate()
+
+    return () => {
+      clientRef.current.deactivate()
+    }
+  }, [params.gameId])
 
   function handleChatFocus(bool: boolean) {
     setChatFocus(bool)
