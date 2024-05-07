@@ -18,7 +18,7 @@ public class QuestionDTO {
     private String questionName;
     private double lat;
     private double lng;
-    private boolean useOrNot;
+    private int used;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
 
@@ -29,7 +29,7 @@ public class QuestionDTO {
         this.questionName = question.getQuestionName();
         this.lat = question.getLat();
         this.lng = question.getLng();
-        this.useOrNot = question.isUseOrNot();
+        this.used = question.getUsed();
         this.createdDate = question.getCreatedDate();
         this.updatedDate = question.getUpdatedDate();
     }
@@ -41,7 +41,7 @@ public class QuestionDTO {
                 .questionName(this.questionName)
                 .lat(this.lat)
                 .lng(this.lng)
-                .useOrNot(this.useOrNot)
+                .used(this.used)
                 .createdDate(this.createdDate)
                 .updatedDate(this.updatedDate)
                 .build();
