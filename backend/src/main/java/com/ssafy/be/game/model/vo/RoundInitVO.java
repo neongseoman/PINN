@@ -1,4 +1,4 @@
-package com.ssafy.be.game.model.dto;
+package com.ssafy.be.game.model.vo;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -13,7 +13,7 @@ import java.util.List;
 @Setter
 @ToString
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class RoundInitResponseDTO extends SocketDTO {
+public class RoundInitVO extends SocketDTO {
     private int gameId;
     private int round;
     private int questionId; // db에서의 문제 id
@@ -22,7 +22,7 @@ public class RoundInitResponseDTO extends SocketDTO {
     private double lng; // 경도
     private List<HintComponent> hints; // 이 문제의 힌트
 
-    public RoundInitResponseDTO(LocalDateTime senderDateTime, String senderNickname, int senderGameId, int senderTeamId, int code, String msg) {
+    public RoundInitVO(LocalDateTime senderDateTime, String senderNickname, int senderGameId, int senderTeamId, int code, String msg) {
         super(senderDateTime, senderNickname, senderGameId, senderTeamId, code, msg);
     }
 }

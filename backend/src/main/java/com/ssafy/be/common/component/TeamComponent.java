@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 
@@ -24,4 +25,6 @@ public class TeamComponent {
     private LocalDateTime lastReadyTime;
     private int finalRank;
     private int finalScore;
+
+    private ConcurrentHashMap<Integer, TeamRoundComponent> teamRounds; // 라운드 번호로 접근 (1,2,3 ...)
 }

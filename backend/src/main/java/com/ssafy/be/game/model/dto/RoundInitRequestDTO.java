@@ -14,7 +14,9 @@ public class RoundInitRequestDTO extends SocketDTO {
     private int gameId;
     private int round;
 
-    public RoundInitRequestDTO(String senderNickname, int senderGameId, int senderTeamId) {
+    public RoundInitRequestDTO(String senderNickname, int senderGameId, int senderTeamId, int gameId, int round) {
         super(senderNickname, senderGameId, senderTeamId);
+        this.gameId = gameId;
+        this.round = round;
     }
 }

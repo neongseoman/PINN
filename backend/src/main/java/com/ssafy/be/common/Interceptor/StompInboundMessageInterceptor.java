@@ -27,18 +27,30 @@ public class StompInboundMessageInterceptor implements ChannelInterceptor {
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
-        log.info(headerAccessor.toString());
-
-        if (StompCommand.CONNECT.equals(headerAccessor.getCommand())) {
-            log.info(headerAccessor.getSessionId() + " connected");
-        }
+//        log.info(headerAccessor.toString());
+        log.info(headerAccessor.getCommand() + " " + headerAccessor.getSessionId());
+//        if (StompCommand.ACK.equals(headerAccessor.getCommand())){
+//            log.info("STOMP ACK :  {}",headerAccessor.getAck());
+//        }
+//        if (StompCommand.CONNECT.equals(headerAccessor.getCommand())) {
+//            log.info(headerAccessor.getSessionId() + " connected");
+//        }
         if (StompCommand.SEND.equals(headerAccessor.getCommand())){
             String token = headerAccessor.getNativeHeader("Auth").get(0);
             UsernamePasswordAuthenticationToken authentication = jwtProvider.getAuthentication(token);
-            GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) authentication.getPrincipal();
-
-            System.out.println("back message header : " + message.getHeaders());
         }
+//        if (StompCommand.ABORT.equals(headerAccessor.getCommand())){
+//            log.info("Connected is ABORT");
+//        }
+//        if (StompCommand.ERROR.equals(headerAccessor.getCommand())){
+//            log.info("Connected is ERROR");
+//        }
+//        if (StompCommand.UNSUBSCRIBE.equals(headerAccessor.getCommand())){
+//            log.info("Connected is UNSUBSCRIBE");
+//        }
+//        if (StompCommand.DISCONNECT.equals(headerAccessor.getCommand())){
+//            log.info("Connected is Disconnected");
+//        }
         return message;
     }
 
