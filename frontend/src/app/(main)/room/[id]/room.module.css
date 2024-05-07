@@ -33,36 +33,22 @@
 
 /* 위에 마진 조절 */
 .chat {
-  height: 380px;
+  height: 57.5%;
   margin-top: 25.5%;
   border-radius: 8px;
   background-color: var(--Main-Navy);
   padding: 2% 6%;
   box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.5);
   color: var(--Main-Yellow);
+  border-color: var(--Main-Yellow);
 }
 
-/* .chat::-webkit-scrollbar {
-  display: none;
-} */
-
 .ready-out {
-  height: 34%;
+  height: 25%;
   margin-top: 4%;
   display: flex;
   flex-direction: column;
 }
-
-/* .ready {
-  height: 60%;
-  color: var(--Main-Navy);
-  font-weight: bold;
-  font-size: 3.5rem;
-  font-family: 'GmarketSans';
-  border-radius: 8px;
-  background-color: var(--Main-Yellow);
-  padding-top: 4%;
-} */
 
 .out {
   height: 40%;

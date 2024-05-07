@@ -1,8 +1,8 @@
 'use client'
 
-import styles from './timer.module.css'
+import { useEffect, useState } from 'react'
 import themeStyles from './theme.module.css'
-import { useState, useEffect } from 'react'
+import styles from './timer.module.css'
 
 interface TimerProp {
   theme: string

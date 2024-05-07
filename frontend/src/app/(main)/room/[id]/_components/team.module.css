@@ -34,15 +34,21 @@
   justify-content: space-between;
 }
 
-.users > div {
+.nickname {
   height: 27%;
-  font-size: 1.5rem;
-  font-weight: bold;
+  width: 80%;
+  font-size: 1rem;
+  font-weight: 700;
   color: white;
-  display: flex;
+  display: block;
   align-items: center;
   padding-left: 10%;
-  padding-top: 3%;
+  padding-right: 10%;
+  padding-top: 2%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 220%;
 }
 
 .ready {
