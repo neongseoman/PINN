@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -14,17 +15,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class Question {
+public class HintType {
     @Id
-    private int questionId;
-    private int themeId;
-    private String questionName;
-    private double lat;
-    private double lng;
-    private int used;
+    private int hintTypeId;
+    private String hintTypeName;
     @CreationTimestamp
     private LocalDateTime createdDate;
-    @CreationTimestamp
+    @UpdateTimestamp
     private LocalDateTime updatedDate;
-
 }

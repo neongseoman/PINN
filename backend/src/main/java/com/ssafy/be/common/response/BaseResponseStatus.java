@@ -33,6 +33,9 @@ public enum BaseResponseStatus {
     NOT_MATCH_PASSWORD(false, 3103, "방 비밀번호를 다시 확인해주세요"),
     NOT_EXIST_UNREADY_TEAM(false, 3104, "모든 팀이 준비 중이라서 방에 들어갈 수 없습니다."),
 
+    NOT_STARTED_GAME(false, 3201, "게임이 시작되지 않은 방이므로 초기화 작업을 수행할 수 없습니다."),
+
+
     /**
      * 4000 : Database, Server 오류
      */

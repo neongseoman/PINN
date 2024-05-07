@@ -15,6 +15,7 @@ public class GameStartRequestDTO extends SocketDTO {
 
     private int gameId;
 
+
     public GameStartRequestDTO(String senderNickname, int senderGameId, int senderTeamId,int gameId) {
         super(senderNickname, senderGameId, senderTeamId);
         setGameId(gameId);
