@@ -2,12 +2,14 @@ package com.ssafy.be.common.model.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
 //@AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class SocketDTO {
     private LocalDateTime senderDateTime;  // 송신자가 보낸 시간
     private String senderNickname;

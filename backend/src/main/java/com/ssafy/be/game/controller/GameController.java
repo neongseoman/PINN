@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -40,48 +42,76 @@ public class GameController {
 
     /////
     // TODO: 한 게임에 대해 중복 요청 검증 처리 필요
+    // 단순 game status 변경 + 참가자들에게 시작 소식 broadcast 하여 로딩 화면으로 넘어갈 수 있도록 함
 
-    @MessageMapping("/game/start") // 단순 game status 변경 + 참가자들에게 시작 소식 broadcast 하여 로딩 화면으로 넘어갈 수 있도록 함
+    @MessageMapping("/game/start")
     public void startGame(GameStartRequestDTO gameStartRequestDTO, StompHeaderAccessor accessor) throws ExecutionException, InterruptedException {
         log.info("Is this async? Start of Method : {}", LocalDateTime.now());
         int gamerId = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor).getGamerId();
         GameStartVO gameStartVO = gameService.startGame(gamerId, gameStartRequestDTO);
-        int gameId = gameStartVO.getGameId();
-        scheduleProvider.startGame(gameId)
-                .thenCompose((result) -> {
-                    log.info("{} : Starting gameId : {} at {}",result, gameId, LocalDateTime.now());
-                    ServerSendEvent serverMsg = new ServerSendEvent(ServerEvent.START);
-                    sendingOperations.convertAndSend("/game/"+result,serverMsg);
-                    return scheduleProvider.roundStart(result,5); // stage 1
-                }).thenCompose((result)->{
-                    log.info("{} : round start: {}  at {}",result, gameId, LocalDateTime.now());
-                    ServerSendEvent serverMsg = new ServerSendEvent(ServerEvent.ROUND_START);
-                    sendingOperations.convertAndSend("/game/"+result,serverMsg);
-                    return scheduleProvider.sendHint(result,5);
-                }).thenCompose((result) ->{
-                    log.info("{} : Hint send: {}  at {}",result, gameId, LocalDateTime.now());
-                    ServerSendEvent serverMsg = new ServerSendEvent(ServerEvent.HINT);
-                    sendingOperations.convertAndSend("/game/"+result,serverMsg);
-                    return scheduleProvider.roundEnd(result,5);
-                }).exceptionally(ex -> {
-                    log.error("Error occurred in the CompletableFuture chain: ", ex);
-                    return null;
-                });
+        GameInitVO gameInitVO = gameService.initGame(gamerId, gameStartRequestDTO);
 
-//        sendingOperations.convertAndSend("/game/"+result,new ServerSendEvent(ServerEvent.START));
+        log.info("{} game started at {}", gameStartRequestDTO.getGameId(), LocalDateTime.now());
+        sendingOperations.convertAndSend("/game/" + gameInitVO.getGameId(), new ServerSendEvent(ServerEvent.ROUND_START));
+
+        CompletableFuture<Integer> startFuture = scheduleProvider.startGame(gameStartRequestDTO.getGameId(), gameInitVO);
+
+        startFuture.thenCompose((result) -> { // startFuture에서 5초 보냈고 Game Init도 보냄.
+            log.info("{} game round 1 started at {}", gameStartRequestDTO.getGameId(), LocalDateTime.now());
+            RoundInitRequestDTO roundInitRequestDTO =
+                    new RoundInitRequestDTO(gameStartVO.getSenderNickname(), gameStartVO.getSenderGameId(), gameStartVO.getSenderTeamId(), gameStartVO.getGameId(), 1);
+            RoundInitVO roundInitVO = gameService.findStage1Info(gamerId, roundInitRequestDTO);
+            roundInitVO.setCode(ServerEvent.ROUND_START.getCode());
+            roundInitVO.setMsg(ServerEvent.ROUND_START.getMsg());
+            sendingOperations.convertAndSend("/game/" + gameInitVO.getGameId(), roundInitVO); // 여기까지 round1의 stage1
+
+//            return scheduleProvider.sendHint(result, gameStartRequestDTO.getStage1Time()); // 지금부터 stage 1
+            return scheduleProvider.sendHint(result, 5); // 지금부터 stage 1
+        }).thenCompose((result) -> {
+            log.info("{} game send Hint at {}", gameStartRequestDTO.getGameId(), LocalDateTime.now());
+            Stage2InitRequestDTO stage2InitRequestDTO =
+                    new Stage2InitRequestDTO(gameStartVO.getSenderNickname(), gameStartVO.getSenderGameId(),
+                            gameStartVO.getSenderTeamId(), gameStartVO.getGameId(), 1);
+            Stage2InitVO stage2InitVO = gameService.findStage2Info(gamerId, stage2InitRequestDTO);
+            stage2InitVO.setCode(ServerEvent.HINT.getCode());
+            stage2InitVO.setMsg(ServerEvent.HINT.getMsg());
+            sendingOperations.convertAndSend("/game/" + gameInitVO.getGameId(), stage2InitVO);
+
+//            return scheduleProvider.roundEnd(result, gameStartRequestDTO.getStage2Time()); // 지금부터 stage 2
+            return scheduleProvider.roundEnd(result, 5); // 지금부터 stage 2
+        }).thenCompose((result) -> {
+            log.info("{} game round 1 is end at {}", gameStartRequestDTO.getGameId(), LocalDateTime.now());
+            sendingOperations.convertAndSend("/game/" + gameInitVO.getGameId(), new ServerSendEvent(ServerEvent.ROUND_SCORE));
+
+//            return scheduleProvider.roundEnd(result, gameStartRequestDTO.getScorePageTime()); // 지금부터 score page
+            return scheduleProvider.roundEnd(result, 5); // 지금부터 score page
+        }).thenCompose((a) -> { // 이건 게임이 끝나
+            log.info(" {}  Game is End at {}", gameInitVO.getGameId(), LocalDateTime.now());
+            ServerSendEvent serverMsg = new ServerSendEvent(ServerEvent.GO_TO_ROOM);
+            sendingOperations.convertAndSend("/game/" + gameInitVO.getGameId(), serverMsg);
+
+            return scheduleProvider.goToRoom(gameInitVO.getGameId(), 5); // 방으로 돌아가라
+        }).exceptionally(ex -> {
+            log.error("Error occurred in the CompletableFuture chain: ", ex);
+            return null;
+        });
+
         log.info("Is this async? End of Method : {}", LocalDateTime.now());
 
-        sendingOperations.convertAndSend("/game/" + gameStartVO.getGameId(), gameStartVO);
+//        sendingOperations.convertAndSend("/game/" + gameStartVO.getGameId(), gameStartVO);
+//        .thenCompose((result) -> {
+//            return scheduleProvider.roundEnd(result, 5); // 지금부터 score page
+//        })
     }
 
-    @MessageMapping("/game/init") // 게임 문제 배정 + 게임 초기 정보값 broadcast
-    public void initGame(GameInitRequestDTO gameInitRequestDTO, StompHeaderAccessor accessor) {
-        int gamerId = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor).getGamerId();
-        GameInitVO gameInitVO = gameService.initGame(gamerId, gameInitRequestDTO);
-
-        // /game/{gameId} 를 구독 중인 모든 사용자에게 publish
-        sendingOperations.convertAndSend("/game/" + gameInitVO.getGameId(), gameInitVO);
-    }
+//    @MessageMapping("/game/init") // 게임 문제 배정 + 게임 초기 정보값 broadcast
+//    public void initGame(GameInitRequestDTO gameInitRequestDTO, StompHeaderAccessor accessor) {
+//        int gamerId = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor).getGamerId();
+//        GameInitVO gameInitVO = gameService.initGame(gamerId, gameInitRequestDTO);
+//
+//        // /game/{gameId} 를 구독 중인 모든 사용자에게 publish
+//        sendingOperations.convertAndSend("/game/" + gameInitVO.getGameId(), gameInitVO);
+//    }
 
     @MessageMapping("/game/round/init") // 라운드 시작(문제의 lat, lng + stage1 hint broadcast)
     public void initStage1(RoundInitRequestDTO roundInitRequestDTO, StompHeaderAccessor accessor) {

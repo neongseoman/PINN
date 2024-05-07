@@ -87,7 +87,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public GameInitVO initGame(int gamerId, GameInitRequestDTO gameInitRequestDTO) throws BaseException {
+    public GameInitVO initGame(int gamerId, GameStartRequestDTO gameInitRequestDTO) throws BaseException {
 
         // TODO: 배정한 문제 GameAndQuestion table에 insert
         // TODO: DB에 TeamGamer, Team 데이터 insert

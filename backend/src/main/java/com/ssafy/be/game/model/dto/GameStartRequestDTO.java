@@ -14,6 +14,10 @@ import lombok.ToString;
 public class GameStartRequestDTO extends SocketDTO {
 
     private int gameId;
+    private int roundCount;
+    private int stage1Time; // 일단 30으로 받자
+    private int stage2Time; // 일단 30으로 받자.
+    private int scorePageTime; //일단 15초로 보내줘
 
 
     public GameStartRequestDTO(String senderNickname, int senderGameId, int senderTeamId,int gameId) {

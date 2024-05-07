@@ -4,11 +4,12 @@ import lombok.Getter;
 
 @Getter
 public enum ServerEvent {
-    START(1,"Game Start"),
-    ROUND_START(2,"Round Start"),
-    HINT(3,"Server Send Hint"),
-    ROUND_SCORE(4,"Go to Round Score Page"),
-    GAME_SCORE(5,"Go to Game Score Page");
+    START(1201,"Game Start. Waiting for players."),
+    ROUND_START(1202,"Round Start. Stage 1 go"),
+    HINT(1203,"Server Send Hint, Stage 2 go"),
+    ROUND_SCORE(1204,"Go to Round Score Page"),
+    GAME_SCORE(1205,"Go to Game Score Page"),
+    GO_TO_ROOM(1206,"GO to Room");
 
     private final int code;
     private final String msg;
