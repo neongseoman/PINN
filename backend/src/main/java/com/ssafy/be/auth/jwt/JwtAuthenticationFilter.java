@@ -37,6 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             GamerPrincipalVO gamerPrincipalVO =(GamerPrincipalVO)authenticationToken.getPrincipal();
             request.setAttribute("gamerPrincipal", gamerPrincipalVO);
+            log.info("In JWT Filter => {} user access", gamerPrincipalVO.getNickname());
         }
 //        log.info("pass");
         filterChain.doFilter(request, response);
