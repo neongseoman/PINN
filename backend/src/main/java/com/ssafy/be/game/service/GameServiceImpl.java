@@ -120,7 +120,7 @@ public class GameServiceImpl implements GameService {
             // teamGamer를 1명 이상 보유한 경우 유효한 team으로 간주한다.
             for (int i = 1; i <= existGame.getTeamCount(); ++i) {
                 TeamComponent team = existGame.getTeams().get(i);
-                ConcurrentHashMap<Long, TeamGamerComponent> teamGamers = team.getTeamGamers(); // 이게 null이라서 에러 발생 중...
+                ConcurrentHashMap<Integer, TeamGamerComponent> teamGamers = team.getTeamGamers(); // 이게 null이라서 에러 발생 중...
                 log.info(team);
                 if (teamGamers != null && !teamGamers.isEmpty()) { // 유효한 팀인 경우
                     // 1. TeamRounds 생성
