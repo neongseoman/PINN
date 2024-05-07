@@ -1,11 +1,14 @@
 'use client'
 
+import useUserStore from '@/stores/userStore';
 import Image from "next/image";
 import React, { useRef, useState } from "react";
 import { TiArrowSortedDown } from "react-icons/ti";
 import styles from '../lobby.module.css';
 
 export default function CreateRoomModal() {
+  // 방 생성 사용자 id
+  const { gamerId } = useUserStore()
   // dialog 참조 ref
   const dialogRef = useRef<HTMLDialogElement>(null);
   // 방 제목
@@ -81,15 +84,15 @@ export default function CreateRoomModal() {
       stage1Time: stage1,
       stage2Time: stage2,
       theme: theme,
-      // leaderId:
+      leaderId: gamerId,
     };
 
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/lobby/create`, {
         method: 'POST',
-        // headers: {
-        //   'Content-Type': 'application/json'
-        // },
+        headers: {
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify(data)
       });
 

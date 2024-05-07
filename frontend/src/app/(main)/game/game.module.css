@@ -10,8 +10,6 @@
   position: fixed;
   bottom: 4vh;
   left: 2vw;
-  background-color: var(--Main-Navy);
-  color: white;
   height: 240px;
   width: 320px;
   z-index: 2;
@@ -21,12 +19,12 @@
   position: fixed;
   bottom: 4vh;
   right: 2vw;
-  background-color: var(--Main-Navy);
-  color: white;
   height: 240px;
   width: 320px;
   transition: all 0.3s ease;
   z-index: 2;
+  display: flex;
+  justify-content: center;
 }
 
 .map:hover {
