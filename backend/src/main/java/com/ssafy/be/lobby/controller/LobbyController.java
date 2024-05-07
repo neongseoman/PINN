@@ -146,8 +146,9 @@ public class LobbyController {
     }
 
     /*
-     * 룸 퇴장 Socket 메서드 - [GET] lobby/{gameId} 로 검증 이후 요청해야 함
+     * 룸 퇴장 Socket 메서드
      * subscribe : /game/{gameId}
+     * publish : /game/exit/{gameId}
      * send to : /app/game/{gameId}
      * */
     @MessageMapping("/game/exit/{gameId}")
@@ -155,7 +156,7 @@ public class LobbyController {
     public SocketDTO exitRoom(@Payload SocketDTO socketDTO, @DestinationVariable Integer gameId, StompHeaderAccessor accessor){
         GamerPrincipalVO gamerPrincipalVO = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor);
 
-        ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
+        gameManager.exitRoom(socketDTO, gamerPrincipalVO.getGamerId());
 
         return socketDTO;
     }

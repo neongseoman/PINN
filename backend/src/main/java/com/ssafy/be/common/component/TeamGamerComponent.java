@@ -6,9 +6,8 @@ import lombok.Getter;
 @Builder
 @Getter
 public class TeamGamerComponent {
-    private Long teamGamerId;
     private int teamId;
     private int colorId;
     private int gamerId;
-
+    private int teamGamerNumber;
 }
