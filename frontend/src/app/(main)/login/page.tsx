@@ -42,8 +42,8 @@ export default function LoginPage() {
 
     const gamerIdData = data.result.gamerId
     const nicknameData = data.result.nickname
-    console.log(gamerIdData)
-    console.log(nicknameData)
+    // console.log(gamerIdData)
+    // console.log(nicknameData)
 
     setGamerId(gamerIdData)
     setNickname(nicknameData)
