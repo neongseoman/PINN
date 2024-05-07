@@ -5,12 +5,12 @@ import { IoIosLock } from "react-icons/io";
 import styles from '../lobby.module.css';
 
 interface PrivateRoomModalProps {
-  // roomName: string
-  setShowModal: Dispatch<SetStateAction<boolean>>
+  gameId: number,
+  roomName: string,
+  setShowModal: Dispatch<SetStateAction<boolean>>,
 }
 
-// { roomName }: PrivateRoomModal
-export default function PrivateRoomModal({ setShowModal }: PrivateRoomModalProps) {
+export default function PrivateRoomModal({ gameId, roomName, setShowModal }: PrivateRoomModalProps) {
   // dialog 참조 ref
   const dialogRef = useRef<HTMLDialogElement>(null);
   // 사용자 입력 비밀번호
@@ -33,16 +33,39 @@ export default function PrivateRoomModal({ setShowModal }: PrivateRoomModalProps
     dialogRef.current?.close();
   };
 
-  const enterPassword = () => {
-    // 비밀번호 입력 후 참여 버튼 클릭
-    // `${process.env.NEXT_PUBLIC_API_URL}/app/game/enter/${gameId}` get 요청
-    // `${process.env.NEXT_PUBLIC_SOCKET_URL}/game/${gameId}` websocket 구독
+  const enterPassword = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/app/game/enter/${gameId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('accessToken') as string}`
+        },
+        body: JSON.stringify({
+          password: password
+        }),
+      });
+
+      if (response.ok) {
+        const responseData = await response.json();
+        console.log('방 입장 요청 성공!', responseData);
+        // 방 입장
+        // 해당 방으로 이동
+      } else {
+        console.error('방 입장 요청 실패!:', response);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
+    // 입장 버튼 클릭
+    // `${process.env.NEXT_PUBLIC_API_URL}/app/game/enter/${gameId}` post 요청
+    // `${process.env.NEXT_PUBLIC_SOCKET_URL}/game/${gameId}` websocket 구독
 
   return (
     <>
       <dialog className={styles.privateRoomModalWrapper} ref={dialogRef}>
-        <p className={styles.modalTitle}>방 제목</p>
+        <p className={styles.modalTitle}>{roomName}</p>
         <hr className={styles.line}/>
         <div className={styles.passwordWrapper}><IoIosLock /><input className={styles.inputText} type="text" value={password} placeholder='비밀번호를 입력해 주세요' onChange={handlePasswordChange} /></div>
         <div className={styles.modalButtons}>

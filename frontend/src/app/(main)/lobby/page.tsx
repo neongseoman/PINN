@@ -9,12 +9,13 @@ import RuleModal from './_components/RuleModal';
 import styles from './lobby.module.css';
 
 interface GameInfo {
-  themeId: number
-  roomName: string
-  roundCount: number
-  stage1Time: number
-  stage2Time: number
-  password: string
+  gameId: number,
+  roomName: string,
+  themeId: number,
+  roundCount: number,
+  stage1Time: number,
+  stage2Time: number,
+  password: boolean,
 }
 
 export default function LobbyPage() {
@@ -71,16 +72,17 @@ export default function LobbyPage() {
             <RuleModal />
         </div>
         <div className={styles.bottom}>
-        {gameList.map((game) => (
-          <RoomCard
-          // themeId={game.themeId}
-          // roomName={game.roomName}
-          // roundCount={game.roundCount}
-          // stage1Time={game.stage1Time}
-          // stage2Time={game.stage2Time}
-          // password={game.password}
-          />
-        ))}
+          {gameList.map((game) => (
+            <RoomCard
+              gameId={game.gameId}
+              themeId={game.themeId}
+              roomName={game.roomName}
+              roundCount={game.roundCount}
+              stage1Time={game.stage1Time}
+              stage2Time={game.stage2Time}
+              password={game.password}
+            />
+          ))}
         </div>
       </main>
     </>
