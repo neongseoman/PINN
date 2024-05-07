@@ -6,6 +6,7 @@ import static com.ssafy.be.common.response.BaseResponseStatus.NOT_EXIST_UNREADY_
 import static com.ssafy.be.common.response.BaseResponseStatus.NOT_MATCH_PASSWORD;
 
 import com.ssafy.be.common.exception.BaseException;
+import com.ssafy.be.common.model.dto.SocketDTO;
 import com.ssafy.be.common.response.BaseResponse;
 import com.ssafy.be.common.response.BaseResponseStatus;
 import java.util.List;
@@ -76,24 +77,40 @@ public class GameManager {
 
     public TeamGamerComponent enterTeam(GameComponent gameComponent, Integer gamerId){
         for (Entry<Integer, TeamComponent> team : gameComponent.teams.entrySet()) {
+            // 준비가 아직 안 된 & 팀 내 멤버가 2명 이하
             if(!team.getValue().isReady()){
-                // 준비 안 한 팀이 있거나 팀멤버 객체가 없다면 입장 가능
+                // 팀멤버 객체가 없다면 생성
                 if(team.getValue().getTeamGamers() == null){
                     team.getValue().setTeamGamers(new ConcurrentHashMap<>());
+                } else if(team.getValue().getTeamGamers().size() < 3){
+                    // 팀멤버 객체가 있다면 멤버가 3명 미만
+                    continue;
                 }
                 // 팀 내 멤버 수 + 1번째 (원래는 DB에 넣고 해당 key id를 넣어야 했음)
-                Long teamGamerNumber = (long) team.getValue().getTeamGamers().size() + 1;
+                int teamGamerNumber = team.getValue().getTeamGamers().size() + 1;
                 TeamGamerComponent teamGamerComponent = TeamGamerComponent.builder()
-                        .teamGamerId(teamGamerNumber)
+                        .teamGamerNumber(teamGamerNumber)
                         .gamerId(gamerId)
                         .teamId(team.getValue().getTeamId())
                         .build();
                 // 멤버를 팀에 삽입
                 log.info(team.getValue().getTeamId() + "팀에 들어간 " + teamGamerComponent);
-                team.getValue().getTeamGamers().put(teamGamerNumber, teamGamerComponent);
+                team.getValue().getTeamGamers().put(gamerId, teamGamerComponent);
                 return teamGamerComponent;
             }
         }
         return null;
+    }
+
+    // 방 나가기위한 method
+    public void exitRoom(SocketDTO socketDTO, int gamerId) {
+        // game
+        GameComponent gameComponent = games.get(socketDTO.getSenderGameId());
+        // team
+        TeamComponent teamComponent = gameComponent.teams.get(socketDTO.getSenderTeamId());
+        // teamGamer
+        ConcurrentHashMap<Integer, TeamGamerComponent> teamGamers = teamComponent.getTeamGamers();
+        // remove gamer
+        teamGamers.remove(gamerId);
     }
 }
