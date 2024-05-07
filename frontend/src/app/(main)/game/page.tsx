@@ -40,6 +40,10 @@ export default function GamePage() {
   // 임시 게임 아이디
   const gameId = 1
 
+  // 채팅방 prop
+  const subscribeUrl = `/game/${gameId}`
+  const publishUrl = `/app/game/chat/${gameId}`
+
   function handleChatFocus(bool: boolean) {
     setChatFocus(bool)
   }
@@ -71,7 +75,7 @@ export default function GamePage() {
             {chatPin ? <LuPinOff /> : <LuPin />}
           </span>
         </div>
-        <Chatting gameId={gameId} />
+        <Chatting subsrcibeUrl={subscribeUrl} publishUrl={publishUrl} />
       </div>
       <div className={`${styles.map} ${styles.opacity}`}>
         <IngameMap theme={theme} loader={loader} />

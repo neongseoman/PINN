@@ -16,10 +16,11 @@ interface MessageFormat {
 }
 
 interface ChattingProps {
-  gameId: number
+  subsrcibeUrl: string
+  publishUrl: string
 }
 
-export default function Chatting({ gameId }: ChattingProps) {
+export default function Chatting({ subsrcibeUrl, publishUrl }: ChattingProps) {
   const [messages, setMessages] = useState<MessageFormat[]>([])
   const [newMessage, setNewMessage] = useState<string>('')
   const chatContainerRef = useRef<HTMLDivElement | null>(null)
@@ -40,7 +41,7 @@ export default function Chatting({ gameId }: ChattingProps) {
   useEffect(() => {
     myId.current = localStorage.getItem('gamerId')
     clientRef.current.onConnect = function (_frame: IFrame) {
-      clientRef.current.subscribe(`/game/${gameId}`, (message: any) => {
+      clientRef.current.subscribe(subsrcibeUrl, (message: any) => {
         const messageResponse = JSON.parse(message.body) as MessageFormat
         console.log(messageResponse)
         setMessages((prevMessages) => [...prevMessages, messageResponse])
@@ -57,7 +58,7 @@ export default function Chatting({ gameId }: ChattingProps) {
     return () => {
       clientRef.current.deactivate()
     }
-  }, [gameId])
+  }, [subsrcibeUrl, publishUrl])
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -77,7 +78,7 @@ export default function Chatting({ gameId }: ChattingProps) {
         headers: {
           Auth: localStorage.getItem('accessToken') as string,
         },
-        destination: `/app/game/chat/${gameId}`,
+        destination: publishUrl,
         body: JSON.stringify({
           senderNickname: '노란목도리담비',
           senderGameId: 6,
