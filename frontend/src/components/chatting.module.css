@@ -15,6 +15,21 @@
   padding: 0 8px 0 8px;
 }
 
+.chatList::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chatList::-webkit-scrollbar-track {
+  background: rgba(119, 107, 93, 0.1);
+}
+.chatList::-webkit-scrollbar-thumb {
+  background: rgba(119, 107, 93, 0.7);
+  border-radius: 4px;
+}
+.chatList::-webkit-scrollbar-thumb:hover {
+  background: rgba(119, 107, 93, 0.7);
+}
+
 .chatContainer {
   display: flex;
   flex-direction: column;
