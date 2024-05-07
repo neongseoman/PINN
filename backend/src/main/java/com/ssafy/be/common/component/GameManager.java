@@ -76,10 +76,14 @@ public class GameManager {
 
     public TeamGamerComponent enterTeam(GameComponent gameComponent, Integer gamerId){
         for (Entry<Integer, TeamComponent> team : gameComponent.teams.entrySet()) {
+            // 준비가 아직 안 된 & 팀 내 멤버가 2명 이하
             if(!team.getValue().isReady()){
-                // 준비 안 한 팀이 있거나 팀멤버 객체가 없다면 입장 가능
+                // 팀멤버 객체가 없다면 생성
                 if(team.getValue().getTeamGamers() == null){
                     team.getValue().setTeamGamers(new ConcurrentHashMap<>());
+                } else if(team.getValue().getTeamGamers().size() < 3){
+                    // 팀멤버 객체가 있다면 멤버가 3명 미만
+                    continue;
                 }
                 // 팀 내 멤버 수 + 1번째 (원래는 DB에 넣고 해당 key id를 넣어야 했음)
                 Long teamGamerNumber = (long) team.getValue().getTeamGamers().size() + 1;
