@@ -42,9 +42,9 @@ export default function LoginPage() {
     const nicknameData = data.result.nickname
     
     if (gamerIdData && nicknameData) {
-    setGamerId(gamerIdData)
-    setNickname(nicknameData)
-    router.push('/lobby')
+      setGamerId(gamerIdData)
+      setNickname(nicknameData)
+      router.push('/lobby')
     } else {
       alert('로그인에 실패하였습니다')
       router.push('/')
