@@ -1,10 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import styles from './result.module.css'
+import styles from './result1.module.css'
 import { useRouter } from 'next/navigation'
 
-export default function ResultPage() {
+export default function ResultPage1({ params }: { params: { id: number } }) {
     const router = useRouter()
     const teamNum = 1
     const [teams, setTeams] = useState([
