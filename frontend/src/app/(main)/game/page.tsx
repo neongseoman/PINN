@@ -17,6 +17,7 @@ export default function GamePage() {
   const [chatFocus, setChatFocus] = useState<boolean>(false)
   const [chatPin, setChatPin] = useState<boolean>(false)
   const [hintPin, setHintPin] = useState<boolean>(false)
+  const [mapPin, setMapPin] = useState<boolean>(false)
 
   //힌트
   const hints = ['hint 1', 'hint 2', 'hint 3']
@@ -85,7 +86,13 @@ export default function GamePage() {
           publishUrl={publishUrl}
         />
       </div>
-      <div className={`${styles.map} ${styles.opacity}`}>
+      <div className={`${styles.map} ${mapPin ? '' : styles.opacity}`}>
+        <div
+          className={`${styles.pin} ${styles.mapPin}`}
+          onClick={() => setMapPin((prev) => !prev)}
+        >
+          {mapPin ? <LuPinOff /> : <LuPin />}
+        </div>
         <IngameMap theme={theme} loader={loader} />
       </div>
       <div className={styles.streetView}>

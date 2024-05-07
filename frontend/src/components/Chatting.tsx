@@ -1,5 +1,6 @@
 'use client'
 
+import useUserStore from '@/stores/userStore'
 import { Client, IFrame } from '@stomp/stompjs'
 import { useEffect, useRef, useState } from 'react'
 import { IoIosSend } from 'react-icons/io'
@@ -29,13 +30,12 @@ export default function Chatting({
   const [messages, setMessages] = useState<MessageFormat[]>([])
   const [newMessage, setNewMessage] = useState<string>('')
   const chatContainerRef = useRef<HTMLDivElement | null>(null)
-  const myId = useRef<string | null>(null)
 
   const clientRef = useRef<Client>(
     new Client({
       brokerURL: process.env.NEXT_PUBLIC_SOCKET_URL,
       debug: function (str: string) {
-        console.log(str)
+        // console.log(str)
       },
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
@@ -43,12 +43,13 @@ export default function Chatting({
     }),
   )
 
+  const { gamerId, nickname } = useUserStore()
+
   useEffect(() => {
-    myId.current = localStorage.getItem('gamerId')
     clientRef.current.onConnect = function (_frame: IFrame) {
       clientRef.current.subscribe(subsrcibeUrl, (message: any) => {
         const messageResponse = JSON.parse(message.body) as MessageFormat
-        console.log(messageResponse)
+        // console.log(messageResponse)
         setMessages((prevMessages) => [...prevMessages, messageResponse])
       })
     }
@@ -77,7 +78,6 @@ export default function Chatting({
       setNewMessage('')
       return
     }
-
     if (clientRef.current) {
       clientRef.current.publish({
         headers: {
@@ -85,8 +85,8 @@ export default function Chatting({
         },
         destination: publishUrl,
         body: JSON.stringify({
-          senderNickname: '노란목도리담비',
-          senderGameId: 61,
+          senderNickname: nickname,
+          senderGameId: 1,
           senderTeamId: 1,
           content: trimmedMessage,
         }),
@@ -108,7 +108,7 @@ export default function Chatting({
         {messages.map((message, index) => (
           <div
             className={
-              message.senderGameId != Number(myId.current)
+              message.senderNickname != nickname
                 ? `${styles.chatContainer}`
                 : `${styles.myChatContainer}`
             }
@@ -117,7 +117,7 @@ export default function Chatting({
             <div className={styles.chatSender}>{message.senderNickname}</div>
             <div
               className={
-                message.senderGameId != Number(myId.current)
+                message.senderNickname != nickname
                   ? `${styles.chatContent}`
                   : `${styles.myChatContent}`
               }
