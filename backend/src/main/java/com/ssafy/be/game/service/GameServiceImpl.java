@@ -317,9 +317,15 @@ public class GameServiceImpl implements GameService {
         TeamComponent submitTeam = existGame.getTeams().get(pinMoveRequestDTO.getSenderTeamId());
         ConcurrentHashMap<Integer, TeamRoundComponent> teamRounds = submitTeam.getTeamRounds();
         if (teamRounds == null) {
-            throw new BaseException(null);
+            throw new BaseException(BaseResponseStatus.OOPS); // TODO: exception 타입 정의
         }
         TeamRoundComponent submitTeamRound = teamRounds.get(pinMoveRequestDTO.getRoundNumber());
+
+        // 이미 guess한 팀 아닌지 확인
+        if (submitTeamRound.isGuessed()) {
+            throw new BaseException(BaseResponseStatus.ALREADY_GUESSED_TEAM);
+        }
+        // guess 안 했으면 제출된 정보로 submitTeamRound 업데이트
         submitTeamRound.setSubmitTime(pinMoveRequestDTO.getSenderDateTime());
         submitTeamRound.setSubmitStage(pinMoveRequestDTO.getSubmitStage());
         submitTeamRound.setSubmitLat(pinMoveRequestDTO.getSubmitLat());
@@ -384,6 +390,8 @@ public class GameServiceImpl implements GameService {
         return pinGuessVO;
 
     }
+
+
 ///////
 
     public static List<Integer> getRandomIndices(int maxIndex, int count) {
