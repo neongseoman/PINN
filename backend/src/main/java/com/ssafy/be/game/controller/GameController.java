@@ -1,6 +1,9 @@
 package com.ssafy.be.game.controller;
 
 import com.ssafy.be.auth.jwt.JwtProvider;
+import com.ssafy.be.common.Provider.ScheduleProvider;
+import com.ssafy.be.common.model.dto.ServerEvent;
+import com.ssafy.be.common.model.dto.ServerSendEvent;
 import com.ssafy.be.game.model.dto.*;
 import com.ssafy.be.game.model.vo.*;
 import com.ssafy.be.game.service.GameService;
@@ -12,17 +15,24 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledFuture;
+
 @RestController
 @Log4j2
 @RequestMapping("/game")
 public class GameController {
-
+    private final ScheduleProvider scheduleProvider;
     private final GameService gameService;
     private final SimpMessageSendingOperations sendingOperations;
     private final JwtProvider jwtProvider;
 
     @Autowired
-    private GameController(GameService gameService, SimpMessageSendingOperations sendingOperations, JwtProvider jwtProvider) {
+    private GameController(ScheduleProvider scheduleProvider, GameService gameService, SimpMessageSendingOperations sendingOperations, JwtProvider jwtProvider) {
+        this.scheduleProvider = scheduleProvider;
         this.gameService = gameService;
         this.sendingOperations = sendingOperations;
         this.jwtProvider = jwtProvider;
@@ -31,19 +41,42 @@ public class GameController {
     /////
     // TODO: 한 게임에 대해 중복 요청 검증 처리 필요
 
-
     @MessageMapping("/game/start") // 단순 game status 변경 + 참가자들에게 시작 소식 broadcast 하여 로딩 화면으로 넘어갈 수 있도록 함
-    public void startGame(GameStartRequestDTO gameStartRequestDTO, StompHeaderAccessor accessor) {
+    public void startGame(GameStartRequestDTO gameStartRequestDTO, StompHeaderAccessor accessor) throws ExecutionException, InterruptedException {
+        log.info("Is this async? Start of Method : {}", LocalDateTime.now());
         int gamerId = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor).getGamerId();
-
         GameStartVO gameStartVO = gameService.startGame(gamerId, gameStartRequestDTO);
+        int gameId = gameStartVO.getGameId();
+        scheduleProvider.startGame(gameId)
+                .thenCompose((result) -> {
+                    log.info("{} : Starting gameId : {} at {}",result, gameId, LocalDateTime.now());
+                    ServerSendEvent serverMsg = new ServerSendEvent(ServerEvent.START);
+                    sendingOperations.convertAndSend("/game/"+result,serverMsg);
+                    return scheduleProvider.roundStart(result,5);
+                }).thenCompose((result)->{
+                    log.info("{} : round start: {}  at {}",result, gameId, LocalDateTime.now());
+                    ServerSendEvent serverMsg = new ServerSendEvent(ServerEvent.ROUND_START);
+                    sendingOperations.convertAndSend("/game/"+result,serverMsg);
+                    return scheduleProvider.sendHint(result,5);
+                }).thenCompose((result) ->{
+                    log.info("{} : Hint send: {}  at {}",result, gameId, LocalDateTime.now());
+                    ServerSendEvent serverMsg = new ServerSendEvent(ServerEvent.HINT);
+                    sendingOperations.convertAndSend("/game/"+result,serverMsg);
+                    return scheduleProvider.roundEnd(result,5);
+                }).exceptionally(ex -> {
+                    log.error("Error occurred in the CompletableFuture chain: ", ex);
+                    return null;
+                });
+
+//        sendingOperations.convertAndSend("/game/"+result,new ServerSendEvent(ServerEvent.START));
+        log.info("Is this async? End of Method : {}", LocalDateTime.now());
+
         sendingOperations.convertAndSend("/game/" + gameStartVO.getGameId(), gameStartVO);
     }
 
     @MessageMapping("/game/init") // 게임 문제 배정 + 게임 초기 정보값 broadcast
     public void initGame(GameInitRequestDTO gameInitRequestDTO, StompHeaderAccessor accessor) {
         int gamerId = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor).getGamerId();
-
         GameInitVO gameInitVO = gameService.initGame(gamerId, gameInitRequestDTO);
 
         // /game/{gameId} 를 구독 중인 모든 사용자에게 publish

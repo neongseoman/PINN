@@ -57,7 +57,7 @@ public class GameServiceImpl implements GameService {
             if (existGame == null) {
                 throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
             }
-
+            log.info(gameId);
             // 요청 보낸 gamer_id가 GM/game의 leader_id와 일치하는지 확인
             if (gamerId != existGame.getLeaderId()) {
                 throw new BaseException(null); // TODO: exception 타입 정의
@@ -81,6 +81,7 @@ public class GameServiceImpl implements GameService {
             log.info(gameStartRequestDTO);
             return gameStartVO;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new BaseException(null);
         }
     }
