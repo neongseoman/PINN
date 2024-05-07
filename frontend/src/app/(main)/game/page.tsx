@@ -43,7 +43,7 @@ export default function GamePage() {
   const gameId = 1
 
   // 채팅방 prop
-  const chatTitle = '팀 채팅'
+  const chatTitle = '방 채팅 url로 임시구현'
   const subscribeUrl = `/game/${gameId}`
   const publishUrl = `/app/game/chat/${gameId}`
 
