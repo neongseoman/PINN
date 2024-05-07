@@ -1,15 +1,13 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import themeStyles from './theme.module.css'
 import styles from './timer.module.css'
 
 interface TimerProp {
-  theme: string
   initialTime: number
 }
 
-export default function Timer({ initialTime, theme }: TimerProp) {
+export default function Timer({ initialTime }: TimerProp) {
   const [minutes, setMinutes] = useState<number>(Math.floor(initialTime / 60))
   const [seconds, setSeconds] = useState<number>(initialTime % 60)
 
@@ -33,7 +31,7 @@ export default function Timer({ initialTime, theme }: TimerProp) {
 
   return (
     <>
-      <div className={`${styles.timer}  ${themeStyles[theme]}`}>
+      <div className={styles.timer}>
         {minutes.toString().padStart(2, '0')} :{' '}
         {seconds.toString().padStart(2, '0')}
       </div>
