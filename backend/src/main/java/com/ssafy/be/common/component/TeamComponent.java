@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Getter
 @Setter
 public class TeamComponent {
-    ConcurrentHashMap<Long, TeamGamerComponent> teamGamers;
+    ConcurrentHashMap<Integer, TeamGamerComponent> teamGamers;
     private int teamId;
     private int gameId;
     private String colorCode;  // ex) 'rgba(251, 52, 159, 1)'

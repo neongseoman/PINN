@@ -8,9 +8,8 @@ import lombok.ToString;
 @Getter
 @ToString
 public class TeamGamerComponent {
-    private Long teamGamerId;
     private int teamId;
     private int colorId;
     private int gamerId;
-
+    private int teamGamerNumber;
 }
