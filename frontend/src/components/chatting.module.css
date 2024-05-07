@@ -4,6 +4,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  border: solid;
+  border-width: 0px 0px 1px 0px;
 }
 
 .chatList {
@@ -12,7 +14,8 @@
   overflow-y: scroll;
   height: 80%;
   color: black;
-  padding: 0 8px 0 8px;
+  padding: 8px 8px 0 8px;
+  box-sizing: border-box;
 }
 
 .chatList::-webkit-scrollbar {
@@ -73,7 +76,8 @@
   bottom: 0;
   display: flex;
   font-size: 24px;
-  border-top: solid white 1px;
+  border: solid;
+  border-width: 1px 0px 0px 0px;
 }
 
 .send input {
@@ -81,7 +85,8 @@
   background-color: rgb(255, 255, 255, 0);
   border: 0;
   padding-left: 8px;
-  color: white;
+  color: inherit;
+  outline: none;
 }
 
 .send div {
@@ -89,4 +94,5 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
 }
