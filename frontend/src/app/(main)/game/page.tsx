@@ -16,6 +16,7 @@ import styles from './game.module.css'
 export default function GamePage() {
   const [chatFocus, setChatFocus] = useState<boolean>(false)
   const [chatPin, setChatPin] = useState<boolean>(false)
+  const [hintPin, setHintPin] = useState<boolean>(false)
 
   //힌트
   const hints = ['hint 1', 'hint 2', 'hint 3']
@@ -55,8 +56,15 @@ export default function GamePage() {
         <GameInfo theme={theme} round={1} stage={1} />
         <ThemeInfo theme={theme} />
       </div>
-      <div className={`${styles.hints} ${styles.opacity}`}>
-        <Hints hints={hints} theme={theme} />
+      <div
+        className={`${styles.hints} ${hintPin ? '' : styles.opacity} ${
+          themeStyles[theme]
+        }`}
+      >
+        <div className={styles.pin} onClick={() => setHintPin((prev) => !prev)}>
+          {hintPin ? <LuPinOff /> : <LuPin />}
+        </div>
+        <Hints hints={hints} />
       </div>
       <div className={styles.timer}>
         <Timer initialTime={initialTime} theme={theme} />
@@ -68,18 +76,7 @@ export default function GamePage() {
         onFocus={() => handleChatFocus(true)}
         onBlur={() => handleChatFocus(false)}
       >
-        {/* <div className={styles.chatTitle}>
-          <span style={{ marginLeft: 'auto', marginRight: 'auto' }}>
-            팀 채팅
-          </span>
-          <span onClick={() => setChatPin((prev) => !prev)}>
-            {chatPin ? <LuPinOff /> : <LuPin />}
-          </span>
-        </div> */}
-        <div
-          className={styles.chatPin}
-          onClick={() => setChatPin((prev) => !prev)}
-        >
+        <div className={styles.pin} onClick={() => setChatPin((prev) => !prev)}>
           {chatPin ? <LuPinOff /> : <LuPin />}
         </div>
         <Chatting

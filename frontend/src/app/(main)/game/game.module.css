@@ -16,7 +16,7 @@
   transition: transform 0.3s ease, height 0.3s ease;
 }
 
-.chatPin {
+.pin {
   position: absolute;
   top: 0;
   right: 0;
