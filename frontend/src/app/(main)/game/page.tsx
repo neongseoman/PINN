@@ -67,8 +67,8 @@ export default function GamePage() {
         </div>
         <Hints hints={hints} />
       </div>
-      <div className={styles.timer}>
-        <Timer initialTime={initialTime} theme={theme} />
+      <div className={`${styles.timer} ${themeStyles[theme]}`}>
+        <Timer initialTime={initialTime} />
       </div>
       <div
         className={`${styles.chat} ${
