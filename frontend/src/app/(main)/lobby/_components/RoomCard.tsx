@@ -1,18 +1,33 @@
 'use client'
 
-import styles from '../lobby.module.css'
-import Image from 'next/image'
+import PrivateRoomModal from '@/app/(main)/lobby/_components/PrivateRoomModal';
+import PublicRoomModal from '@/app/(main)/lobby/_components/PublicRoomModal';
+import Image from 'next/image';
+import { useState } from 'react';
+import styles from '../lobby.module.css';
 
+interface RoomCardProps {
+  // themeId: number,
+  // roomName: string,
+  // roundCount: number,
+  // stage1Time: number,
+  // stage2Time: number,
+  // password: string
+}
+
+// { themeId, roomName, roundCount, stage1Time, stage2Time, password }: RoomCardProps
 export default function RoomCard() {
-  const joinGame = () => {
-    // 게임 참여하기
-    // 비밀방 true -> 비밀번호 확인 모달 띄우기
-    // 비밀방 false -> 해당 게임 대기방으로 이동
+  const [showModal, setShowModal] = useState<boolean>(false);
+
+  const password = true
+
+  const joinRoom = () => {
+    setShowModal(true);
   };
 
   return (
     <>
-      <div className={styles.card} onClick={joinGame}>
+      <div className={styles.card} onClick={joinRoom}>
         <Image width={110} height={110} src="/assets/images/themes/EgyptTheme.jpg" alt="테마 이미지" />
         <div className={styles.roomInfo}>
           <p className={styles.title}>방 제목</p>
@@ -23,6 +38,9 @@ export default function RoomCard() {
           </div>
         </div>
       </div>
+      {showModal && password ? <PrivateRoomModal setShowModal={setShowModal} /> : null}
+      {showModal && !password ? <PublicRoomModal setShowModal={setShowModal} /> : null}
+      {/* roomName={roomName} */}
     </>
   )
 }

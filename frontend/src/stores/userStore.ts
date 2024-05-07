@@ -1,6 +1,7 @@
 // 유저 정보 상태관리
 
-import { create } from 'zustand'
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 interface UserState {
   gamerId: string | null
@@ -9,11 +10,16 @@ interface UserState {
   setNickname: (nickname: string) => void
 }
 
-const useUserStore = create<UserState>((set) => ({
-  gamerId: null,
-  nickname: null,
-  setGamerId: (gamerId: string) => set({ gamerId }),
-  setNickname: (nickname: string) => set({ nickname }),
-}))
+const useUserStore = create(
+  persist<UserState>(
+    (set) => ({
+      gamerId: null,
+      nickname: null,
+      setGamerId: (gamerId: string) => set({ gamerId }),
+      setNickname: (nickname: string) => set({ nickname }),
+    }),
+    { name: 'user-storage' },
+  )
+);
 
 export default useUserStore

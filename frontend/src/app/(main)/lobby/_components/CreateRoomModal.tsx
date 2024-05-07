@@ -21,64 +21,49 @@ export default function CreateRoomModal() {
   // 테마
   const [themeId, setThemeId] = useState<number>(1);
 
-  // 방 제목 변경 이벤트 핸들러
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRoomName(event.target.value);
   };
 
-  // 방 비밀번호 변경 이벤트 핸들러
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(event.target.value);
   };
 
-  // 라운드 수 변경 이벤트 핸들러
   const handleRoundChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(event.target.value);
     setRoundCount(value);
   };
   
-  // stage1 시간 변경 이벤트 핸들러
   const handleStage1Change = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     const selectedStage = parseInt(event.currentTarget.innerText);
     setStage1Time(selectedStage);
   };
 
-  // stage2 시간 변경 이벤트 핸들러
   const handleStage2Change = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     const selectedStage = parseInt(event.currentTarget.innerText);
     setStage2Time(selectedStage);
   };
 
-  // 테마 변경 이벤트 핸들러
   const handleThemeChange = (selectedTheme: number) => {
     setThemeId(selectedTheme);
   };
 
-  // modal 오픈 함수
   const showModal = () => {
-    dialogRef.current?.showModal(); // 모달창 노출. show() 호출하면 다이얼로그 노출
+    dialogRef.current?.showModal();
   };
 
-  // Modal 닫기 함수
   const closeModal = () => {
-    dialogRef.current?.close(); // 모달창 닫기
+    dialogRef.current?.close();
   };
 
   // 생성 요청 함수
   const handleSubmit = async () => {
-    if (!roomName || roomName.length > 20 || roomName.length < 1) {
-      alert('방 제목은 1글자 이상, 20글자 이하여야 합니다.');
-      return;
-    } else if (password.length > 8) {
-      alert('비밀번호는 8글자 이하여야 합니다.');
-      return;
-    }
-
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/lobby/create`, {
         method: 'POST',
         headers: {
-          Authorization: localStorage.getItem('accessToken') as string,
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('accessToken') as string}`
         },
         body: JSON.stringify({
           themeId: themeId,
@@ -92,12 +77,22 @@ export default function CreateRoomModal() {
 
       if (response.ok) {
         const responseData = await response.json();
-        console.log('Response from server:', responseData);
+        console.log('게임 생성 성공!', responseData);
+        // 방 입장
+        // 해당 방으로 이동
       } else {
-        console.error('Error:', response);
+        console.error('게임 생성 실패!:', response);
       }
     } catch (error) {
       console.error('Error:', error);
+    }
+
+    if (!roomName || roomName.length > 20 || roomName.length < 1) {
+      alert('방 제목은 1글자 이상, 20글자 이하여야 합니다.');
+      return;
+    } else if (password.length > 8) {
+      alert('비밀번호는 8글자 이하여야 합니다.');
+      return;
     }
   };
 
