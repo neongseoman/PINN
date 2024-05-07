@@ -157,6 +157,8 @@ public class LobbyController {
         GamerPrincipalVO gamerPrincipalVO = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor);
 
         gameManager.exitRoom(socketDTO, gamerPrincipalVO.getGamerId());
+        // code & msg 설정
+        socketDTO.setCodeAndMsg(1200, gamerPrincipalVO.getNickname() + "님이 " + socketDTO.getSenderGameId() + "방에서 나갔습니다.");
 
         return socketDTO;
     }
