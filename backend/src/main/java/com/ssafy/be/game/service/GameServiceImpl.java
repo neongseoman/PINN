@@ -122,10 +122,7 @@ public class GameServiceImpl implements GameService {
                 TeamComponent team = existGame.getTeams().get(i);
                 ConcurrentHashMap<Long, TeamGamerComponent> teamGamers = team.getTeamGamers(); // 이게 null이라서 에러 발생 중...
                 log.info(team);
-                if (teamGamers == null) {
-                    throw new BaseException(null); // TODO: exception 타입 정의
-                }
-                if (!teamGamers.isEmpty()) { // 유효한 팀인 경우
+                if (teamGamers != null && !teamGamers.isEmpty()) { // 유효한 팀인 경우
                     // 1. TeamRounds 생성
                     ConcurrentHashMap<Integer, TeamRoundComponent> teamRounds = new ConcurrentHashMap<>();
                     for (int j = 1; j <= existGame.getRoundCount(); ++j) {
@@ -139,6 +136,7 @@ public class GameServiceImpl implements GameService {
                     // TODO: 2. DB의 Team 테이블에 insert
                 }
             }
+
 
             /*
              themeId 보고 question 배정
@@ -354,7 +352,7 @@ public class GameServiceImpl implements GameService {
     }
 
 
-    ///////
+///////
 
     public static List<Integer> getRandomIndices(int maxIndex, int count) {
         List<Integer> randomIndices = new ArrayList<>();
