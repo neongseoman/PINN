@@ -2,10 +2,15 @@ package com.ssafy.be.lobby.service;
 
 import com.ssafy.be.common.Provider.ColorCode;
 import com.ssafy.be.common.component.GameComponent;
+import com.ssafy.be.common.component.GameManager;
+import com.ssafy.be.common.component.GameStatus;
 import com.ssafy.be.common.component.TeamComponent;
 import com.ssafy.be.common.model.domain.Game;
 import com.ssafy.be.common.model.repository.GameRepository;
 import com.ssafy.be.lobby.model.dto.CreateRoomDTO;
+import com.ssafy.be.lobby.model.vo.SearchVO;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +22,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LobbyServiceImpl implements LobbyService {
 
     private final int teamCount = 10;
+    @Autowired
+    private GameManager gameManager;
 
     @Autowired
     GameRepository gameRepository;
@@ -67,6 +74,20 @@ public class LobbyServiceImpl implements LobbyService {
 
             teams.put(colorcodes[i].getTeamNumber(), teamComponent);
         }
+    }
+
+    @Override
+    public SearchVO searchRoom() {
+        SearchVO searchVO = new SearchVO();
+        searchVO.setReadyGames(new ArrayList<GameComponent>());
+        List<GameComponent> readyGames = searchVO.getReadyGames();
+
+        for (GameComponent gameComponent: gameManager.getGames().values()) {
+            if(gameComponent.getStatus().equals(GameStatus.READY)){
+                readyGames.add(gameComponent);
+            }
+        }
+        return searchVO;
     }
 
 }
