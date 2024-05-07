@@ -52,7 +52,7 @@ public class GameController {
                     log.info("{} : Starting gameId : {} at {}",result, gameId, LocalDateTime.now());
                     ServerSendEvent serverMsg = new ServerSendEvent(ServerEvent.START);
                     sendingOperations.convertAndSend("/game/"+result,serverMsg);
-                    return scheduleProvider.roundStart(result,5);
+                    return scheduleProvider.roundStart(result,5); // stage 1
                 }).thenCompose((result)->{
                     log.info("{} : round start: {}  at {}",result, gameId, LocalDateTime.now());
                     ServerSendEvent serverMsg = new ServerSendEvent(ServerEvent.ROUND_START);
