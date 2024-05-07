@@ -2,6 +2,7 @@
 
 import styles from './room.module.css'
 
+import Chatting from '@/components/Chatting'
 import TeamList from './_components/TeamList'
 import Option from './_components/Option'
 import BtnReady from './_components/BtnReady'
@@ -31,6 +32,11 @@ export default function RoomPage({ params }: { params: { id: number } }) {
     { teamNumber: 9, teamColor: 'rgba(188, 157, 157, 1)', teamMember: ['', '', ''], isReady: 0 },
     { teamNumber: 10, teamColor: 'rgba(85, 85, 85, 1)', teamMember: ['', '', ''], isReady: 0 },
   ])
+
+  const chatTitle = '전체 채팅'
+  const subscribeUrl = `/game/${params.id}`
+  const publishUrl = `/app/game/chat/${params.id}`
+
   useEffect(() => {
 
   }, teams)
@@ -44,7 +50,13 @@ export default function RoomPage({ params }: { params: { id: number } }) {
           <TeamList teams={teams} ></TeamList>
         </div>
         <div className={styles['chat-ready-out']}>
-          <div className={styles.chat}>chatting</div>
+          <div className={styles.chat}>
+            <Chatting
+              chatTitle={chatTitle}
+              subsrcibeUrl={subscribeUrl}
+              publishUrl={publishUrl}
+            />
+          </div>
           <div className={styles['ready-out']}>
             {isTeamReady ? (
               <BtnReady teams={teams} setTeams={setTeams} />

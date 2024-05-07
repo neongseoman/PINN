@@ -1,4 +1,4 @@
-import Timer from '@/app/components/Timer'
+import Timer from '@/components/Timer'
 import ThemeInfo from './_components/ThemeInfo'
 import GameInfo from './_components/GameInfo'
 import Hints from './_components/Hints'
