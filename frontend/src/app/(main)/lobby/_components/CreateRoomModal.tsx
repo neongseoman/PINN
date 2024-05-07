@@ -1,28 +1,25 @@
 'use client'
 
-import useUserStore from '@/stores/userStore';
 import Image from "next/image";
 import React, { useRef, useState } from "react";
 import { TiArrowSortedDown } from "react-icons/ti";
 import styles from '../lobby.module.css';
 
 export default function CreateRoomModal() {
-  // 방 생성 사용자 id
-  const { gamerId } = useUserStore()
   // dialog 참조 ref
   const dialogRef = useRef<HTMLDialogElement>(null);
   // 방 제목
   const [roomName, setRoomName] = useState<string>('');
   // 방 비밀번호
-  const [roomPassword, setRoomPassword] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
   // 라운드 수
-  const [round, setRound] = useState<number>(3);
+  const [roundCount, setRoundCount] = useState<number>(3);
   // stage1 시간
-  const [stage1, setStage1] = useState<number>(30);
+  const [stage1Time, setStage1Time] = useState<number>(30);
   // stage2 시간
-  const [stage2, setStage2] = useState<number>(20);
+  const [stage2Time, setStage2Time] = useState<number>(20);
   // 테마
-  const [theme, setTheme] = useState<number>(1);
+  const [themeId, setThemeId] = useState<number>(1);
 
   // 방 제목 변경 이벤트 핸들러
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,30 +28,30 @@ export default function CreateRoomModal() {
 
   // 방 비밀번호 변경 이벤트 핸들러
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRoomPassword(event.target.value);
+    setPassword(event.target.value);
   };
 
   // 라운드 수 변경 이벤트 핸들러
   const handleRoundChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(event.target.value);
-    setRound(value);
+    setRoundCount(value);
   };
   
   // stage1 시간 변경 이벤트 핸들러
   const handleStage1Change = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     const selectedStage = parseInt(event.currentTarget.innerText);
-    setStage1(selectedStage);
+    setStage1Time(selectedStage);
   };
 
   // stage2 시간 변경 이벤트 핸들러
   const handleStage2Change = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     const selectedStage = parseInt(event.currentTarget.innerText);
-    setStage2(selectedStage);
+    setStage2Time(selectedStage);
   };
 
   // 테마 변경 이벤트 핸들러
   const handleThemeChange = (selectedTheme: number) => {
-    setTheme(selectedTheme);
+    setThemeId(selectedTheme);
   };
 
   // modal 오픈 함수
@@ -72,28 +69,25 @@ export default function CreateRoomModal() {
     if (!roomName || roomName.length > 20 || roomName.length < 1) {
       alert('방 제목은 1글자 이상, 20글자 이하여야 합니다.');
       return;
-    } else if (roomPassword.length > 8) {
+    } else if (password.length > 8) {
       alert('비밀번호는 8글자 이하여야 합니다.');
       return;
     }
-
-    const data = {
-      roomName: roomName,
-      password: roomPassword,
-      roundCount: round,
-      stage1Time: stage1,
-      stage2Time: stage2,
-      theme: theme,
-      leaderId: gamerId,
-    };
 
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/lobby/create`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          Authorization: localStorage.getItem('accessToken') as string,
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify({
+          themeId: themeId,
+          roomName: roomName,
+          roundCount: roundCount,
+          stage1Time: stage1Time,
+          stage2Time: stage2Time,
+          password: password
+        }),
       });
 
       if (response.ok) {
@@ -119,22 +113,22 @@ export default function CreateRoomModal() {
             방 제목 : <input className={styles.inputText} type="text" value={roomName} placeholder='20글자 이하' onChange={handleTitleChange} />
           </p>
           <p className={styles.passwordInputBox}>
-            비밀번호 : <input className={styles.inputText} type="text" value={roomPassword} placeholder='8글자 이하' onChange={handlePasswordChange} />
+            비밀번호 : <input className={styles.inputText} type="text" value={password} placeholder='8글자 이하' onChange={handlePasswordChange} />
           </p>
         </div>
         <div className={styles.infoWrapper}>
           <div className={styles.roundInputBox}>
             <span>라운드 수 : </span>
             <p className={styles.radio}>
-              <label><input type="radio" name="options" value="1" checked={round === 1} onChange={handleRoundChange} />1</label>
-              <label><input type="radio" name="options" value="2" checked={round === 2} onChange={handleRoundChange} />2</label>
-              <label><input type="radio" name="options" value="3" checked={round === 3} onChange={handleRoundChange} />3</label>
+              <label><input type="radio" name="options" value="1" checked={roundCount === 1} onChange={handleRoundChange} />1</label>
+              <label><input type="radio" name="options" value="2" checked={roundCount === 2} onChange={handleRoundChange} />2</label>
+              <label><input type="radio" name="options" value="3" checked={roundCount === 3} onChange={handleRoundChange} />3</label>
             </p>
           </div>
           <div className={styles.stageInputBox}>
             스테이지 1 :
             <div className={styles.dropdown}>
-              <button className={styles.dropbtn}>{stage1}&nbsp;초&nbsp;&nbsp;<TiArrowSortedDown /></button>
+              <button className={styles.dropbtn}>{stage1Time}&nbsp;초&nbsp;&nbsp;<TiArrowSortedDown /></button>
               <div className={styles.dropdownContent}>
                 <a href="#" onClick={handleStage1Change}>30</a>
                 <a href="#" onClick={handleStage1Change}>40</a>
@@ -146,7 +140,7 @@ export default function CreateRoomModal() {
           <div className={styles.stageInputBox}>
             스테이지 2 :
             <div className={styles.dropdown}>
-              <button className={styles.dropbtn}>{stage2}&nbsp;초&nbsp;&nbsp;<TiArrowSortedDown /></button>
+              <button className={styles.dropbtn}>{stage2Time}&nbsp;초&nbsp;&nbsp;<TiArrowSortedDown /></button>
               <div className={styles.dropdownContent}>
                 <a href="#" onClick={handleStage2Change}>20</a>
                 <a href="#" onClick={handleStage2Change}>30</a>
@@ -159,23 +153,23 @@ export default function CreateRoomModal() {
         <div className={styles.themeInputBox}>
           <p style={{ margin: '0px' }}>테마 선택</p>
           <div className={styles.themeList}>
-            <div className={`${styles.themeItem} ${theme === 1 ? styles.selectedTheme : ''}`} onClick={() => handleThemeChange(1)}>
+            <div className={`${styles.themeItem} ${themeId === 1 ? styles.selectedTheme : ''}`} onClick={() => handleThemeChange(1)}>
               <Image className={styles.shadow} width={100} height={100} src="/assets/images/themes/RandomTheme.jpg" alt="랜덤 이미지" />
               <p className={styles.themeName}>랜덤</p>
             </div>
-            <div className={`${styles.themeItem} ${theme === 2 ? styles.selectedTheme : ''}`} onClick={() => handleThemeChange(2)}>
+            <div className={`${styles.themeItem} ${themeId === 2 ? styles.selectedTheme : ''}`} onClick={() => handleThemeChange(2)}>
               <Image className={styles.shadow} width={100} height={100} src="/assets/images/themes/KoreaTheme.jpg" alt="한국 이미지" />
               <p className={styles.themeName}>한국</p>
             </div>
-            <div className={`${styles.themeItem} ${theme === 3 ? styles.selectedTheme : ''}`} onClick={() => handleThemeChange(3)}>
+            <div className={`${styles.themeItem} ${themeId === 3 ? styles.selectedTheme : ''}`} onClick={() => handleThemeChange(3)}>
               <Image className={styles.shadow} width={100} height={100} src="/assets/images/themes/GreekTheme.jpg" alt="그리스 이미지" />
               <p className={styles.themeName}>그리스</p>
             </div>
-            <div className={`${styles.themeItem} ${theme === 4 ? styles.selectedTheme : ''}`} onClick={() => handleThemeChange(4)}>
+            <div className={`${styles.themeItem} ${themeId === 4 ? styles.selectedTheme : ''}`} onClick={() => handleThemeChange(4)}>
               <Image className={styles.shadow} width={100} height={100} src="/assets/images/themes/EgyptTheme.jpg" alt="이집트 이미지" />
               <p className={styles.themeName}>이집트</p>
             </div>
-            <div className={`${styles.themeItem} ${theme === 5 ? styles.selectedTheme : ''}`} onClick={() => handleThemeChange(5)}>
+            <div className={`${styles.themeItem} ${themeId === 5 ? styles.selectedTheme : ''}`} onClick={() => handleThemeChange(5)}>
               <Image className={styles.shadow} width={100} height={100} src="/assets/images/themes/LandmarkTheme.jpg" alt="랜드마크 이미지" />
               <p className={styles.themeName}>랜드마크</p>
             </div>
