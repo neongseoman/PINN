@@ -41,6 +41,7 @@ export default function GamePage() {
   const gameId = 1
 
   // 채팅방 prop
+  const chatTitle = '팀 채팅'
   const subscribeUrl = `/game/${gameId}`
   const publishUrl = `/app/game/chat/${gameId}`
 
@@ -67,15 +68,25 @@ export default function GamePage() {
         onFocus={() => handleChatFocus(true)}
         onBlur={() => handleChatFocus(false)}
       >
-        <div className={styles.chatTitle}>
+        {/* <div className={styles.chatTitle}>
           <span style={{ marginLeft: 'auto', marginRight: 'auto' }}>
             팀 채팅
           </span>
           <span onClick={() => setChatPin((prev) => !prev)}>
             {chatPin ? <LuPinOff /> : <LuPin />}
           </span>
+        </div> */}
+        <div
+          className={styles.chatPin}
+          onClick={() => setChatPin((prev) => !prev)}
+        >
+          {chatPin ? <LuPinOff /> : <LuPin />}
         </div>
-        <Chatting subsrcibeUrl={subscribeUrl} publishUrl={publishUrl} />
+        <Chatting
+          chatTitle={chatTitle}
+          subsrcibeUrl={subscribeUrl}
+          publishUrl={publishUrl}
+        />
       </div>
       <div className={`${styles.map} ${styles.opacity}`}>
         <IngameMap theme={theme} loader={loader} />

@@ -1,3 +1,11 @@
+.chatTitle {
+  height: 10%;
+  font-size: large;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .chatList {
   display: flex;
   flex-direction: column;

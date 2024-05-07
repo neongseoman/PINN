@@ -16,12 +16,12 @@
   transition: transform 0.3s ease, height 0.3s ease;
 }
 
-.chatTitle {
-  height: 10%;
-  font-size: large;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.chatPin {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: larger;
+  padding: 6px;
 }
 
 .map {

@@ -16,11 +16,16 @@ interface MessageFormat {
 }
 
 interface ChattingProps {
+  chatTitle: string
   subsrcibeUrl: string
   publishUrl: string
 }
 
-export default function Chatting({ subsrcibeUrl, publishUrl }: ChattingProps) {
+export default function Chatting({
+  chatTitle,
+  subsrcibeUrl,
+  publishUrl,
+}: ChattingProps) {
   const [messages, setMessages] = useState<MessageFormat[]>([])
   const [newMessage, setNewMessage] = useState<string>('')
   const chatContainerRef = useRef<HTMLDivElement | null>(null)
@@ -81,7 +86,7 @@ export default function Chatting({ subsrcibeUrl, publishUrl }: ChattingProps) {
         destination: publishUrl,
         body: JSON.stringify({
           senderNickname: '노란목도리담비',
-          senderGameId: 6,
+          senderGameId: 61,
           senderTeamId: 1,
           content: trimmedMessage,
         }),
@@ -98,6 +103,7 @@ export default function Chatting({ subsrcibeUrl, publishUrl }: ChattingProps) {
 
   return (
     <>
+      <div className={styles.chatTitle}>{chatTitle}</div>
       <div className={styles.chatList} ref={chatContainerRef}>
         {messages.map((message, index) => (
           <div
