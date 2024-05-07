@@ -1,4 +1,4 @@
-package com.ssafy.be.game.model.dto;
+package com.ssafy.be.game.model.vo;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class GameInitResponseDTO extends SocketDTO {
+public class GameInitVO extends SocketDTO {
     private int gameId;
     private String roomName;
     private int themeId;
@@ -22,7 +22,7 @@ public class GameInitResponseDTO extends SocketDTO {
     private LocalDateTime startedTime;
 
 
-    public GameInitResponseDTO(LocalDateTime senderDateTime, String senderNickname, int senderGameId, int senderTeamId, int code, String msg) {
+    public GameInitVO(LocalDateTime senderDateTime, String senderNickname, int senderGameId, int senderTeamId, int code, String msg) {
         super(senderDateTime, senderNickname, senderGameId, senderTeamId, code, msg);
     }
 }

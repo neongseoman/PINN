@@ -1,4 +1,4 @@
-package com.ssafy.be.game.model.dto;
+package com.ssafy.be.game.model.vo;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -13,15 +13,9 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class PinMoveResponseDTO extends SocketDTO {
-    // TODO: 핀 찍은 사용자 gamerId 필요한지 재검토 필요
-    private int gamerId;
-    private double submitLat;
-    private double submitLng;
-    private double roundNumber;
-    private double submitStage;
+public class PinGuessVO extends SocketDTO {
 
-    public PinMoveResponseDTO(LocalDateTime senderDateTime, String senderNickname, int senderGameId, int senderTeamId, int code, String msg) {
+    public PinGuessVO(LocalDateTime senderDateTime, String senderNickname, int senderGameId, int senderTeamId, int code, String msg) {
         super(senderDateTime, senderNickname, senderGameId, senderTeamId, code, msg);
     }
 }

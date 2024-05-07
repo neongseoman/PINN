@@ -11,6 +11,7 @@ import com.ssafy.be.game.model.dto.*;
 import com.ssafy.be.game.model.repository.HintRepository;
 import com.ssafy.be.game.model.repository.HintTypeRepository;
 import com.ssafy.be.game.model.repository.QuestionRepository;
+import com.ssafy.be.game.model.vo.*;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,7 +44,7 @@ public class GameServiceImpl implements GameService {
     // TODO: BaseException에 임시로 null 넣어둔 거 exception 종류에 맞게 수정
 
     @Override
-    public GameStartResponseDTO startGame(int gamerId, GameStartRequestDTO gameStartRequestDTO) throws BaseException {
+    public GameStartVO startGame(int gamerId, GameStartRequestDTO gameStartRequestDTO) throws BaseException {
         try {
 //            log.info(gameStartRequestDTO);
 //            log.info(gamerId);
@@ -62,8 +63,8 @@ public class GameServiceImpl implements GameService {
                 throw new BaseException(null); // TODO: exception 타입 정의
             }
 
-            GameStartResponseDTO gameStartResponseDTO = new GameStartResponseDTO(gameStartRequestDTO.getSenderDateTime(), gameStartRequestDTO.getSenderNickname(), gameStartRequestDTO.getSenderGameId(), gameStartRequestDTO.getSenderTeamId(), gameStartRequestDTO.getCode(), gameStartRequestDTO.getMsg());
-            gameStartResponseDTO.setCodeAndMsg(1111, "게임이 정상 시작되었습니다.");
+            GameStartVO gameStartVO = new GameStartVO(gameStartRequestDTO.getSenderDateTime(), gameStartRequestDTO.getSenderNickname(), gameStartRequestDTO.getSenderGameId(), gameStartRequestDTO.getSenderTeamId(), gameStartRequestDTO.getCode(), gameStartRequestDTO.getMsg());
+            gameStartVO.setCodeAndMsg(1111, "게임이 정상 시작되었습니다.");
 
             // 시작 시간 gameManager에 기록
             existGame.setStartedTime(gameStartRequestDTO.getSenderDateTime());
@@ -75,17 +76,17 @@ public class GameServiceImpl implements GameService {
                 throw new BaseException(BaseResponseStatus.ALREADY_START_GAME);
             }
 
-            gameStartResponseDTO.setGameId(existGame.getGameId());
+            gameStartVO.setGameId(existGame.getGameId());
 
             log.info(gameStartRequestDTO);
-            return gameStartResponseDTO;
+            return gameStartVO;
         } catch (Exception e) {
             throw new BaseException(null);
         }
     }
 
     @Override
-    public GameInitResponseDTO initGame(int gamerId, GameInitRequestDTO gameInitRequestDTO) throws BaseException {
+    public GameInitVO initGame(int gamerId, GameInitRequestDTO gameInitRequestDTO) throws BaseException {
 
         // TODO: 배정한 문제 GameAndQuestion table에 insert
         // TODO: DB에 TeamGamer, Team 데이터 insert
@@ -109,8 +110,8 @@ public class GameServiceImpl implements GameService {
                 throw new BaseException(null); // TODO: exception 타입 정의
             }
 
-            GameInitResponseDTO gameInitResponseDTO = new GameInitResponseDTO(gameInitRequestDTO.getSenderDateTime(), gameInitRequestDTO.getSenderNickname(), gameInitRequestDTO.getSenderGameId(), gameInitRequestDTO.getSenderTeamId(), gameInitRequestDTO.getCode(), gameInitRequestDTO.getMsg());
-            gameInitResponseDTO.setCodeAndMsg(1112, "게임 초기 설정이 정상적으로 완료되었습니다.");
+            GameInitVO gameInitVO = new GameInitVO(gameInitRequestDTO.getSenderDateTime(), gameInitRequestDTO.getSenderNickname(), gameInitRequestDTO.getSenderGameId(), gameInitRequestDTO.getSenderTeamId(), gameInitRequestDTO.getCode(), gameInitRequestDTO.getMsg());
+            gameInitVO.setCodeAndMsg(1112, "게임 초기 설정이 정상적으로 완료되었습니다.");
 
             /*
              team 마다 roundCount개의 teamRounds 생성
@@ -191,17 +192,17 @@ public class GameServiceImpl implements GameService {
             existGame.setQuestions(questions);
 
             // game의 정보 중 필요한 것들을 gIRD에 담아서 return
-            gameInitResponseDTO.setGameId(existGame.getGameId());
-            gameInitResponseDTO.setRoomName(existGame.getRoomName());
-            gameInitResponseDTO.setLeaderId(existGame.getLeaderId());
-            gameInitResponseDTO.setRoundCount(existGame.getRoundCount());
-            gameInitResponseDTO.setThemeId(existGame.getThemeId());
-            gameInitResponseDTO.setStage1Time(existGame.getStage1Time());
-            gameInitResponseDTO.setStage2Time(existGame.getStage2Time());
-            gameInitResponseDTO.setStartedTime(existGame.getStartedTime());
+            gameInitVO.setGameId(existGame.getGameId());
+            gameInitVO.setRoomName(existGame.getRoomName());
+            gameInitVO.setLeaderId(existGame.getLeaderId());
+            gameInitVO.setRoundCount(existGame.getRoundCount());
+            gameInitVO.setThemeId(existGame.getThemeId());
+            gameInitVO.setStage1Time(existGame.getStage1Time());
+            gameInitVO.setStage2Time(existGame.getStage2Time());
+            gameInitVO.setStartedTime(existGame.getStartedTime());
 
-            log.info(gameInitResponseDTO);
-            return gameInitResponseDTO;
+            log.info(gameInitVO);
+            return gameInitVO;
         } catch (Exception e) {
             e.printStackTrace();
             throw new BaseException(null); // TODO: exception 타입 정의
@@ -209,7 +210,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public RoundInitResponseDTO findStage1Info(int gamerId, RoundInitRequestDTO roundInitRequestDTO) throws BaseException {
+    public RoundInitVO findStage1Info(int gamerId, RoundInitRequestDTO roundInitRequestDTO) throws BaseException {
 
         // 해당 라운드의 문제 + 스테이지1에 해당하는 힌트 return
 
@@ -226,8 +227,8 @@ public class GameServiceImpl implements GameService {
                 throw new BaseException(null);
             }
 
-            RoundInitResponseDTO roundInitResponseDTO = new RoundInitResponseDTO(roundInitRequestDTO.getSenderDateTime(), roundInitRequestDTO.getSenderNickname(), roundInitRequestDTO.getSenderGameId(), roundInitRequestDTO.getSenderTeamId(), -1, null);
-            roundInitResponseDTO.setCodeAndMsg(1113, "라운드 초기 정보를 받아오는 데에 성공했습니다.");
+            RoundInitVO roundInitVO = new RoundInitVO(roundInitRequestDTO.getSenderDateTime(), roundInitRequestDTO.getSenderNickname(), roundInitRequestDTO.getSenderGameId(), roundInitRequestDTO.getSenderTeamId(), -1, null);
+            roundInitVO.setCodeAndMsg(1113, "라운드 초기 정보를 받아오는 데에 성공했습니다.");
 
             int round = roundInitRequestDTO.getRound();
             QuestionComponent question = existGame.getQuestions().get(round - 1);
@@ -242,15 +243,15 @@ public class GameServiceImpl implements GameService {
             }
 
             // 문제 정보 + 문제의 스테이지1 힌트 정보 담아 보내기 ..
-            roundInitResponseDTO.setGameId(existGame.getGameId());
-            roundInitResponseDTO.setRound(round);
-            roundInitResponseDTO.setQuestionId(question.getQuestionId());
-            roundInitResponseDTO.setQuestionName(question.getQuestionName());
-            roundInitResponseDTO.setLat(question.getLat());
-            roundInitResponseDTO.setLng(question.getLng());
-            roundInitResponseDTO.setHints(stage1Hints);
+            roundInitVO.setGameId(existGame.getGameId());
+            roundInitVO.setRound(round);
+            roundInitVO.setQuestionId(question.getQuestionId());
+            roundInitVO.setQuestionName(question.getQuestionName());
+            roundInitVO.setLat(question.getLat());
+            roundInitVO.setLng(question.getLng());
+            roundInitVO.setHints(stage1Hints);
 
-            return roundInitResponseDTO;
+            return roundInitVO;
         } catch (Exception e) {
             e.printStackTrace();
             throw new BaseException(null);
@@ -258,7 +259,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Stage2InitResponseDTO findStage2Info(int gamerId, Stage2InitRequestDTO stage2InitRequestDTO) throws BaseException {
+    public Stage2InitVO findStage2Info(int gamerId, Stage2InitRequestDTO stage2InitRequestDTO) throws BaseException {
 
         int gameId = stage2InitRequestDTO.getGameId();
         ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
@@ -273,8 +274,8 @@ public class GameServiceImpl implements GameService {
                 throw new BaseException(null);
             }
 
-            Stage2InitResponseDTO stage2InitResponseDTO = new Stage2InitResponseDTO(stage2InitRequestDTO.getSenderDateTime(), stage2InitRequestDTO.getSenderNickname(), stage2InitRequestDTO.getSenderGameId(), stage2InitRequestDTO.getSenderTeamId(), stage2InitRequestDTO.getCode(), stage2InitRequestDTO.getMsg());
-            stage2InitResponseDTO.setCodeAndMsg(1114, "stage2 추가 힌트를 받아오는 데에 성공했습니다.");
+            Stage2InitVO stage2InitVO = new Stage2InitVO(stage2InitRequestDTO.getSenderDateTime(), stage2InitRequestDTO.getSenderNickname(), stage2InitRequestDTO.getSenderGameId(), stage2InitRequestDTO.getSenderTeamId(), stage2InitRequestDTO.getCode(), stage2InitRequestDTO.getMsg());
+            stage2InitVO.setCodeAndMsg(1114, "stage2 추가 힌트를 받아오는 데에 성공했습니다.");
 
             int round = stage2InitRequestDTO.getRound();
             QuestionComponent question = existGame.getQuestions().get(round - 1);
@@ -288,12 +289,12 @@ public class GameServiceImpl implements GameService {
                 }
             }
 
-            stage2InitResponseDTO.setGameId(gameId);
-            stage2InitResponseDTO.setRound(round);
-            stage2InitResponseDTO.setStage(2);
-            stage2InitResponseDTO.setHints(stage2Hints);
+            stage2InitVO.setGameId(gameId);
+            stage2InitVO.setRound(round);
+            stage2InitVO.setStage(2);
+            stage2InitVO.setHints(stage2Hints);
 
-            return stage2InitResponseDTO;
+            return stage2InitVO;
         } catch (Exception e) {
             e.printStackTrace();
             throw new BaseException(null);
@@ -301,7 +302,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public PinMoveResponseDTO movePin(int gamerId, PinMoveRequestDTO pinMoveRequestDTO) throws BaseException {
+    public PinMoveVO movePin(int gamerId, PinMoveRequestDTO pinMoveRequestDTO) throws BaseException {
 
         int gameId = pinMoveRequestDTO.getSenderGameId();
         ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
@@ -333,20 +334,20 @@ public class GameServiceImpl implements GameService {
         submitTeamRound.setRoundScore(submitScore);
 
         // broadcast할 정보 responseDTO에 채우기
-        PinMoveResponseDTO pinMoveResponseDTO = new PinMoveResponseDTO(pinMoveRequestDTO.getSenderDateTime(), pinMoveRequestDTO.getSenderNickname(), pinMoveRequestDTO.getSenderGameId(), pinMoveRequestDTO.getSenderTeamId(), pinMoveRequestDTO.getCode(), pinMoveRequestDTO.getMsg());
-        pinMoveResponseDTO.setCodeAndMsg(1115, "변경한 핀 위치가 정상 제출 및 반영되었습니다.");
-        pinMoveResponseDTO.setGamerId(gamerId);
-        pinMoveResponseDTO.setRoundNumber(pinMoveRequestDTO.getRoundNumber());
-        pinMoveResponseDTO.setSubmitStage(pinMoveRequestDTO.getSubmitStage());
-        pinMoveResponseDTO.setSubmitLat(pinMoveRequestDTO.getSubmitLat());
-        pinMoveResponseDTO.setSubmitLng(pinMoveRequestDTO.getSubmitLng());
+        PinMoveVO pinMoveVO = new PinMoveVO(pinMoveRequestDTO.getSenderDateTime(), pinMoveRequestDTO.getSenderNickname(), pinMoveRequestDTO.getSenderGameId(), pinMoveRequestDTO.getSenderTeamId(), pinMoveRequestDTO.getCode(), pinMoveRequestDTO.getMsg());
+        pinMoveVO.setCodeAndMsg(1115, "변경한 핀 위치가 정상 제출 및 반영되었습니다.");
+        pinMoveVO.setGamerId(gamerId);
+        pinMoveVO.setRoundNumber(pinMoveRequestDTO.getRoundNumber());
+        pinMoveVO.setSubmitStage(pinMoveRequestDTO.getSubmitStage());
+        pinMoveVO.setSubmitLat(pinMoveRequestDTO.getSubmitLat());
+        pinMoveVO.setSubmitLng(pinMoveRequestDTO.getSubmitLng());
 
-        log.info(pinMoveResponseDTO);
-        return pinMoveResponseDTO;
+        log.info(pinMoveVO);
+        return pinMoveVO;
     }
 
     @Override
-    public PinGuessResponseDTO guessPin(int gamerId, PinGuessRequestDTO pinGuessRequestDTO) throws BaseException {
+    public PinGuessVO guessPin(int gamerId, PinGuessRequestDTO pinGuessRequestDTO) throws BaseException {
         // TODO: 구현 시작해야 함
         return null;
     }
