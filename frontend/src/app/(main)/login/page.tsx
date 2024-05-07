@@ -16,14 +16,12 @@ export default function LoginPage() {
     setToken(params.get('code'))
 
     if (token !== null) {
-      setAccessToken(token.split('=')[1])
+      setAccessToken(token.split('=')[1].split(";")[0])
+      // console.log(accessToken)
     }
 
     if (accessToken !== null) {
       localStorage.setItem('accessToken', accessToken)
-    }
-
-    if (accessToken != null ){
       getUserInfo(accessToken)
     }
   }, [token, accessToken])
@@ -42,13 +40,15 @@ export default function LoginPage() {
 
     const gamerIdData = data.result.gamerId
     const nicknameData = data.result.nickname
-    // console.log(gamerIdData)
-    // console.log(nicknameData)
-
+    
+    if (gamerIdData && nicknameData) {
     setGamerId(gamerIdData)
     setNickname(nicknameData)
-
     router.push('/lobby')
+    } else {
+      alert('로그인에 실패하였습니다')
+      router.push('/')
+    }
   }
 
   return (
