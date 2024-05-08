@@ -48,7 +48,10 @@ public class RoomController {
     public MoveTeamVO moveTeam(@Payload MoveTeamDTO moveTeamDTO, @DestinationVariable Integer gameId, StompHeaderAccessor accessor){
         GamerPrincipalVO gamerPrincipalVO = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor);
 
-        MoveTeamVO moveTeamVO = gameManager.moveTeam(moveTeamDTO, gamerPrincipalVO.getGamerId());
+        // 일단 팀 나가기
+        gameManager.exitRoom(moveTeamDTO, gamerPrincipalVO);
+        // 새로운 팀에 할당
+        MoveTeamVO moveTeamVO = gameManager.enterSpecificTeam(moveTeamDTO, gamerPrincipalVO);
 
         return moveTeamVO;
     }

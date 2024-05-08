@@ -22,8 +22,6 @@ public class SocketDTO {
     // nickname, gameId, teamId
     public SocketDTO() {
         this.senderDateTime = LocalDateTime.now();
-        this.code = 0;
-        this.msg = null;
     }
 
     // DTO 용도 사용 시 > 생성될 때 localdatetime.now()를 넣음

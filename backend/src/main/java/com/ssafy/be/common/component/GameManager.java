@@ -11,7 +11,7 @@ import com.ssafy.be.common.response.BaseResponse;
 import com.ssafy.be.common.response.BaseResponseStatus;
 import com.ssafy.be.gamer.model.GamerPrincipalVO;
 import com.ssafy.be.room.model.dto.MoveTeamDTO;
-import com.ssafy.be.room.model.vo.ExitRoomVO;
+import com.ssafy.be.lobby.model.vo.ExitRoomVO;
 import com.ssafy.be.room.model.vo.MoveTeamVO;
 import java.util.Map.Entry;
 import lombok.extern.log4j.Log4j2;
@@ -134,8 +134,19 @@ public class GameManager {
     }
 
     // 팀 옮기기위한 method
-    public MoveTeamVO moveTeam(MoveTeamDTO moveTeamDTO, int gamerId) {
+    public MoveTeamVO enterSpecificTeam(MoveTeamDTO moveTeamDTO, GamerPrincipalVO gamerPrincipalVO) {
         String nickname = moveTeamDTO.getSenderNickname();
+
+        // 게임
+        GameComponent gameComponent = games.get(moveTeamDTO.getSenderGameId());
+        // 팀
+        ConcurrentHashMap<Integer, TeamComponent> teams = gameComponent.getTeams();
+        // 들어가려는 팀에 공간이 있는지 에러처리
+        if(teams.size() == 3){
+
+        }
+
+        // 공간이 있다면
 
         MoveTeamVO moveTeamVO = MoveTeamVO.builder()
                 .oldTeamId(moveTeamDTO.getOldTeamId())

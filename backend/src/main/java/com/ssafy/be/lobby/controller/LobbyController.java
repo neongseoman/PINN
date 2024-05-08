@@ -9,9 +9,10 @@ import com.ssafy.be.common.response.BaseResponse;
 import com.ssafy.be.common.response.BaseResponseStatus;
 import com.ssafy.be.gamer.model.GamerPrincipalVO;
 import com.ssafy.be.lobby.model.dto.CreateRoomDTO;
+import com.ssafy.be.lobby.model.vo.EnterRoomVO;
 import com.ssafy.be.lobby.model.vo.SearchVO;
 import com.ssafy.be.lobby.service.LobbyService;
-import com.ssafy.be.room.model.vo.ExitRoomVO;
+import com.ssafy.be.lobby.model.vo.ExitRoomVO;
 import jakarta.servlet.ServletRequest;
 import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
@@ -125,7 +126,7 @@ public class LobbyController {
      * */
     @MessageMapping("/game/enter/{gameId}")
     @SendTo("/game/{gameId}")
-    public SocketDTO enterRoom(@Payload SocketDTO socketDTO, @DestinationVariable Integer gameId, StompHeaderAccessor accessor){
+    public EnterRoomVO enterRoom(@Payload SocketDTO socketDTO, @DestinationVariable Integer gameId, StompHeaderAccessor accessor){
         GamerPrincipalVO gamerPrincipalVO = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor);
         log.info(gamerPrincipalVO.getGamerId());
         // TODO : 게임이 없는 경우 Exception
@@ -135,11 +136,21 @@ public class LobbyController {
         TeamGamerComponent teamGamerComponent = gameManager.enterTeam(games.get(gameId), gamerPrincipalVO.getGamerId());
 
         // code & msg 삽입
-        socketDTO.setCodeAndMsg(1002, "gameId : " + gameId + " 방에 " + teamGamerComponent.getTeamId() + "팀으로 " + gamerPrincipalVO.getNickname() + "님이 들어왔습니다.");
+//        socketDTO.setCodeAndMsg(1002, "gameId : " + gameId + " 방에 " + teamGamerComponent.getTeamId() + "팀으로 " + gamerPrincipalVO.getNickname() + "님이 들어왔습니다.");
         // 팀 할당
-        socketDTO.setSenderTeamId(teamGamerComponent.getTeamId());
-        log.info(socketDTO);
-        return socketDTO;
+//        socketDTO.setSenderTeamId(teamGamerComponent.getTeamId());
+        EnterRoomVO enterRoomVO = EnterRoomVO.builder()
+                .senderDateTime(socketDTO.getSenderDateTime())
+                .senderNickname(gamerPrincipalVO.getNickname())
+                .senderGameId(gameId)
+                .senderTeamId(teamGamerComponent.getTeamId())
+                .senderTeamNumber(teamGamerComponent.getTeamGamerNumber())
+                .code(1002)
+                .msg(gameId + " 방에 " + teamGamerComponent.getTeamId() + "팀 " + teamGamerComponent.getTeamGamerNumber() + "번째로 " + gamerPrincipalVO.getNickname() + "님이 들어왔습니다.")
+                .build();
+        log.info(enterRoomVO);
+
+        return enterRoomVO;
     }
 
     /*
