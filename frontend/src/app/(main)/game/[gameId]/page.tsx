@@ -3,8 +3,10 @@
 import Chatting from '@/components/Chatting'
 import Timer from '@/components/Timer'
 import themeStyles from '@/components/theme.module.css'
+import { IngameResponse } from '@/types/IngameTypes'
 import { Loader } from '@googlemaps/js-api-loader'
-import { useState } from 'react'
+import { Client, IFrame, IMessage } from '@stomp/stompjs'
+import { useEffect, useRef, useState } from 'react'
 import { LuPin, LuPinOff } from 'react-icons/lu'
 import GameInfo from '../_components/GameInfo'
 import Hints from '../_components/Hints'
@@ -49,58 +51,71 @@ export default function GamePage({ params }: { params: { gameId: string } }) {
 
   // 소켓 코드
 
-  // const clientRef = useRef<Client>(
-  //   new Client({
-  //     brokerURL: process.env.NEXT_PUBLIC_SOCKET_URL,
-  //     debug: function (str: string) {
-  //       console.log(str)
-  //     },
-  //     reconnectDelay: 5000,
-  //     heartbeatIncoming: 4000,
-  //     heartbeatOutgoing: 4000,
-  //   }),
-  // )
+  const clientRef = useRef<Client>(
+    new Client({
+      brokerURL: process.env.NEXT_PUBLIC_SOCKET_URL,
+      debug: function (str: string) {
+        console.log(str)
+      },
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
+    }),
+  )
 
-  // const ingameSubscribeUrl = `/game/sse/${params.gameId}`
-  // const gameStartPublishUrl = 'app/game/start'
-  // const gameStartRequest = {
-  //   senderNickname: 'rockbison',
-  //   senderGameId: params.gameId,
-  //   senderTeamId: 1,
-  //   gameId: params.gameId,
-  //   roundCount: 3,
-  //   stage1Time: 30,
-  //   stage2Time: 30,
-  //   scorePageTime: 30,
-  // }
+  const ingameSubscribeUrl = `/game/sse/${params.gameId}`
+  const gameStartPublishUrl = 'app/game/start'
+  const gameStartRequest = {
+    senderNickname: 'rockbison',
+    senderGameId: params.gameId,
+    senderTeamId: 1,
+    gameId: params.gameId,
+    roundCount: 3,
+    stage1Time: 30,
+    stage2Time: 30,
+    scorePageTime: 30,
+  }
 
-  // useEffect(() => {
-  //   clientRef.current.onConnect = function (_frame: IFrame) {
-  //     clientRef.current.subscribe(ingameSubscribeUrl, (message: IMessage) => {
-  //       const ingameResponse = JSON.parse(message.body) as IngameResponse
-  //       console.log(JSON.stringify(ingameResponse))
-  //     })
-  //   }
+  useEffect(() => {
+    clientRef.current.onConnect = function (_frame: IFrame) {
+      clientRef.current.subscribe(ingameSubscribeUrl, (message: IMessage) => {
+        const ingameResponse = JSON.parse(message.body) as IngameResponse
+        switch (ingameResponse.code) {
+          case 1201:
+            break
+          case 1202:
+            break
+          case 1203:
+            break
+          case 1204:
+            break
+          case 1205:
+            break
+          case 1206:
+            break
+        }
+      })
+    }
 
-  //   clientRef.current.onStompError = function (frame: IFrame) {
-  //     console.log('Broker reported error: ' + frame.headers['message'])
-  //     console.log('Additional details: ' + frame.body)
-  //   }
+    clientRef.current.onStompError = function (frame: IFrame) {
+      console.log('Broker reported error: ' + frame.headers['message'])
+      console.log('Additional details: ' + frame.body)
+    }
 
-  //   clientRef.current.activate()
+    clientRef.current.activate()
 
-  //   clientRef.current.publish({
-  //     headers: {
-  //       Auth: localStorage.getItem('accessToken') as string,
-  //     },
-  //     destination: gameStartPublishUrl,
-  //     body: JSON.stringify(gameStartRequest),
-  //   })
+    clientRef.current.publish({
+      headers: {
+        Auth: localStorage.getItem('accessToken') as string,
+      },
+      destination: gameStartPublishUrl,
+      body: JSON.stringify(gameStartRequest),
+    })
 
-  //   return () => {
-  //     clientRef.current.deactivate()
-  //   }
-  // }, [params.gameId])
+    return () => {
+      clientRef.current.deactivate()
+    }
+  }, [params.gameId])
 
   function handleChatFocus(bool: boolean) {
     setChatFocus(bool)

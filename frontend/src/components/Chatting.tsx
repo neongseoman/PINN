@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from 'react'
 import { IoIosSend } from 'react-icons/io'
 import styles from './chatting.module.css'
 
-interface MessageFormat {
+interface MessageRespnose {
   senderDateTime: string
   senderNickname: string
   senderGameId: number
@@ -27,7 +27,7 @@ export default function Chatting({
   subsrcibeUrl,
   publishUrl,
 }: ChattingProps) {
-  const [messages, setMessages] = useState<MessageFormat[]>([])
+  const [messages, setMessages] = useState<MessageRespnose[]>([])
   const [newMessage, setNewMessage] = useState<string>('')
   const chatContainerRef = useRef<HTMLDivElement | null>(null)
 
@@ -48,8 +48,7 @@ export default function Chatting({
   useEffect(() => {
     clientRef.current.onConnect = function (_frame: IFrame) {
       clientRef.current.subscribe(subsrcibeUrl, (message: IMessage) => {
-        const messageResponse = JSON.parse(message.body) as MessageFormat
-        // console.log(messageResponse)
+        const messageResponse = JSON.parse(message.body) as MessageRespnose
         setMessages((prevMessages) => [...prevMessages, messageResponse])
       })
     }
