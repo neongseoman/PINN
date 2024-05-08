@@ -15,6 +15,7 @@ import com.ssafy.be.lobby.service.LobbyService;
 import com.ssafy.be.lobby.model.vo.ExitRoomVO;
 import jakarta.servlet.ServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,7 +111,7 @@ public class LobbyController {
     @GetMapping("search")
     public BaseResponse<?> searchRoom(){
 
-        SearchVO searchVO = lobbyService.searchRoom();
+        List<SearchVO> searchVO = lobbyService.searchRoom();
 
         return new BaseResponse<>(searchVO);
     }
