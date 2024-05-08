@@ -46,9 +46,6 @@ public class GameServiceImpl implements GameService {
     @Override
     public GameStartVO startGame(int gamerId, GameStartRequestDTO gameStartRequestDTO) throws BaseException {
         try {
-//            log.info(gameStartRequestDTO);
-//            log.info(gamerId);
-
             int gameId = gameStartRequestDTO.getGameId();
             ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
 
@@ -81,7 +78,7 @@ public class GameServiceImpl implements GameService {
             log.info(gameStartRequestDTO);
             return gameStartVO;
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             throw new BaseException(null);
         }
     }
@@ -127,7 +124,10 @@ public class GameServiceImpl implements GameService {
                     ConcurrentHashMap<Integer, TeamRoundComponent> teamRounds = new ConcurrentHashMap<>();
                     for (int j = 1; j <= existGame.getRoundCount(); ++j) {
                         TeamRoundComponent teamRound = new TeamRoundComponent();
-                        teamRound.setRoundNumber(j); // roundNumber 제외한 값은 비워둔다.
+                        teamRound.setRoundNumber(j); // roundNumber 설정
+                        teamRound.setSubmitLat(-1);
+                        teamRound.setSubmitLng(-1); // 최초 핀찍기 이전 위, 경도 초기값 기본 "-1"으로 설정
+                        teamRound.setGuessed(false); // guessed(답 제출 여부) 기본 "false"로 설정
                         teamRounds.put(j, teamRound);
                     }
                     team.setTeamRounds(teamRounds);
@@ -203,7 +203,7 @@ public class GameServiceImpl implements GameService {
             log.info(gameInitVO);
             return gameInitVO;
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             throw new BaseException(null); // TODO: exception 타입 정의
         }
     }
@@ -252,7 +252,7 @@ public class GameServiceImpl implements GameService {
 
             return roundInitVO;
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             throw new BaseException(null);
         }
     }
@@ -295,7 +295,7 @@ public class GameServiceImpl implements GameService {
 
             return stage2InitVO;
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             throw new BaseException(null);
         }
     }
@@ -317,9 +317,15 @@ public class GameServiceImpl implements GameService {
         TeamComponent submitTeam = existGame.getTeams().get(pinMoveRequestDTO.getSenderTeamId());
         ConcurrentHashMap<Integer, TeamRoundComponent> teamRounds = submitTeam.getTeamRounds();
         if (teamRounds == null) {
-            throw new BaseException(null);
+            throw new BaseException(BaseResponseStatus.OOPS); // TODO: exception 타입 정의
         }
         TeamRoundComponent submitTeamRound = teamRounds.get(pinMoveRequestDTO.getRoundNumber());
+
+        // 이미 guess한 팀 아닌지 확인
+        if (submitTeamRound.isGuessed()) {
+            throw new BaseException(BaseResponseStatus.ALREADY_GUESSED_TEAM);
+        }
+        // guess 안 했으면 제출된 정보로 submitTeamRound 업데이트
         submitTeamRound.setSubmitTime(pinMoveRequestDTO.getSenderDateTime());
         submitTeamRound.setSubmitStage(pinMoveRequestDTO.getSubmitStage());
         submitTeamRound.setSubmitLat(pinMoveRequestDTO.getSubmitLat());
@@ -347,8 +353,42 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public PinGuessVO guessPin(int gamerId, PinGuessRequestDTO pinGuessRequestDTO) throws BaseException {
-        // TODO: 구현 시작해야 함
-        return null;
+
+        int gameId = pinGuessRequestDTO.getSenderGameId();
+        ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
+        GameComponent existGame = games.get(gameId);
+        if (existGame == null) { // 존재하는 게임인지 확인
+            throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
+        }
+
+        // TODO: gamerId가 senderTeamId 팀의 구성원인지 확인
+
+        // senderTeamId 팀이 roundNumber 라운드에 한 번이라도 핀 찍은 적 있는지 확인
+        TeamComponent guessTeam = existGame.getTeams().get(pinGuessRequestDTO.getSenderTeamId());
+        ConcurrentHashMap<Integer, TeamRoundComponent> teamRounds = guessTeam.getTeamRounds();
+        if (teamRounds == null) {
+            throw new BaseException(null); // TODO: exception 타입 정의
+        }
+        TeamRoundComponent guessTeamRound = teamRounds.get(pinGuessRequestDTO.getRoundNumber());
+        // 이미 guess한 팀 아닌지 확인
+        if (guessTeamRound.isGuessed()) {
+            throw new BaseException(BaseResponseStatus.ALREADY_GUESSED_TEAM);
+        }
+
+        // 해당 라운드에서 한 번도 핀 찍은 적 없으면 점수 0점 처리하기
+        if (guessTeamRound.getSubmitLat() == -1 || guessTeamRound.getSubmitLng() == -1) {
+            guessTeamRound.setRoundScore(0);
+        }
+
+        // senderTeamId 팀의 guessed 상태 true로 업데이트 > 중복 guess+추가 핀 찍기 방지하기
+        guessTeamRound.setGuessed(true);
+
+        // 정상적으로 guess 완료 > pinGuessVO 생성하여 정보 담아 return
+        PinGuessVO pinGuessVO = new PinGuessVO(pinGuessRequestDTO.getSenderDateTime(), pinGuessRequestDTO.getSenderNickname(), pinGuessRequestDTO.getSenderGameId(), pinGuessRequestDTO.getSenderTeamId(), pinGuessRequestDTO.getCode(), pinGuessRequestDTO.getMsg());
+        pinGuessVO.setCodeAndMsg(1116, "소속 팀의 현재 라운드 Guess가 완료되었습니다.");
+
+        return pinGuessVO;
+
     }
 
 
@@ -381,8 +421,7 @@ public class GameServiceImpl implements GameService {
                 * Math.sin(lngDistance / 2) * Math.sin(lngDistance / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-        double distance = R * c;
-        return distance;
+        return R * c;
     }
 
     public static int calculateScore(double answerLat, double answerLng, double submitLat, double submitLng) {
