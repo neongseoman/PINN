@@ -75,7 +75,7 @@ public class GameServiceImpl implements GameService {
 
             gameStartVO.setGameId(existGame.getGameId());
 
-            log.info(gameStartRequestDTO);
+//            log.info(gameStartRequestDTO);
             return gameStartVO;
         } catch (Exception e) {
 //            e.printStackTrace();
@@ -143,7 +143,7 @@ public class GameServiceImpl implements GameService {
              */
             int themeId = existGame.getThemeId();
             List<Question> questionDatas = questionRepository.findByUsedAndThemeId(1, themeId); // 사용 중이고 + themeId 일치하는 것만 가져오기
-            log.info(questionDatas);
+            log.info("Q data : {} ",  questionDatas.size());
 
             // 랜덤 (roundCount)개의 인덱스 선택
             List<Integer> randomIndices = getRandomIndices(questionDatas.size(), existGame.getRoundCount());
@@ -188,7 +188,9 @@ public class GameServiceImpl implements GameService {
                 // 문제 완성. list에 넣기
                 questions.add(question);
             }
+
             existGame.setQuestions(questions);
+            log.info("Question Size : {}",existGame.getQuestions().size());
 
             // game의 정보 중 필요한 것들을 gIRD에 담아서 return
             gameInitVO.setGameId(existGame.getGameId());
@@ -219,6 +221,7 @@ public class GameServiceImpl implements GameService {
         if (existGame == null) {
             throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
         }
+        log.info(existGame.toString());
 
         try {
             // 요청 보낸 gamer_id가 GM/game의 leader_id와 일치하는지 확인
@@ -230,6 +233,7 @@ public class GameServiceImpl implements GameService {
             roundInitVO.setCodeAndMsg(1113, "라운드 초기 정보를 받아오는 데에 성공했습니다.");
 
             int round = roundInitRequestDTO.getRound();
+            log.info("{} : {}",round, existGame.getQuestions().size());
             QuestionComponent question = existGame.getQuestions().get(round - 1);
 
             // stage1 힌트만 골라내기
@@ -252,7 +256,7 @@ public class GameServiceImpl implements GameService {
 
             return roundInitVO;
         } catch (Exception e) {
-//            e.printStackTrace();
+            e.printStackTrace();
             throw new BaseException(null);
         }
     }

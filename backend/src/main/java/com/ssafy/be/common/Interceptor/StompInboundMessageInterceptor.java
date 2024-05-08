@@ -36,21 +36,9 @@ public class StompInboundMessageInterceptor implements ChannelInterceptor {
 //            log.info(headerAccessor.getSessionId() + " connected");
 //        }
         if (StompCommand.SEND.equals(headerAccessor.getCommand())){
-            String token = headerAccessor.getNativeHeader("Auth").get(0);
-            UsernamePasswordAuthenticationToken authentication = jwtProvider.getAuthentication(token);
+//            String token = headerAccessor.getNativeHeader("Auth").get(0);
+//            UsernamePasswordAuthenticationToken authentication = jwtProvider.getAuthentication(token);
         }
-//        if (StompCommand.ABORT.equals(headerAccessor.getCommand())){
-//            log.info("Connected is ABORT");
-//        }
-//        if (StompCommand.ERROR.equals(headerAccessor.getCommand())){
-//            log.info("Connected is ERROR");
-//        }
-//        if (StompCommand.UNSUBSCRIBE.equals(headerAccessor.getCommand())){
-//            log.info("Connected is UNSUBSCRIBE");
-//        }
-//        if (StompCommand.DISCONNECT.equals(headerAccessor.getCommand())){
-//            log.info("Connected is Disconnected");
-//        }
         return message;
     }
 
