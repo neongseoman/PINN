@@ -6,19 +6,12 @@ import { TiArrowSortedDown } from "react-icons/ti";
 import styles from '../lobby.module.css';
 
 export default function CreateRoomModal() {
-  // dialog 참조 ref
   const dialogRef = useRef<HTMLDialogElement>(null);
-  // 방 제목
   const [roomName, setRoomName] = useState<string>('');
-  // 방 비밀번호
   const [password, setPassword] = useState<string>('');
-  // 라운드 수
   const [roundCount, setRoundCount] = useState<number>(3);
-  // stage1 시간
   const [stage1Time, setStage1Time] = useState<number>(30);
-  // stage2 시간
   const [stage2Time, setStage2Time] = useState<number>(20);
-  // 테마
   const [themeId, setThemeId] = useState<number>(1);
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,7 +49,6 @@ export default function CreateRoomModal() {
     dialogRef.current?.close();
   };
 
-  // 생성 요청 함수
   const handleSubmit = async () => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/lobby/create`, {

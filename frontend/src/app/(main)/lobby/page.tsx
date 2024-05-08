@@ -20,8 +20,6 @@ interface GameInfo {
 
 export default function LobbyPage() {
   const { nickname } = useUserStore()
-
-  // 게임 목록 상태 변수
   const [gameList, setGameList] = useState<GameInfo[]>([]);
 
   const profileModal = () => {

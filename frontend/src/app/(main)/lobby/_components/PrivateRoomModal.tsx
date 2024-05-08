@@ -35,7 +35,7 @@ export default function PrivateRoomModal({ gameId, roomName, setShowModal }: Pri
 
   const enterPassword = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/app/game/enter/${gameId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/lobby/${gameId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

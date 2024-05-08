@@ -1,5 +1,7 @@
 'use client'
 
+import useUserStore from '@/stores/userStore';
+import { Client, IFrame } from '@stomp/stompjs';
 import { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import { FaQuestionCircle } from "react-icons/fa";
 import styles from '../lobby.module.css';
@@ -11,8 +13,20 @@ interface PublicRoomModalProps {
 }
 
 export default function PublicRoomModal({ gameId, roomName, setShowModal }: PublicRoomModalProps) {
-  // dialog 참조 ref
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const { nickname } = useUserStore()
+
+  const clientRef = useRef<Client>(
+    new Client({
+      brokerURL: process.env.NEXT_PUBLIC_SOCKET_URL,
+      debug: function (str: string) {
+        // console.log(str)
+      },
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
+    }),
+  )
 
   useEffect(() => {
     showModal();
@@ -29,14 +43,14 @@ export default function PublicRoomModal({ gameId, roomName, setShowModal }: Publ
 
   const joinGame = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/app/game/enter/${gameId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/lobby/${gameId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('accessToken') as string}`
         },
         body: JSON.stringify({
-          password: null
+          password: ""
         }),
       });
 
@@ -47,6 +61,25 @@ export default function PublicRoomModal({ gameId, roomName, setShowModal }: Publ
           console.log('공개방 입장 요청 성공!', responseData);
           // 방 입장
           // 해당 방으로 이동
+          if (clientRef.current) {
+            clientRef.current.onConnect = function (_frame: IFrame) {
+              clientRef.current.subscribe(`${process.env.NEXT_PUBLIC_SOCKET_URL}/game/${gameId}`, (message: any) => {
+                // const messageResponse = JSON.parse(message.body) as MessageFormat
+                // // console.log(messageResponse)
+                // setMessages((prevMessages) => [...prevMessages, messageResponse])
+              })
+            }
+            clientRef.current.publish({
+              headers: {
+                Auth: localStorage.getItem('accessToken') as string,
+              },
+              destination: `${process.env.NEXT_PUBLIC_SOCKET_URL}/app/game/enter/${gameId}`,
+              body: JSON.stringify({
+                senderNickname: nickname,
+                senderGameId: gameId
+              }),
+            })
+          }
         } else {
           console.log('공개방 입장 요청 실패!', responseData.code);
         }
@@ -58,8 +91,7 @@ export default function PublicRoomModal({ gameId, roomName, setShowModal }: Publ
     }
   };
     // 입장 버튼 클릭
-    // `${process.env.NEXT_PUBLIC_API_URL}/app/game/enter/${gameId}` post 요청
-    // `${process.env.NEXT_PUBLIC_SOCKET_URL}/game/${gameId}` websocket 구독
+    // `${process.env.NEXT_PUBLIC_SOCKET_URL}/app/game/enter/${gameId}` websocket 구독
 
   return (
     <dialog className={styles.publicRoomModalWrapper} ref={dialogRef}>
