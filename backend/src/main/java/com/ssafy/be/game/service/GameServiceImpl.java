@@ -84,7 +84,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public GameInitVO initGame(int gamerId, GameInitRequestDTO gameInitRequestDTO) throws BaseException {
+    public GameInitVO initGame(int gamerId, GameStartRequestDTO gameInitRequestDTO) throws BaseException {
 
         // TODO: 배정한 문제 GameAndQuestion table에 insert
         // TODO: DB에 TeamGamer, Team 데이터 insert
@@ -117,7 +117,7 @@ public class GameServiceImpl implements GameService {
             // teamGamer를 1명 이상 보유한 경우 유효한 team으로 간주한다.
             for (int i = 1; i <= existGame.getTeamCount(); ++i) {
                 TeamComponent team = existGame.getTeams().get(i);
-                ConcurrentHashMap<Long, TeamGamerComponent> teamGamers = team.getTeamGamers(); // 이게 null이라서 에러 발생 중...
+                ConcurrentHashMap<Integer, TeamGamerComponent> teamGamers = team.getTeamGamers(); // 이게 null이라서 에러 발생 중...
                 log.info(team);
                 if (teamGamers != null && !teamGamers.isEmpty()) { // 유효한 팀인 경우
                     // 1. TeamRounds 생성
@@ -143,7 +143,7 @@ public class GameServiceImpl implements GameService {
              */
             int themeId = existGame.getThemeId();
             List<Question> questionDatas = questionRepository.findByUsedAndThemeId(1, themeId); // 사용 중이고 + themeId 일치하는 것만 가져오기
-//            log.info(questionDatas);
+            log.info(questionDatas);
 
             // 랜덤 (roundCount)개의 인덱스 선택
             List<Integer> randomIndices = getRandomIndices(questionDatas.size(), existGame.getRoundCount());

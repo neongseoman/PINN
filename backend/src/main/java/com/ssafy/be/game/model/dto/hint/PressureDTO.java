@@ -1,4 +1,4 @@
-package com.ssafy.be.game.model;
+package com.ssafy.be.game.model.dto.hint;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.ToString;
 @Setter
 @AllArgsConstructor
 @ToString
-public class HumidityDTO {
+public class PressureDTO {
     private int min;
     private int max;
     private int median;
