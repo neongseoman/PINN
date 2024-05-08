@@ -76,7 +76,6 @@ class GameServiceImplTest {
     @Test
     void findGameInfo() {
         int gamerId = 123;
-        GameStartRequestDTO gameStartRequestDTO =
 
 
     }
