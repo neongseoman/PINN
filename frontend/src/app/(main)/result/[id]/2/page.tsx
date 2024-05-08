@@ -43,9 +43,9 @@ export default function ResultPage2({ params }: { params: { id: number } }) {
                 </div>
                 <div className={styles['rank-container']}>
                     {/* 1 ~ 10  단순 등수*/}
-                    <div className={styles.number}>
+                    <div className={styles.numbers}>
                         {teams.map((team) => (
-                            <div key={team.rank} className={styles.number} style={{ background: team.teamNumber === teamNum ? 'var(--Main-Yellow)' : 'var(--Main-Navy)' }}>
+                            <div key={team.rank} className={team.teamNumber === teamNum ? styles.myNumber : styles.number} >
                                 {team.rank}
                             </div>
                         ))}
@@ -54,8 +54,8 @@ export default function ResultPage2({ params }: { params: { id: number } }) {
                     <div className={styles.rank}>
                         {teams.map((team, index) => (
                             <div key={index} className={styles.team}>
-                                <div style={{ color: team.teamNumber === teamNum ? 'var(--Main-Yellow)' : 'white' }}>TEAM {team.teamNumber}</div>
-                                <div style={{ color: team.teamNumber === teamNum ? 'var(--Main-Yellow)' : 'white' }}>{team.score.toLocaleString()}</div>
+                                <div className={team.teamNumber === teamNum ? styles.myTeamResult : styles.teamResult}>TEAM {team.teamNumber}</div>
+                                <div className={team.teamNumber === teamNum ? styles.myTeamResult : styles.teamResult}>{team.score.toLocaleString()}</div>
                                 <div className={styles.bar} style={{ width: `${(team.score) / teams[0].score * 100}%`, backgroundColor: team.teamColor }} ></div>
                             </div>
                         ))}
