@@ -41,6 +41,7 @@ public class GameController {
     @MessageMapping("/game/start")
     public void startGame(GameStartRequestDTO gameStartRequestDTO, StompHeaderAccessor accessor) throws ExecutionException, InterruptedException {
 //        log.info("Is this async? Start of Method : {}", LocalDateTime.now());
+        log.info(gameStartRequestDTO.toString());
         int gamerId = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor).getGamerId();
         GameStartVO gameStartVO = gameService.startGame(gamerId, gameStartRequestDTO);
         GameInitVO gameInitVO = gameService.initGame(gamerId, gameStartRequestDTO);
@@ -60,8 +61,8 @@ public class GameController {
             roundInitVO.setMsg(ServerEvent.ROUND_START.getMsg());
             sendingOperations.convertAndSend("/game/" + gameInitVO.getGameId(), roundInitVO); // 여기까지 게임 준비 및 시작
 
-//            return scheduleProvider.sendHint(result, gameStartRequestDTO.getStage1Time()); // 지금부터 stage 1
-            return scheduleProvider.sendHint(result, 5); // 지금부터 stage 1 test time 5초
+            return scheduleProvider.sendHint(result, gameStartRequestDTO.getStage1Time()); // 지금부터 stage 1
+//            return scheduleProvider.sendHint(result, 5); // 지금부터 stage 1 test time 5초
         }).thenCompose((result) -> {
             log.info("{} game send Hint at {}", gameStartRequestDTO.getGameId(), LocalDateTime.now());
             Stage2InitRequestDTO stage2InitRequestDTO =
@@ -72,14 +73,14 @@ public class GameController {
             stage2InitVO.setMsg(ServerEvent.HINT.getMsg());
             sendingOperations.convertAndSend("/game/" + gameInitVO.getGameId(), stage2InitVO);
 
-//            return scheduleProvider.roundEnd(result, gameStartRequestDTO.getStage2Time()); // 지금부터 stage 2
-            return scheduleProvider.roundEnd(result, 5); // 지금부터 stage 2 test time 5초
+            return scheduleProvider.roundEnd(result, gameStartRequestDTO.getStage2Time()); // 지금부터 stage 2
+//            return scheduleProvider.roundEnd(result, 5); // 지금부터 stage 2 test time 5초
         }).thenCompose((result) -> {
             log.info("{} game round 1 is end at {}", gameStartRequestDTO.getGameId(), LocalDateTime.now()); // 점수 정산
 
             sendingOperations.convertAndSend("/game/" + gameInitVO.getGameId(), new ServerSendEvent(ServerEvent.ROUND_SCORE));
-//            return scheduleProvider.roundEnd(result, gameStartRequestDTO.getScorePageTime()); // 지금부터 score page
-            return scheduleProvider.roundEnd(result, 5); // 지금부터 score page
+            return scheduleProvider.roundEnd(result, gameStartRequestDTO.getScorePageTime()); // 지금부터 score page
+//            return scheduleProvider.roundEnd(result, 5); // 지금부터 score page
         }).thenCompose((a) -> { // 이건 게임이 끝나
             log.info(" {}  Game is End at {}", gameInitVO.getGameId(), LocalDateTime.now());
             ServerSendEvent serverMsg = new ServerSendEvent(ServerEvent.GO_TO_ROOM);

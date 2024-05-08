@@ -18,9 +18,19 @@ public class GameStartRequestDTO extends SocketDTO {
     private int stage2Time; // 일단 30으로 받자.
     private int scorePageTime; //일단 15초로 보내줘
 
+//    public GameStartRequestDTO() {}
 
-    public GameStartRequestDTO(String senderNickname, int senderGameId, int senderTeamId,int gameId) {
+//    public GameStartRequestDTO(String senderNickname, int senderGameId, int senderTeamId, int gameId) {
+//        super(senderNickname, senderGameId, senderTeamId);
+//        setGameId(gameId);
+//    }
+
+    public GameStartRequestDTO(String senderNickname, int senderGameId, int senderTeamId, int gameId, int roundCount, int stage1Time, int stage2Time, int scorePageTime) {
         super(senderNickname, senderGameId, senderTeamId);
         setGameId(gameId);
+        setRoundCount(roundCount);
+        setStage1Time(stage1Time);
+        setStage2Time(stage2Time);
+        setScorePageTime(scorePageTime);
     }
 }
