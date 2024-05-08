@@ -2,11 +2,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 20px;
   font-size: x-large;
   font-weight: 700;
   height: 52px;
   width: 150px;
   border: solid 4px;
   font-style: italic;
+  overflow: hidden;
+  border-radius: inherit;
 }
