@@ -25,16 +25,16 @@ body {
 
 :root {
   /* Main colors */
-  --Main-Red: #f23838; /* Main Red */
-  --Main-Yellow: #f2ca50; /* Main Yellow */
-  --Main-Light-Green: #50bf61; /* Main Light Green */
-  --Main-Green: #378c4c; /* Main Green */
-  --Main-Navy: #1d3240; /* Main Navy */
-  --Main-Brown: #66321c; /* Main Brown */
+  --Main-Red: rgb(242, 56, 56); /* Main Red */
+  --Main-Yellow: rgb(242, 202, 80); /* Main Yellow */
+  --Main-Light-Green: rgb(80, 191, 97); /* Main Light Green */
+  --Main-Green: rgb(55, 140, 76); /* Main Green */
+  --Main-Navy: rgb(29, 50, 64); /* Main Navy */
+  --Main-Brown: rgb(102, 50, 28); /* Main Brown */
 
   /* Theme colors */
-  --Theme-Korea: #401914; /* Korea Theme */
-  --Theme-Egypt: #dc8a1d; /* Egypt Theme */
-  --Theme-Greece: #53c0fb; /* Greece Theme */
-  --Theme-Landmark: #5c3a78; /* Landmark Theme */
+  --Theme-Korea: rgb(64, 25, 20); /* Korea Theme */
+  --Theme-Egypt: rgb(220, 138, 29); /* Egypt Theme */
+  --Theme-Greece: rgb(83, 192, 251); /* Greece Theme */
+  --Theme-Landmark: rgb(92, 58, 120); /* Landmark Theme */
 }
