@@ -113,8 +113,8 @@ public class GameServiceImpl implements GameService {
             // teamGamer를 1명 이상 보유한 경우 유효한 team으로 간주한다.
             for (int i = 1; i <= existGame.getTeamCount(); ++i) {
                 TeamComponent team = existGame.getTeams().get(i);
-                ConcurrentHashMap<Integer, TeamGamerComponent> teamGamers = team.getTeamGamers(); // 이게 null이라서 에러 발생 중...
-                log.info(team);
+                ConcurrentHashMap<Integer, TeamGamerComponent> teamGamers = team.getTeamGamers();
+//                log.info(team);
                 if (teamGamers != null && !teamGamers.isEmpty()) { // 유효한 팀인 경우
                     // 1. TeamRounds 생성
                     ConcurrentHashMap<Integer, TeamRoundComponent> teamRounds = new ConcurrentHashMap<>();
@@ -127,7 +127,7 @@ public class GameServiceImpl implements GameService {
                         teamRounds.put(j, teamRound);
                     }
                     team.setTeamRounds(teamRounds);
-                    log.info(teamRounds);
+//                    log.info(teamRounds);
 
                     // TODO: 2. DB의 Team 테이블에 insert
                 }
@@ -390,7 +390,43 @@ public class GameServiceImpl implements GameService {
         }
 
         // 모든 팀의 teamRound 받아오기
-        ConcurrentHashMap<Integer, TeamComponent> teams =
+        ConcurrentHashMap<Integer, TeamComponent> teams = existGame.getTeams();
+        for (int i = 1; i <= existGame.getTeamCount(); ++i) {
+            TeamComponent team = teams.get(i);
+            if (team.getTeamGamers() == null || team.getTeamGamers().isEmpty()) { // teamGamers가 없거나 0명인 경우, 유효하지 않은 팀으로 간주
+                continue; // 패스!
+            }
+
+            // i팀의 현재 라운드 최신 핀 위치 정보
+            TeamRoundComponent teamRound = team.getTeamRounds().get(roundFinishRequestDTO.getRoundNumber());
+
+            // guess한 팀인지 확인
+            if (teamRound.isGuessed()) {
+                // CASE: Guess 한 팀
+                
+
+            } else {
+                // CASE: Guess 안 한 팀
+
+                // 핀 찍은 적 있는 팀인지 확인
+                if (teamRound.getSubmitTime() == null) {
+                    // CASE: 핀 찍은 적 없는 팀
+
+                    // 0점 부여
+                    teamRound.setRoundScore(0);
+                    // TeamRoundResultVO에 정보 세팅
+
+                } else {
+                    // CASE: 핀 찍은 적 있으나 guess 누르지 않은 팀
+
+                    // submitTime이랑 submitStage 업데이트하고 guess 처리
+
+                    //
+                }
+            }
+
+
+        }
 
         return null;
     }
@@ -398,6 +434,7 @@ public class GameServiceImpl implements GameService {
 
 ///////
 
+    // 0 ~ maxIndex 중 count 개의 숫자를 List로 반환
     public static List<Integer> getRandomIndices(int maxIndex, int count) {
         List<Integer> randomIndices = new ArrayList<>();
         Random random = new Random();
