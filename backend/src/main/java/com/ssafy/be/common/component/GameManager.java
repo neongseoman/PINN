@@ -9,7 +9,9 @@ import com.ssafy.be.common.exception.BaseException;
 import com.ssafy.be.common.model.dto.SocketDTO;
 import com.ssafy.be.common.response.BaseResponse;
 import com.ssafy.be.common.response.BaseResponseStatus;
+import com.ssafy.be.gamer.model.GamerPrincipalVO;
 import com.ssafy.be.room.model.dto.MoveTeamDTO;
+import com.ssafy.be.room.model.vo.ExitRoomVO;
 import com.ssafy.be.room.model.vo.MoveTeamVO;
 import java.util.Map.Entry;
 import lombok.extern.log4j.Log4j2;
@@ -100,21 +102,35 @@ public class GameManager {
             }
         }
 
-
-
+        // TODO : 들어갈 수 있는 공간이 없는 경우 Exception 처리
         return null;
     }
 
     // 방 나가기위한 method
-    public void exitRoom(SocketDTO socketDTO, int gamerId) {
+    public ExitRoomVO exitRoom(SocketDTO socketDTO, GamerPrincipalVO gamerPrincipalVO) {
+
+        // TODO : 각각의 경우 Exception 처리
         // game
         GameComponent gameComponent = games.get(socketDTO.getSenderGameId());
         // team
         TeamComponent teamComponent = gameComponent.teams.get(socketDTO.getSenderTeamId());
         // teamGamer
         ConcurrentHashMap<Integer, TeamGamerComponent> teamGamers = teamComponent.getTeamGamers();
+        // TeamGamerComponent to ExitRoomVO
+        TeamGamerComponent teamGamerComponent = teamGamers.get(gamerPrincipalVO.getGamerId());
+        ExitRoomVO exitRoomVO = ExitRoomVO.builder()
+                .senderDateTime(socketDTO.getSenderDateTime())
+                .senderNickname(socketDTO.getSenderNickname())
+                .senderGameId(socketDTO.getSenderGameId())
+                .senderTeamId(socketDTO.getSenderTeamId())
+                .senderTeamNumber(teamComponent.getTeamNumber())
+                .code(1011)
+                .msg(gamerPrincipalVO.getNickname() + "님이 " + socketDTO.getSenderGameId() + "번 방 " + socketDTO.getSenderTeamId() + "팀 " + teamComponent.getTeamNumber() + "번째 자리에서 나갔습니다.")
+                .build();
+
         // remove gamer
-        teamGamers.remove(gamerId);
+        teamGamers.remove(gamerPrincipalVO.getGamerId());
+        return exitRoomVO;
     }
 
     // 팀 옮기기위한 method

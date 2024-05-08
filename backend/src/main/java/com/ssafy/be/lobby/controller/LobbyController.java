@@ -11,6 +11,7 @@ import com.ssafy.be.gamer.model.GamerPrincipalVO;
 import com.ssafy.be.lobby.model.dto.CreateRoomDTO;
 import com.ssafy.be.lobby.model.vo.SearchVO;
 import com.ssafy.be.lobby.service.LobbyService;
+import com.ssafy.be.room.model.vo.ExitRoomVO;
 import jakarta.servlet.ServletRequest;
 import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
@@ -127,6 +128,7 @@ public class LobbyController {
     public SocketDTO enterRoom(@Payload SocketDTO socketDTO, @DestinationVariable Integer gameId, StompHeaderAccessor accessor){
         GamerPrincipalVO gamerPrincipalVO = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor);
         log.info(gamerPrincipalVO.getGamerId());
+        // TODO : 게임이 없는 경우 Exception
         ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
 
         // 오름차순으로 비어있는 팀에 할당
@@ -148,14 +150,12 @@ public class LobbyController {
      * */
     @MessageMapping("/game/exit/{gameId}")
     @SendTo("/game/{gameId}")
-    public SocketDTO exitRoom(@Payload SocketDTO socketDTO, @DestinationVariable Integer gameId, StompHeaderAccessor accessor){
+    public ExitRoomVO exitRoom(@Payload SocketDTO socketDTO, @DestinationVariable Integer gameId, StompHeaderAccessor accessor){
         GamerPrincipalVO gamerPrincipalVO = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor);
 
-        gameManager.exitRoom(socketDTO, gamerPrincipalVO.getGamerId());
-        // code & msg 설정
-        socketDTO.setCodeAndMsg(1003, gamerPrincipalVO.getNickname() + "님이 " + socketDTO.getSenderGameId() + "방에서 나갔습니다.");
+        ExitRoomVO exitRoomVO = gameManager.exitRoom(socketDTO, gamerPrincipalVO);
 
-        return socketDTO;
+        return exitRoomVO;
     }
 
 
