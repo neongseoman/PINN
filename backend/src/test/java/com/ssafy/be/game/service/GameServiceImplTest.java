@@ -3,6 +3,8 @@ package com.ssafy.be.game.service;
 import com.ssafy.be.common.component.GameComponent;
 import com.ssafy.be.common.component.GameManager;
 import com.ssafy.be.common.component.TeamComponent;
+import com.ssafy.be.common.model.domain.Game;
+import com.ssafy.be.game.model.dto.GameStartRequestDTO;
 import com.ssafy.be.lobby.model.dto.CreateRoomDTO;
 import com.ssafy.be.common.component.GameStatus;
 import com.ssafy.be.lobby.service.LobbyServiceImpl;
@@ -70,8 +72,13 @@ class GameServiceImplTest {
         assertEquals(existGame.getGameId(),123);
     }
 
+    @DisplayName("Init Game Test")
     @Test
     void findGameInfo() {
+        int gamerId = 123;
+        GameStartRequestDTO gameStartRequestDTO =
+
+
     }
 
     @Test
@@ -80,5 +87,41 @@ class GameServiceImplTest {
 
     @Test
     void findStage2Info() {
+    }
+
+    @Test
+    void startGame() {
+    }
+
+    @Test
+    void initGame() {
+    }
+
+    @Test
+    void testFindStage1Info() {
+    }
+
+    @Test
+    void testFindStage2Info() {
+    }
+
+    @Test
+    void movePin() {
+    }
+
+    @Test
+    void guessPin() {
+    }
+
+    @Test
+    void getRandomIndices() {
+    }
+
+    @Test
+    void calculateDistance() {
+    }
+
+    @Test
+    void calculateScore() {
     }
 }

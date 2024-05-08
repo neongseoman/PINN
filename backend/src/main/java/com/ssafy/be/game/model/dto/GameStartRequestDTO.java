@@ -3,9 +3,8 @@ package com.ssafy.be.game.model.dto;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.ssafy.be.common.model.dto.SocketDTO;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import jakarta.persistence.Access;
+import lombok.*;
 
 @ToString
 @Getter

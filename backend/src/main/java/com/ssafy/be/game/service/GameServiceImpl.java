@@ -143,7 +143,7 @@ public class GameServiceImpl implements GameService {
              */
             int themeId = existGame.getThemeId();
             List<Question> questionDatas = questionRepository.findByUsedAndThemeId(1, themeId); // 사용 중이고 + themeId 일치하는 것만 가져오기
-//            log.info(questionDatas);
+            log.info(questionDatas);
 
             // 랜덤 (roundCount)개의 인덱스 선택
             List<Integer> randomIndices = getRandomIndices(questionDatas.size(), existGame.getRoundCount());

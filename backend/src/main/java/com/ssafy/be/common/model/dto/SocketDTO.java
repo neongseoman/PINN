@@ -1,5 +1,6 @@
 package com.ssafy.be.common.model.dto;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

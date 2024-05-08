@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.*;
+import java.util.function.Consumer;
 
 @Component
 @Log4j2
@@ -20,6 +21,7 @@ import java.util.concurrent.*;
 public class ScheduleProvider {
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     private final SimpMessageSendingOperations sendingOperations;
+
 
     // 5초 지났고 게임 시작합시다.
     public CompletableFuture<Integer> startGame
@@ -39,10 +41,10 @@ public class ScheduleProvider {
     public CompletableFuture<Integer> roundStart(int gameId, int delayTime) {
         CompletableFuture<Integer> future = new CompletableFuture<>();
         executorService.schedule(() -> {
-            log.info("Round start: {}  at {}",gameId, LocalDateTime.now());
-//            RoundInitVO r
-            ServerSendEvent serverMsg = new ServerSendEvent(ServerEvent.ROUND_START);
-            sendingOperations.convertAndSend("/game/" + gameId, serverMsg);
+//            log.info("Round start: {}  at {}",gameId, LocalDateTime.now());
+////            RoundInitVO r
+//            ServerSendEvent serverMsg = new ServerSendEvent(ServerEvent.ROUND_START);
+//            sendingOperations.convertAndSend("/game/" + gameId, serverMsg);
             // round 정보를 보내줘야함
             future.complete(gameId);
         }, delayTime, TimeUnit.SECONDS);
@@ -54,9 +56,9 @@ public class ScheduleProvider {
     public CompletableFuture<Integer> sendHint(int gameId, int delayTime) {
         CompletableFuture<Integer> future = new CompletableFuture<>();
         executorService.schedule(() -> {
-            log.info("Hint send: {}  at {}",  gameId, LocalDateTime.now());
-            ServerSendEvent serverMsg = new ServerSendEvent(ServerEvent.HINT);
-            sendingOperations.convertAndSend("/game/" + gameId, serverMsg);
+//            log.info("Hint send: {}  at {}",  gameId, LocalDateTime.now());
+//            ServerSendEvent serverMsg = new ServerSendEvent(ServerEvent.HINT);
+//            sendingOperations.convertAndSend("/game/" + gameId, serverMsg);
             future.complete(gameId);
         }, delayTime, TimeUnit.SECONDS); // 게임 시간 인자로 받으면 수정할 수 있음.
         return future;
