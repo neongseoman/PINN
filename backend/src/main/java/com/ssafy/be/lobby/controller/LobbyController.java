@@ -4,17 +4,18 @@ import com.ssafy.be.auth.jwt.JwtProvider;
 import com.ssafy.be.common.component.GameComponent;
 import com.ssafy.be.common.component.GameManager;
 import com.ssafy.be.common.component.TeamGamerComponent;
-import com.ssafy.be.common.model.domain.Game;
-import com.ssafy.be.common.model.dto.ChatDTO;
 import com.ssafy.be.common.model.dto.SocketDTO;
 import com.ssafy.be.common.response.BaseResponse;
 import com.ssafy.be.common.response.BaseResponseStatus;
 import com.ssafy.be.gamer.model.GamerPrincipalVO;
 import com.ssafy.be.lobby.model.dto.CreateRoomDTO;
+import com.ssafy.be.lobby.model.vo.EnterRoomVO;
 import com.ssafy.be.lobby.model.vo.SearchVO;
 import com.ssafy.be.lobby.service.LobbyService;
+import com.ssafy.be.lobby.model.vo.ExitRoomVO;
 import jakarta.servlet.ServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,14 +23,12 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -46,7 +45,6 @@ public class LobbyController {
     @Autowired
     private GameManager gameManager;
 
-    private final SimpMessagingTemplate simpMessagingTemplate;
     private final JwtProvider jwtProvider;
 
 
@@ -113,7 +111,7 @@ public class LobbyController {
     @GetMapping("search")
     public BaseResponse<?> searchRoom(){
 
-        SearchVO searchVO = lobbyService.searchRoom();
+        List<SearchVO> searchVO = lobbyService.searchRoom();
 
         return new BaseResponse<>(searchVO);
     }
@@ -124,25 +122,32 @@ public class LobbyController {
     /*
      * 룸 입장을 위한 Socket 메서드 - [GET] lobby/{gameId} 로 검증 이후 요청해야 함
      * subscribe : /game/{gameId}
-     * publish : /game/enter/{gameId}
-     * send to : /app/game/{gameId}
+     * publish : /app/game/enter/{gameId}
+     * send to : /game/{gameId}
      * */
     @MessageMapping("/game/enter/{gameId}")
     @SendTo("/game/{gameId}")
-    public SocketDTO enterRoom(@Payload SocketDTO socketDTO, @DestinationVariable Integer gameId, StompHeaderAccessor accessor){
+    public EnterRoomVO enterRoom(@Payload SocketDTO socketDTO, @DestinationVariable Integer gameId, StompHeaderAccessor accessor){
         GamerPrincipalVO gamerPrincipalVO = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor);
         log.info(gamerPrincipalVO.getGamerId());
+        // TODO : 게임이 없는 경우 Exception
         ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
 
         // 오름차순으로 비어있는 팀에 할당
         TeamGamerComponent teamGamerComponent = gameManager.enterTeam(games.get(gameId), gamerPrincipalVO.getGamerId());
 
-        // code & msg 삽입
-        socketDTO.setCodeAndMsg(1002, "gameId : " + gameId + " 방에 " + teamGamerComponent.getTeamId() + "팀으로 " + gamerPrincipalVO.getNickname() + "님이 들어왔습니다.");
-        // 팀 할당
-        socketDTO.setSenderTeamId(teamGamerComponent.getTeamId());
-        log.info(socketDTO);
-        return socketDTO;
+        EnterRoomVO enterRoomVO = EnterRoomVO.builder()
+                .senderDateTime(socketDTO.getSenderDateTime())
+                .senderNickname(gamerPrincipalVO.getNickname())
+                .senderGameId(gameId)
+                .senderTeamId(teamGamerComponent.getTeamId())
+                .senderTeamNumber(teamGamerComponent.getTeamGamerNumber())
+                .code(1002)
+                .msg(gameId + " 방에 " + teamGamerComponent.getTeamId() + "팀 " + teamGamerComponent.getTeamGamerNumber() + "번째로 " + gamerPrincipalVO.getNickname() + "님이 들어왔습니다.")
+                .build();
+        log.info(enterRoomVO);
+
+        return enterRoomVO;
     }
 
     /*
@@ -153,35 +158,14 @@ public class LobbyController {
      * */
     @MessageMapping("/game/exit/{gameId}")
     @SendTo("/game/{gameId}")
-    public SocketDTO exitRoom(@Payload SocketDTO socketDTO, @DestinationVariable Integer gameId, StompHeaderAccessor accessor){
+    public ExitRoomVO exitRoom(@Payload SocketDTO socketDTO, @DestinationVariable Integer gameId, StompHeaderAccessor accessor){
         GamerPrincipalVO gamerPrincipalVO = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor);
 
-        gameManager.exitRoom(socketDTO, gamerPrincipalVO.getGamerId());
-        // code & msg 설정
-        socketDTO.setCodeAndMsg(1200, gamerPrincipalVO.getNickname() + "님이 " + socketDTO.getSenderGameId() + "방에서 나갔습니다.");
+        ExitRoomVO exitRoomVO = gameManager.exitRoom(socketDTO, gamerPrincipalVO);
 
-        return socketDTO;
+        return exitRoomVO;
     }
 
-    /*
-     * 대기방 내 채팅을 위한 Socket 메서드
-     * subscribe : /game/{gameId}
-     * send to : /app/game/{gameId}
-     * */
-    @MessageMapping("/game/chat/{gameId}")
-    @SendTo("/game/{gameId}")
-    public ChatDTO createRoom(ChatDTO chatDTO, @DestinationVariable String gameId){
-        ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
-        // nickname 검증
-
-        System.out.println(chatDTO);
-
-        // 방 채팅, 팀 채팅
-        // code & msg 삽입
-        chatDTO.setCodeAndMsg(1001, "방 채팅이 성공적으로 보내졌습니다.");
-
-        return chatDTO;
-    }
 
 
 
