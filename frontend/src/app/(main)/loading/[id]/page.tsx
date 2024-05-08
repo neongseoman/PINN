@@ -5,18 +5,26 @@ import styles from './loading.module.css'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
-interface Teams {
-
-}
-
 export default function LoadingPage({ params }: { params: { id: number } }) {
-    const [teams, setTeams] = useState()
+    // 더미
+    const [teams, setTeams] = useState([
+        { rank: 2, teamNumber: 1, score: 15000 },
+        { rank: 1, teamNumber: 2, score: 14000 },
+        { rank: 3, teamNumber: 3, score: 13000 },
+        { rank: 5, teamNumber: 4, score: 12000 },
+        { rank: 4, teamNumber: 5, score: 11000 },
+        { rank: 6, teamNumber: 6, score: 10000 },
+        { rank: 7, teamNumber: 7, score: 9000 },
+        { rank: 9, teamNumber: 8, score: 8000 },
+        { rank: 8, teamNumber: 9, score: 7000 },
+        { rank: 10, teamNumber: 10, score: 5000 },
+    ])
     const [count, setCount] = useState(3)
     const router = useRouter()
 
     useEffect(() => {
-        // API 호출
-    }, []) // 컴포넌트가 처음 마운트될 때만 호출
+        // Team API 호출
+    }, [])
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -31,7 +39,8 @@ export default function LoadingPage({ params }: { params: { id: number } }) {
         return () => clearInterval(timer)
     }, [count, router])
 
-    // 어디로 라우팅할지만 추가하면 끝
+    // 어디로 라우팅(소켓?연결?)할지만 추가하면 끝
+
     return (
         <main className={styles.background}>
             <div className={styles.container}>
@@ -44,47 +53,14 @@ export default function LoadingPage({ params }: { params: { id: number } }) {
                         <Image src="/assets/images/svg/noto_3rd-place-medal.svg" alt="" width={28} height={28} />
                     </div>
                     <div className={styles.rank}>
-                        {/* map함수로 팀원 나열해주기 */}
-                        <div className={styles.teamList}>
-                            <div>1. TEAM 1</div>
-                            <div>00,000</div>
-                        </div>
-                        <div className={styles.teamList}>
-                            <div>2. TEAM 2</div>
-                            <div>00,000</div>
-                        </div>
-                        <div className={styles.teamList}>
-                            <div>3. TEAM 3</div>
-                            <div>00,000</div>
-                        </div>
-                        <div className={styles.teamList}>
-                            <div>4. TEAM 4</div>
-                            <div>00,000</div>
-                        </div>
-                        <div className={styles.teamList}>
-                            <div>5. TEAM 5</div>
-                            <div>00,000</div>
-                        </div>
-                        <div className={styles.teamList}>
-                            <div>6. TEAM 6</div>
-                            <div>00,000</div>
-                        </div>
-                        <div className={styles.teamList}>
-                            <div>7. TEAM 7</div>
-                            <div>00,000</div>
-                        </div>
-                        <div className={styles.teamList}>
-                            <div>8. TEAM 8</div>
-                            <div>00,000</div>
-                        </div>
-                        <div className={styles.teamList}>
-                            <div>9. TEAM 9</div>
-                            <div>00,000</div>
-                        </div>
-                        <div className={styles.teamList}>
-                            <div>10. TEAM 10</div>
-                            <div>00,000</div>
-                        </div>
+                        {teams
+                            .sort((a, b) => a.rank - b.rank)
+                            .map((team, index) => (
+                                <div key={index} className={styles.teamList}>
+                                    <div>{team.rank}. TEAM {team.teamNumber}</div>
+                                    <div>{team.score.toLocaleString()}</div>
+                                </div>
+                            ))}
                     </div>
                 </div>
             </div>
