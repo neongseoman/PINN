@@ -9,14 +9,17 @@ import RuleModal from './_components/RuleModal';
 import styles from './lobby.module.css';
 
 interface GameInfo {
-  gameId: number
-  roomName: string
-  themeId: number
-  roundCount: number
-  stage1Time: number
-  stage2Time: number
-  password: boolean
-  gamerNumber: number
+  readyGames: {
+    gameId: number
+    roomName: string
+    themeId: number
+    roundCount: number
+    stage1Time: number
+    stage2Time: number
+    password: boolean
+    gamerNumber: number
+  }
+  countPerson: number
 }
 
 export default function LobbyPage() {
@@ -46,7 +49,7 @@ export default function LobbyPage() {
         const responseData = await response.json();
         if (responseData.code === 1000) {
           console.log('게임 목록 출력 성공!', responseData);
-          setGameList(responseData.result.readyGames)
+          setGameList(responseData.result)
         } else {
           console.log('게임 목록 출력 실패!', responseData.code);
           alert(responseData.message);
@@ -58,6 +61,7 @@ export default function LobbyPage() {
 
     roomList()
   }, []);
+  console.log(gameList)
 
   return (
     <main className={styles.lobby}>
@@ -79,14 +83,14 @@ export default function LobbyPage() {
         {gameList && gameList.map((game, i) => (
           <RoomCard
             key={i}
-            gameId={game.gameId}
-            themeId={game.themeId}
-            roomName={game.roomName}
-            roundCount={game.roundCount}
-            stage1Time={game.stage1Time}
-            stage2Time={game.stage2Time}
-            password={game.password}
-            countPerson={1}
+            gameId={game.readyGames.gameId}
+            themeId={game.readyGames.themeId}
+            roomName={game.readyGames.roomName}
+            roundCount={game.readyGames.roundCount}
+            stage1Time={game.readyGames.stage1Time}
+            stage2Time={game.readyGames.stage2Time}
+            password={game.readyGames.password}
+            countPerson={game.countPerson}
           />
         ))}
       </div>
