@@ -1,0 +1,85 @@
+.background {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  background-image: url('../../../../../public/assets/images/BackgroundImage.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 최상위 컨테이너 */
+.container {
+  width: 60%;
+  height: 85%;
+  background-color: rgba(29, 50, 64, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 라운드 글자 */
+.round {
+  height: 25%;
+  font-family: 'GmarketSans';
+  font-weight: bold;
+  font-size: 6rem;
+  color: var(--Main-Yellow);
+  padding-top: 6%;
+  display: flex;
+  align-items: center;
+}
+
+/* 라운드 */
+.count {
+  height: 18%;
+  font-family: 'GmarketSans';
+  font-weight: 600;
+  font-size: 6rem;
+  color: var(--Main-Red);
+}
+
+/* 랭크 컨테이너 */
+.rank-container {
+  width: 100%;
+  height: 50%;
+  display: flex;
+}
+
+/* 메달 svg */
+.trophy {
+  width: 11%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding-top: 2.7%;
+  gap: 6.5%;
+}
+
+/* 랭크 그리드 잡아놓은거 */
+.rank {
+  width: 78%;
+  height: 50%;
+  padding-top: 3%;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  row-gap: 10%;
+  column-gap: 15%;
+}
+
+/* 그리드 밑에 팀 데이터 */
+.teamList {
+  width: 100%;
+  display: flex;
+  color: var(--Main-Yellow);
+  font-weight: 600;
+  font-size: 1.3rem;
+  justify-content: space-between;
+  border-bottom: 3px solid white;
+  padding-bottom: 2%;
+  padding-left: 1%;
+}
