@@ -76,8 +76,9 @@ export default function LobbyPage() {
           <RuleModal />
       </div>
       <div className={styles.bottom}>
-        {gameList.map((game) => (
+        {gameList.map((game, i) => (
           <RoomCard
+            key={i}
             gameId={game.gameId}
             themeId={game.themeId}
             roomName={game.roomName}
