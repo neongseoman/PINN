@@ -76,15 +76,20 @@ export default function CreateRoomModal() {
       });
 
       if (response.ok) {
+        console.log('게임 생성 요청 통신 성공');
         const responseData = await response.json();
-        console.log('게임 생성 성공!', responseData);
-        // 방 입장
-        // 해당 방으로 이동
+        if (responseData.code === 1000) {
+          console.log('게임 생성 성공!', responseData);
+          // 방 입장
+          // 해당 방으로 이동
+        } else {
+          console.log('게임 생성 실패!', responseData.code);
+        }
       } else {
-        console.error('게임 생성 실패!:', response);
+        console.error('게임 생성 요청 통신 실패', response);
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('에러 발생: ', error);
     }
 
     if (!roomName || roomName.length > 20 || roomName.length < 1) {

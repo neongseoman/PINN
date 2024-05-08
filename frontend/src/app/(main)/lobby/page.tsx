@@ -43,11 +43,16 @@ export default function LobbyPage() {
       });
 
       if (response.ok) {
+        console.log('게임 목록 요청 통신 성공');
         const responseData = await response.json();
-        console.log('게임 목록 요청 성공!', responseData);
-        setGameList(responseData.result.readyGames)
+        if (responseData.code === 1000) {
+          console.log('게임 목록 출력 성공!', responseData);
+          setGameList(responseData.result.readyGames)
+        } else {
+          console.log('게임 목록 출력 실패!', responseData.code);
+        }
       } else {
-        console.error('게임 목록 요청 실패!:', response);
+        console.error('게임 목록 요청 통신 실패', response);
       }
     } 
 
@@ -55,36 +60,34 @@ export default function LobbyPage() {
   }, []);
 
   return (
-    <>
-      <main className={styles.lobby}>
-        <div className={styles.top}>
-          <img className={styles.logo} src="/assets/images/logo.png" alt="로고" />
-          <div className={styles.userInfo} onClick={profileModal}>
-            <p className={styles.username}>{nickname}</p>
-            <Image className={styles.profile} width={25} height={25} src="/assets/images/default_profile.png" alt="프로필 이미지" />
-          </div>
+    <main className={styles.lobby}>
+      <div className={styles.top}>
+        <img className={styles.logo} src="/assets/images/logo.png" alt="로고" />
+        <div className={styles.userInfo} onClick={profileModal}>
+          <p className={styles.username}>{nickname}</p>
+          <Image className={styles.profile} width={25} height={25} src="/assets/images/default_profile.png" alt="프로필 이미지" />
         </div>
-        <div className={styles.medium}>
-          <div style={{ display: 'flex' }}>
-            <CreateRoomModal />
-            <p className={styles.buttons} onClick={fastStart}>빠른 시작</p>
-          </div>
-            <RuleModal />
+      </div>
+      <div className={styles.medium}>
+        <div style={{ display: 'flex' }}>
+          <CreateRoomModal />
+          <p className={styles.buttons} onClick={fastStart}>빠른 시작</p>
         </div>
-        <div className={styles.bottom}>
-          {gameList.map((game) => (
-            <RoomCard
-              gameId={game.gameId}
-              themeId={game.themeId}
-              roomName={game.roomName}
-              roundCount={game.roundCount}
-              stage1Time={game.stage1Time}
-              stage2Time={game.stage2Time}
-              password={game.password}
-            />
-          ))}
-        </div>
-      </main>
-    </>
+          <RuleModal />
+      </div>
+      <div className={styles.bottom}>
+        {gameList.map((game) => (
+          <RoomCard
+            gameId={game.gameId}
+            themeId={game.themeId}
+            roomName={game.roomName}
+            roundCount={game.roundCount}
+            stage1Time={game.stage1Time}
+            stage2Time={game.stage2Time}
+            password={game.password}
+          />
+        ))}
+      </div>
+    </main>
   )
 }
