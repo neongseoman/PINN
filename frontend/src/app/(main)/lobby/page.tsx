@@ -1,21 +1,22 @@
 'use client'
 
+import CreateRoomModal from '@/app/(main)/lobby/_components/CreateRoomModal';
+import RoomCard from '@/app/(main)/lobby/_components/RoomCard';
 import useUserStore from '@/stores/userStore';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import CreateRoomModal from './_components/CreateRoomModal';
-import RoomCard from './_components/RoomCard';
 import RuleModal from './_components/RuleModal';
 import styles from './lobby.module.css';
 
 interface GameInfo {
-  gameId: number,
-  roomName: string,
-  themeId: number,
-  roundCount: number,
-  stage1Time: number,
-  stage2Time: number,
-  password: boolean,
+  gameId: number
+  roomName: string
+  themeId: number
+  roundCount: number
+  stage1Time: number
+  stage2Time: number
+  password: boolean
+  gamerNumber: number
 }
 
 export default function LobbyPage() {
@@ -48,6 +49,7 @@ export default function LobbyPage() {
           setGameList(responseData.result.readyGames)
         } else {
           console.log('게임 목록 출력 실패!', responseData.code);
+          alert(responseData.message);
         }
       } else {
         console.error('게임 목록 요청 통신 실패', response);
@@ -74,7 +76,7 @@ export default function LobbyPage() {
           <RuleModal />
       </div>
       <div className={styles.bottom}>
-        {gameList.map((game, i) => (
+        {gameList && gameList.map((game, i) => (
           <RoomCard
             key={i}
             gameId={game.gameId}
@@ -84,6 +86,7 @@ export default function LobbyPage() {
             stage1Time={game.stage1Time}
             stage2Time={game.stage2Time}
             password={game.password}
+            countPerson={1}
           />
         ))}
       </div>

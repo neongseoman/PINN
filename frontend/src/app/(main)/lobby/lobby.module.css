@@ -101,11 +101,20 @@
   justify-content: space-evenly;
   padding-top: 15px;
   box-shadow: 0px 15px 15px 0px rgba(0, 0, 0, 0.5);
+  position: relative;
   &:hover {
     cursor: pointer;
     transform: scale(1.03);
     transition: transform 0.3s ease;
   }
+}
+
+.privateIcon {
+  font-size: 30px;
+  color: var(--Main-Red);
+  position: absolute;
+  bottom: -20px;
+  right: 18px;
 }
 
 .roomInfo {
@@ -134,22 +143,20 @@
 
 .bottomInfo {
   display: flex;
-  width: 285px;
   margin-top: 5px;
   color: white;
   font-size: 10px;
-  font-weight: bold;
 }
 
 .round {
   margin: 0px 10px 0px 0px;
-  background-color: var(--Main-Green);
+  background-color: var(--Main-Light-Green);
   padding: 5px;
 }
 
 .count {
   margin: 0px 10px 0px 0px;
-  background-color: var(--Main-Light-Green);
+  background-color: var(--Main-Green);
   padding: 5px;
 }
 
@@ -399,9 +406,6 @@
 .publicRoomModalWrapper {
   display: flex;
   flex-direction: column;
-  /* justify-content: center; 수직 가운데 정렬 */
-  /* align-items: center; 수평 가운데 정렬 */
-  width: 400px;
   padding: 25px;
   border: none;
   background-color: var(--Main-Navy);

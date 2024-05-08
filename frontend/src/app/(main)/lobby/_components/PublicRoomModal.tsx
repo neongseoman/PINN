@@ -2,20 +2,21 @@
 
 import useUserStore from '@/stores/userStore';
 import { Client, IFrame } from '@stomp/stompjs';
+import { useRouter } from 'next/navigation';
 import { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import { FaQuestionCircle } from "react-icons/fa";
 import styles from '../lobby.module.css';
 
 interface PublicRoomModalProps {
-  gameId: number,
-  roomName: string,
-  setShowModal: Dispatch<SetStateAction<boolean>>,
+  gameId: number
+  roomName: string
+  setShowModal: Dispatch<SetStateAction<boolean>>
 }
 
 export default function PublicRoomModal({ gameId, roomName, setShowModal }: PublicRoomModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const { nickname } = useUserStore()
-
+  const { nickname } = useUserStore();
+  const router = useRouter();
   const clientRef = useRef<Client>(
     new Client({
       brokerURL: process.env.NEXT_PUBLIC_SOCKET_URL,
@@ -26,7 +27,7 @@ export default function PublicRoomModal({ gameId, roomName, setShowModal }: Publ
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
     }),
-  )
+  );
 
   useEffect(() => {
     showModal();
@@ -34,6 +35,10 @@ export default function PublicRoomModal({ gameId, roomName, setShowModal }: Publ
   
   const showModal = () => {
     dialogRef.current?.showModal();
+    clientRef.current.activate();
+    clientRef.current.onConnect = function (_frame: IFrame) {
+      clientRef.current.subscribe(`/game/${gameId}`, () => {})
+    };
   };
 
   const closeModal = () => {
@@ -59,29 +64,23 @@ export default function PublicRoomModal({ gameId, roomName, setShowModal }: Publ
         const responseData = await response.json();
         if (responseData.code === 1000) {
           console.log('공개방 입장 요청 성공!', responseData);
-          // 방 입장
-          // 해당 방으로 이동
-          if (clientRef.current) {
-            clientRef.current.onConnect = function (_frame: IFrame) {
-              clientRef.current.subscribe(`${process.env.NEXT_PUBLIC_SOCKET_URL}/game/${gameId}`, (message: any) => {
-                // const messageResponse = JSON.parse(message.body) as MessageFormat
-                // // console.log(messageResponse)
-                // setMessages((prevMessages) => [...prevMessages, messageResponse])
-              })
-            }
-            clientRef.current.publish({
-              headers: {
-                Auth: localStorage.getItem('accessToken') as string,
-              },
-              destination: `${process.env.NEXT_PUBLIC_SOCKET_URL}/app/game/enter/${gameId}`,
-              body: JSON.stringify({
-                senderNickname: nickname,
-                senderGameId: gameId
-              }),
-            })
-          }
+          
+          clientRef.current.publish({
+            headers: {
+              Auth: localStorage.getItem('accessToken') as string,
+            },
+            destination: `/app/game/enter/${gameId}`,
+            body: JSON.stringify({
+              senderNickname: nickname,
+              senderGameId: gameId
+            }),
+          })
+
+          console.log(`${gameId}번 방으로 입장합니다`)
+          router.push(`/room/${gameId}`)
         } else {
           console.log('공개방 입장 요청 실패!', responseData.code);
+          alert(responseData.message);
         }
       } else {
         console.error('공개방 입장 요청 통신 실패', response);
@@ -90,8 +89,6 @@ export default function PublicRoomModal({ gameId, roomName, setShowModal }: Publ
       console.error('에러 발생: ', error);
     }
   };
-    // 입장 버튼 클릭
-    // `${process.env.NEXT_PUBLIC_SOCKET_URL}/app/game/enter/${gameId}` websocket 구독
 
   return (
     <dialog className={styles.publicRoomModalWrapper} ref={dialogRef}>

@@ -1,18 +1,35 @@
 'use client'
 
+import useUserStore from '@/stores/userStore';
+import { Client, IFrame } from '@stomp/stompjs';
 import Image from "next/image";
+import { useRouter } from 'next/navigation';
 import React, { useRef, useState } from "react";
 import { TiArrowSortedDown } from "react-icons/ti";
 import styles from '../lobby.module.css';
 
 export default function CreateRoomModal() {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const { nickname } = useUserStore()
   const [roomName, setRoomName] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [roundCount, setRoundCount] = useState<number>(3);
   const [stage1Time, setStage1Time] = useState<number>(30);
   const [stage2Time, setStage2Time] = useState<number>(20);
   const [themeId, setThemeId] = useState<number>(1);
+  const [gameId, setGameId] = useState<number|null>(0)
+  const router = useRouter()
+  const clientRef = useRef<Client>(
+    new Client({
+      brokerURL: process.env.NEXT_PUBLIC_SOCKET_URL,
+      debug: function (str: string) {
+        // console.log(str)
+      },
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
+    }),
+  )
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRoomName(event.target.value);
@@ -43,12 +60,17 @@ export default function CreateRoomModal() {
 
   const showModal = () => {
     dialogRef.current?.showModal();
+    clientRef.current.activate();
+    clientRef.current.onConnect = function (_frame: IFrame) {
+      clientRef.current.subscribe(`/game/${gameId}`, () => {})
+    }
   };
 
   const closeModal = () => {
     dialogRef.current?.close();
   };
 
+  // 생성 요청 함수
   const handleSubmit = async () => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/lobby/create`, {
@@ -72,24 +94,35 @@ export default function CreateRoomModal() {
         const responseData = await response.json();
         if (responseData.code === 1000) {
           console.log('게임 생성 성공!', responseData);
-          // 방 입장
-          // 해당 방으로 이동
+          const gameId = responseData.result.gameId
+          clientRef.current.publish({
+            headers: {
+              Auth: localStorage.getItem('accessToken') as string,
+            },
+            destination: `/app/game/enter/${gameId}`,
+            body: JSON.stringify({
+              senderNickname: nickname,
+              senderGameId: gameId
+            }),
+          })
+          if (!roomName || roomName.length > 20 || roomName.length < 1) {
+            alert('방 제목은 1글자 이상, 20글자 이하여야 합니다.');
+            return;
+          } else if (password.length > 8) {
+            alert('비밀번호는 8글자 이하여야 합니다.');
+            return;
+          }
+          console.log(`${gameId}번 방으로 입장합니다`)
+          router.push(`/room/${gameId}`)
         } else {
           console.log('게임 생성 실패!', responseData.code);
+          alert(responseData.message);
         }
       } else {
         console.error('게임 생성 요청 통신 실패', response);
       }
     } catch (error) {
       console.error('에러 발생: ', error);
-    }
-
-    if (!roomName || roomName.length > 20 || roomName.length < 1) {
-      alert('방 제목은 1글자 이상, 20글자 이하여야 합니다.');
-      return;
-    } else if (password.length > 8) {
-      alert('비밀번호는 8글자 이하여야 합니다.');
-      return;
     }
   };
 
