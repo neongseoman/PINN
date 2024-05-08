@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class TeamRoundComponent {
     private int roundNumber; // 라운드 번호
     private int submitStage; // 최종 핀 찍은 스테이지 (1 or 2)
-    private LocalDateTime submitTime; // guess 한 시간
+    private LocalDateTime submitTime; // 마지막 핀 찍은 시간 or Guess 한 시간
     private double submitLat; // 가장 최근(or guess한) 핀 찍은 위도
     private double submitLng; // 가장 최근(or guess한) 핀 찍은 경도
     private int roundScore; // submitLat, submitLng 바탕으로 계산된 점수
