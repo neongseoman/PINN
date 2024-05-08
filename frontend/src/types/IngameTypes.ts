@@ -1,11 +1,13 @@
 export type IngameResponse = RoundInfo | PinLocationInfo
 
+type IngameResponseCode = 1201 | 1202 | 1203 | 1204 | 1205 | 1205
+
 interface RoundInfo {
-  senderDateTime: number
+  senderDateTime: string
   senderNickname: string
   senderGameId: number
   senderTeamId: number
-  code: number
+  code: IngameResponseCode
   msg: string
   gameId: number
   round: number
@@ -17,11 +19,11 @@ interface RoundInfo {
 }
 
 interface PinLocationInfo {
-  senderDateTime: Date
+  senderDateTime: string
   senderNickname: string
   senderGameId: number
   senderTeamId: number
-  code: number
+  code: IngameResponseCode
   msg: string
   gamerId: number
   submitLat: number
