@@ -9,9 +9,9 @@ import com.ssafy.be.common.exception.BaseException;
 import com.ssafy.be.common.model.dto.SocketDTO;
 import com.ssafy.be.common.response.BaseResponse;
 import com.ssafy.be.common.response.BaseResponseStatus;
-import java.util.List;
+import com.ssafy.be.room.model.dto.MoveTeamDTO;
+import com.ssafy.be.room.model.vo.MoveTeamVO;
 import java.util.Map.Entry;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
@@ -82,8 +82,8 @@ public class GameManager {
                 // 팀멤버 객체가 없다면 생성
                 if(team.getValue().getTeamGamers() == null){
                     team.getValue().setTeamGamers(new ConcurrentHashMap<>());
-                } else if(team.getValue().getTeamGamers().size() < 3){
-                    // 팀멤버 객체가 있다면 멤버가 3명 미만
+                } else if(team.getValue().getTeamGamers().size() == 3){
+                    // 팀멤버 객체가 있다면 멤버가 3명이라면 넘어감
                     continue;
                 }
                 // 팀 내 멤버 수 + 1번째 (원래는 DB에 넣고 해당 key id를 넣어야 했음)
@@ -99,6 +99,9 @@ public class GameManager {
                 return teamGamerComponent;
             }
         }
+
+
+
         return null;
     }
 
@@ -112,5 +115,21 @@ public class GameManager {
         ConcurrentHashMap<Integer, TeamGamerComponent> teamGamers = teamComponent.getTeamGamers();
         // remove gamer
         teamGamers.remove(gamerId);
+    }
+
+    // 팀 옮기기위한 method
+    public MoveTeamVO moveTeam(MoveTeamDTO moveTeamDTO, int gamerId) {
+        String nickname = moveTeamDTO.getSenderNickname();
+
+        MoveTeamVO moveTeamVO = MoveTeamVO.builder()
+                .oldTeamId(moveTeamDTO.getOldTeamId())
+                .newTeamId(moveTeamDTO.getNewTeamId())
+                .senderDateTime(moveTeamDTO.getSenderDateTime())
+                .senderNickname(moveTeamDTO.getSenderNickname())
+                .senderGameId(moveTeamDTO.getSenderGameId())
+                .code(1010)
+                .msg(nickname + "님이 " + moveTeamDTO.getSenderTeamId() + "팀에서 " + moveTeamDTO)
+                .build();
+        return moveTeamVO;
     }
 }
