@@ -141,13 +141,18 @@ public class GameManager {
         GameComponent gameComponent = games.get(moveTeamDTO.getSenderGameId());
         // 팀
         ConcurrentHashMap<Integer, TeamComponent> teams = gameComponent.getTeams();
-        // 들어가려는 팀에 공간이 있는지 에러처리
-        if(teams.size() == 3){
+        TeamComponent oldTeam = teams.get(moveTeamDTO.getOldTeamId());
+        TeamComponent newTeam = teams.get(moveTeamDTO.getNewTeamId());
 
-        }
+        // 들어가려는 팀에 공간이 있는지 에러처리
+//        if(newTeam.size() == 3){
+//
+//        }
 
         // 공간이 있다면
 
+
+        // VO 생성
         MoveTeamVO moveTeamVO = MoveTeamVO.builder()
                 .oldTeamId(moveTeamDTO.getOldTeamId())
                 .newTeamId(moveTeamDTO.getNewTeamId())
@@ -155,7 +160,7 @@ public class GameManager {
                 .senderNickname(moveTeamDTO.getSenderNickname())
                 .senderGameId(moveTeamDTO.getSenderGameId())
                 .code(1010)
-                .msg(nickname + "님이 " + moveTeamDTO.getSenderTeamId() + "팀에서 " + moveTeamDTO)
+                .msg(nickname + "님이 " + moveTeamDTO.getSenderTeamId() + "팀에서 " + moveTeamDTO.getNewTeamId() + "팀으로 이동했습니다.")
                 .build();
         return moveTeamVO;
     }
