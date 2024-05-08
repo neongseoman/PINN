@@ -1,4 +1,4 @@
-package com.ssafy.be.game.model;
+package com.ssafy.be.game.model.dto.hint;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

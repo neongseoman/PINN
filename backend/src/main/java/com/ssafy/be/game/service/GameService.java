@@ -8,7 +8,7 @@ public interface GameService {
 
     GameStartVO startGame(int gamerId, GameStartRequestDTO gameStartRequestDTO) throws BaseException;
 
-    GameInitVO initGame(int gamerId, GameInitRequestDTO gameInitRequestDTO) throws BaseException;
+    GameInitVO initGame(int gamerId, GameStartRequestDTO gameInitRequestDTO) throws BaseException;
 
     RoundInitVO findStage1Info(int gamerId, RoundInitRequestDTO roundInitRequestDTO) throws BaseException;
 

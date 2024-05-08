@@ -12,10 +12,12 @@ import lombok.ToString;
 @ToString
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class PinGuessRequestDTO extends SocketDTO {
+    private int roundNumber; // 현재 라운드
+    private int guessStage; // 현재 스테이지
 
-
-    public PinGuessRequestDTO(String senderNickname, int senderGameId, int senderTeamId) {
-        // 추가한 변수들 넣는거 잊지 말기!
+    public PinGuessRequestDTO(String senderNickname, int senderGameId, int senderTeamId, int roundNumber, int guessStage) {
         super(senderNickname, senderGameId, senderTeamId);
+        setRoundNumber(roundNumber);
+        setGuessStage(guessStage);
     }
 }
