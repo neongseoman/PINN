@@ -8,9 +8,9 @@ import { IoIosLock } from "react-icons/io";
 import styles from '../lobby.module.css';
 
 interface PrivateRoomModalProps {
-  gameId: number,
-  roomName: string,
-  setShowModal: Dispatch<SetStateAction<boolean>>,
+  gameId: number
+  roomName: string
+  setShowModal: Dispatch<SetStateAction<boolean>>
 }
 
 export default function PrivateRoomModal({ gameId, roomName, setShowModal }: PrivateRoomModalProps) {
@@ -31,12 +31,12 @@ export default function PrivateRoomModal({ gameId, roomName, setShowModal }: Pri
   );
 
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(event.target.value);
-  };
+    setPassword(event.target.value)
+  }
 
   useEffect(() => {
-    showModal();
-  }, []);
+    showModal()
+  }, [])
 
   const showModal = () => {
     dialogRef.current?.showModal();
@@ -48,8 +48,8 @@ export default function PrivateRoomModal({ gameId, roomName, setShowModal }: Pri
 
   const closeModal = () => {
     setShowModal(false)
-    dialogRef.current?.close();
-  };
+    dialogRef.current?.close()
+  }
 
   const enterPassword = async () => {
     try {
@@ -59,14 +59,11 @@ export default function PrivateRoomModal({ gameId, roomName, setShowModal }: Pri
           'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('accessToken') as string}`
         },
-        body: JSON.stringify({
-          password: password
-        }),
-      });
+      )
 
       if (response.ok) {
-        console.log('비밀방 입장 요청 통신 성공');
-        const responseData = await response.json();
+        console.log('비밀방 입장 요청 통신 성공')
+        const responseData = await response.json()
         if (responseData.code === 1000) {
           console.log('비밀방 입장 요청 성공!', responseData);
           
@@ -88,21 +85,34 @@ export default function PrivateRoomModal({ gameId, roomName, setShowModal }: Pri
           alert(responseData.message);
         }
       } else {
-        console.error('비밀방 입장 요청 통신 실패', response);
+        console.error('비밀방 입장 요청 통신 실패', response)
       }
     } catch (error) {
-      console.error('에러 발생: ', error);
+      console.error('에러 발생: ', error)
     }
   };
 
   return (
     <dialog className={styles.privateRoomModalWrapper} ref={dialogRef}>
       <p className={styles.modalTitle}>{roomName}</p>
-      <hr className={styles.line}/>
-      <div className={styles.passwordWrapper}><IoIosLock /><input className={styles.inputText} type="text" value={password} placeholder='비밀번호를 입력해 주세요' onChange={handlePasswordChange} /></div>
+      <hr className={styles.line} />
+      <div className={styles.passwordWrapper}>
+        <IoIosLock />
+        <input
+          className={styles.inputText}
+          type="text"
+          value={password}
+          placeholder="비밀번호를 입력해 주세요"
+          onChange={handlePasswordChange}
+        />
+      </div>
       <div className={styles.modalButtons}>
-        <p className={styles.exit} onClick={closeModal}>취소</p>
-        <p className={styles.start} onClick={enterPassword}>입장 ➜</p>
+        <p className={styles.exit} onClick={closeModal}>
+          취소
+        </p>
+        <p className={styles.start} onClick={enterPassword}>
+          입장 ➜
+        </p>
       </div>
     </dialog>
   )
