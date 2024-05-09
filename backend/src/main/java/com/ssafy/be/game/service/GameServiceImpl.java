@@ -54,7 +54,7 @@ public class GameServiceImpl implements GameService {
             log.info(gameId);
             // 요청 보낸 gamer_id가 GM/game의 leader_id와 일치하는지 확인
             if (gamerId != existGame.getLeaderId()) {
-                throw new BaseException(null); // TODO: exception 타입 정의
+                throw new BaseException(BaseResponseStatus.OOPS);
             }
 
             GameStartVO gameStartVO = new GameStartVO(gameStartRequestDTO.getSenderDateTime(), gameStartRequestDTO.getSenderNickname(), gameStartRequestDTO.getSenderGameId(), gameStartRequestDTO.getSenderTeamId(), gameStartRequestDTO.getCode(), gameStartRequestDTO.getMsg());
@@ -76,7 +76,7 @@ public class GameServiceImpl implements GameService {
             return gameStartVO;
         } catch (Exception e) {
 //            e.printStackTrace();
-            throw new BaseException(null);
+            throw new BaseException(BaseResponseStatus.OOPS);
         }
     }
 
@@ -101,7 +101,7 @@ public class GameServiceImpl implements GameService {
         try {
             // 요청 보낸 gamer_id가 GM/game의 leader_id와 일치하는지 확인
             if (gamerId != existGame.getLeaderId()) {
-                throw new BaseException(null); // TODO: exception 타입 정의
+                throw new BaseException(BaseResponseStatus.OOPS);
             }
 
             GameInitVO gameInitVO = new GameInitVO(gameInitRequestDTO.getSenderDateTime(), gameInitRequestDTO.getSenderNickname(), gameInitRequestDTO.getSenderGameId(), gameInitRequestDTO.getSenderTeamId(), gameInitRequestDTO.getCode(), gameInitRequestDTO.getMsg());
@@ -158,7 +158,7 @@ public class GameServiceImpl implements GameService {
                     // hintTypeId 바탕으로 hintTypeName 받아오기
                     HintType existHintType = hintTypeRepository.findById(hintData.getHintTypeId()).orElse(null);
                     if (existHintType == null) {
-                        throw new BaseException(null); // TODO: exception 타입 정의
+                        throw new BaseException(BaseResponseStatus.OOPS); // TODO: exception 타입 정의
                     }
                     HintTypeDTO hintTypeDTO = new HintTypeDTO(existHintType);
 
@@ -200,7 +200,7 @@ public class GameServiceImpl implements GameService {
             return gameInitVO;
         } catch (Exception e) {
 //            e.printStackTrace();
-            throw new BaseException(null); // TODO: exception 타입 정의
+            throw new BaseException(BaseResponseStatus.OOPS);
         }
     }
 
@@ -218,7 +218,7 @@ public class GameServiceImpl implements GameService {
         try {
             // 요청 보낸 gamer_id가 GM/game의 leader_id와 일치하는지 확인
             if (gamerId != existGame.getLeaderId()) {
-                throw new BaseException(null);
+                throw new BaseException(BaseResponseStatus.OOPS);
             }
 
             RoundInitVO roundInitVO = new RoundInitVO(roundInitRequestDTO.getSenderDateTime(), roundInitRequestDTO.getSenderNickname(), roundInitRequestDTO.getSenderGameId(), roundInitRequestDTO.getSenderTeamId(), -1, null);
@@ -247,7 +247,7 @@ public class GameServiceImpl implements GameService {
             return roundInitVO;
         } catch (Exception e) {
 //            e.printStackTrace();
-            throw new BaseException(null);
+            throw new BaseException(BaseResponseStatus.OOPS);
         }
     }
 
@@ -263,7 +263,7 @@ public class GameServiceImpl implements GameService {
         try {
             // 요청 보낸 gamer_id가 GM/game의 leader_id와 일치하는지 확인
             if (gamerId != existGame.getLeaderId()) {
-                throw new BaseException(null);
+                throw new BaseException(BaseResponseStatus.OOPS); // TODO: EXCEPTION TYPE 정의
             }
 
             Stage2InitVO stage2InitVO = new Stage2InitVO(stage2InitRequestDTO.getSenderDateTime(), stage2InitRequestDTO.getSenderNickname(), stage2InitRequestDTO.getSenderGameId(), stage2InitRequestDTO.getSenderTeamId(), stage2InitRequestDTO.getCode(), stage2InitRequestDTO.getMsg());
@@ -288,7 +288,7 @@ public class GameServiceImpl implements GameService {
             return stage2InitVO;
         } catch (Exception e) {
 //            e.printStackTrace();
-            throw new BaseException(null);
+            throw new BaseException(BaseResponseStatus.OOPS);
         }
     }
 
@@ -354,7 +354,7 @@ public class GameServiceImpl implements GameService {
         // senderTeamId 팀이 roundNumber 라운드에 한 번이라도 핀 찍은 적 있는지 확인
         ConcurrentHashMap<Integer, TeamRoundComponent> teamRounds = existGame.getTeams().get(pinGuessRequestDTO.getSenderTeamId()).getTeamRounds();
         if (teamRounds == null) {
-            throw new BaseException(null); // TODO: exception 타입 정의
+            throw new BaseException(BaseResponseStatus.OOPS); // TODO: exception 타입 정의
         }
         TeamRoundComponent guessTeamRound = teamRounds.get(pinGuessRequestDTO.getRoundNumber());
         // 이미 guess한 팀 아닌지 확인
@@ -403,7 +403,7 @@ public class GameServiceImpl implements GameService {
             // guess한 팀인지 확인
             if (teamRound.isGuessed()) {
                 // CASE: Guess 한 팀
-                
+
 
             } else {
                 // CASE: Guess 안 한 팀
