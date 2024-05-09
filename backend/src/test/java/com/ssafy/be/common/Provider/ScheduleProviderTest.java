@@ -1,5 +1,7 @@
 package com.ssafy.be.common.Provider;
 
+import com.ssafy.be.common.exception.BaseException;
+import com.ssafy.be.common.response.BaseResponseStatus;
 import com.ssafy.be.game.model.dto.GameStartRequestDTO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,7 +38,7 @@ class ScheduleProviderTest {
 
         // startGame 메서드를 호출하고 CompletableFuture를 받습니다.
         log.info(String.valueOf(startTime));
-        CompletableFuture<Integer> future = scheduleProvider.startGame(gameId);
+        CompletableFuture<Integer> future = scheduleProvider.startGame(gameId, 0);
 
         // CompletableFuture의 결과를 기다리고 완료 시각을 기록합니다.
         int completedGameId = future.get(20, TimeUnit.SECONDS); // 최대 10초까지 기다립니다.
@@ -49,17 +51,17 @@ class ScheduleProviderTest {
         assertEquals(gameId, completedGameId); // 반환된 게임 ID가 일치하는지 확인
         assertTrue(secondsDifference >= 5); // 최소 5초 지연이 있었는지 확인
 
-        System.out.printf("Expected delay: " +5 + " seconds, Actual delay: %d seconds%n", secondsDifference);
+        System.out.printf("Expected delay: " + 5 + " seconds, Actual delay: %d seconds%n", secondsDifference);
     }
 
     @DisplayName("점수 페이지")
     @Test
-    void nextRound()  throws ExecutionException, InterruptedException, TimeoutException  {
+    void nextRound() throws ExecutionException, InterruptedException, TimeoutException {
         LocalDateTime startTime = LocalDateTime.now();
 
         // startGame 메서드를 호출하고 CompletableFuture를 받습니다.
         log.info(String.valueOf(startTime));
-        CompletableFuture<Integer> future = scheduleProvider.scheduleFuture(gameId,testSecond);
+        CompletableFuture<Integer> future = scheduleProvider.scheduleFuture(gameId, testSecond);
 
         // CompletableFuture의 결과를 기다리고 완료 시각을 기록합니다.
         int completedGameId = future.get(20, TimeUnit.SECONDS); // 최대 10초까지 기다립니다.
@@ -72,7 +74,7 @@ class ScheduleProviderTest {
         assertEquals(gameId, completedGameId); // 반환된 게임 ID가 일치하는지 확인
         assertTrue(secondsDifference >= testSecond); // 최소 testSecond초 지연이 있었는지 확인
 
-        System.out.printf("Expected delay: " +testSecond + " seconds, Actual delay: %d seconds%n", secondsDifference);
+        System.out.printf("Expected delay: " + testSecond + " seconds, Actual delay: %d seconds%n", secondsDifference);
     }
 
     @DisplayName("라운드 1개가 소비하는 시간 stage1+stage2+점수")
@@ -81,20 +83,54 @@ class ScheduleProviderTest {
         // given
         LocalDateTime startTime = LocalDateTime.now();
         GameStartRequestDTO requestDTO =
-                new GameStartRequestDTO("testUser",1,
-                        1,1,1,2,3,6);
+                new GameStartRequestDTO("testUser", 1,
+                        1, 1, 1, 2, 3, 4);
 
         //when
-        scheduleProvider.roundScheduler(1,requestDTO,0).get();
+        int result = scheduleProvider.roundScheduler(1, requestDTO, 1).get();
 //        log.info(String.valueOf(LocalDateTime.now()));
         LocalDateTime endTime = LocalDateTime.now();
         // 시작과 완료 시각의 차이를 구합니다.
         long secondsDifference = ChronoUnit.SECONDS.between(startTime, endTime);
-        log.info(String.valueOf(secondsDifference));
-        int expectDelay = 2+3+6;
+//        log.info(String.valueOf(secondsDifference));
+        int expectDelay = 2 + 3 + 4;
         // then
-        assertEquals(requestDTO.getStage1Time()+requestDTO.getStage2Time()+requestDTO.getScorePageTime(), expectDelay); // 반환된 게임 ID가 일치하는지 확인
-        assertTrue(secondsDifference >= 11); // 최소 testSecond*3초 지연이 있었는지 확인
+        assertEquals(1, result); // 3라운드까지 잘 카운트가 되엇나?
+        assertEquals(requestDTO.getStage1Time() + requestDTO.getStage2Time() + requestDTO.getScorePageTime(), expectDelay); // 반환된 게임 ID가 일치하는지 확인
+        assertTrue(secondsDifference >= 9); // 최소 testSecond*3초 지연이 있었는지 확인
+
+        System.out.printf("Expected delay: " + expectDelay + " seconds, Actual delay: %d seconds%n", secondsDifference);
+
+    }
+
+    @DisplayName("3라운드는 제대로 작동하나?")
+    @Test
+    void _test_three_round_takes_32sec() throws ExecutionException, InterruptedException, TimeoutException {
+        // given
+        LocalDateTime startTime = LocalDateTime.now();
+        GameStartRequestDTO requestDTO =
+                new GameStartRequestDTO("testUser", 1,
+                        1, 1, 1, 2, 3, 4);
+
+        //when
+        int result = scheduleProvider.startGame(requestDTO.getGameId(), 0
+            ).thenCompose(r ->
+                    scheduleProvider.roundScheduler(gameId, requestDTO, r + 1)
+            ).thenCompose(r ->
+                    scheduleProvider.roundScheduler(gameId, requestDTO, r + 1)
+            ).thenCompose(r ->
+                    scheduleProvider.roundScheduler(gameId, requestDTO, r + 1)
+            ).get();
+//        log.info(String.valueOf(LocalDateTime.now()));
+        LocalDateTime endTime = LocalDateTime.now();
+        // 시작과 완료 시각의 차이를 구합니다.
+        long secondsDifference = ChronoUnit.SECONDS.between(startTime, endTime);
+//        log.info(String.valueOf(secondsDifference));
+        int expectDelay = (2 + 3 + 4) * 3 + 5;
+        // then
+        assertEquals(3, result); // 3라운드까지 잘 카운트가 되엇나?
+//        assertEquals(requestDTO.getStage1Time() + requestDTO.getStage2Time() + requestDTO.getScorePageTime(), expectDelay); // 반환된 게임 ID가 일치하는지 확인
+        assertTrue(secondsDifference >= expectDelay); // 최소 testSecond*3초 지연이 있었는지 확인
 
         System.out.printf("Expected delay: " + expectDelay + " seconds, Actual delay: %d seconds%n", secondsDifference);
 

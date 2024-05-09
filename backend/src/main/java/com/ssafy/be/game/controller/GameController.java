@@ -46,15 +46,13 @@ public class GameController {
         int currentRound =0;
 
         // round가 늘어난다면 이걸 늘리면 될 것 같음.
-        scheduleProvider.startGame(gameInitVO.getGameId()
+        scheduleProvider.startGame(gameInitVO.getGameId(),currentRound
                 ).thenCompose(r ->
-                        scheduleProvider.roundScheduler(gameId, gameStartRequestDTO, currentRound)
+                    scheduleProvider.roundScheduler(gameId, gameStartRequestDTO, r+1)
                 ).thenCompose(r ->
-                        scheduleProvider.roundScheduler(gameId, gameStartRequestDTO, currentRound)
+                        scheduleProvider.roundScheduler(gameId, gameStartRequestDTO, r+1)
                 ).thenCompose(r ->
-                        scheduleProvider.roundScheduler(gameId, gameStartRequestDTO, currentRound)
-                ).thenCompose( r ->
-                        scheduleProvider.gameFinishScheduler(gameId,gameStartRequestDTO)
+                        scheduleProvider.roundScheduler(gameId, gameStartRequestDTO, r+1)
                 ).exceptionally(ex -> {
                     log.error("Error occurred in the CompletableFuture chain: ", ex);
                     throw new BaseException(BaseResponseStatus.OOPS, gameId);
