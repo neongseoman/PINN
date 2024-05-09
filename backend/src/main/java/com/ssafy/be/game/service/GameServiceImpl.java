@@ -449,7 +449,7 @@ public class GameServiceImpl implements GameService {
         // TODO: 모든 team의 teamRound를 DB에 insert
 
         // GameManager의 gameComponent의 roundResults에 teamRoundResults 담아서 gm이 라운드 결과 들고 있게 하기!
-        // TODO: gm도 gm인데 DB에 저장해야 해...
+        // TODO: gm도 gm인데 DB에도 저장해야 해...
         existGame.getRoundResults().add(teamRoundResults);
 
         // RF VO에 TRRs 담아서 리턴
@@ -459,14 +459,29 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public RoundFinishVO getRoundResult(RoundFinishRequestDTO roundFinishRequestDTO) throws BaseException {
-        return null;
+    public RoundResultVO getRoundResult(int gamerId, RoundResultRequestDTO roundResultRequestDTO) throws BaseException {
+        int gameId = roundResultRequestDTO.getGameId();
+        GameComponent existGame = gameManager.getGames().get(gameId);
+        if (existGame == null) { // 존재하는 게임인지 확인
+            throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
+        }
+
+        // TODO: gamerId가 game 구성원인지 확인
+
+        List<TeamRoundComponent> roundResult = existGame.getRoundResults().get(roundResultRequestDTO.getRoundNumber() - 1);
+
+        RoundResultVO roundResultVO = new RoundResultVO();
+        roundResultVO.setGameId(roundResultRequestDTO.getGameId());
+        roundResultVO.setRoundNumber(roundResultRequestDTO.getRoundNumber());
+        roundResultVO.setRoundResult(roundResult);
+
+        return roundResultVO;
     }
 
 
 ///////
 
-    // teamRoundComponent 리스트를 totalScore 기준으로 내림차순으로 정렬
+    // List<TeamRoundComponent> 를 totalScore 기준으로 내림차순 정렬
     private static void sortByTotalScore(List<TeamRoundComponent> teamRoundResults) {
         teamRoundResults.sort(new Comparator<TeamRoundComponent>() {
             @Override
