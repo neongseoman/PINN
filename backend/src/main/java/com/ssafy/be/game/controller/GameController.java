@@ -46,7 +46,7 @@ public class GameController {
         int currentRound =0;
 
         // round가 늘어난다면 이걸 늘리면 될 것 같음.
-        scheduleProvider.startGame(gameStartRequestDTO.getGameId()
+        scheduleProvider.startGame(gameInitVO.getGameId()
                 ).thenCompose(r ->
                         scheduleProvider.roundScheduler(gameId, gameStartRequestDTO, currentRound)
                 ).thenCompose(r ->

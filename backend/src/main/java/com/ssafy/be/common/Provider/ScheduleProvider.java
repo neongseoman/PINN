@@ -27,11 +27,11 @@ public class ScheduleProvider {
 
     // 5초 지났고 게임 시작합시다.
     public CompletableFuture<Integer> startGame(int gameId) throws BaseException {
+        log.info("{} game start after 5 sec : {}", gameId, LocalDateTime.now());
+        sendingOperations.convertAndSend("/game/sse/" + gameId,
+                new ServerSendEvent(ServerEvent.START)); // send Hint and Stage 1 End # 1203
         CompletableFuture<Integer> future = new CompletableFuture<>();
         executorService.schedule(() -> {
-            log.info("{} game start after 5 sec : {}", gameId, LocalDateTime.now());
-            sendingOperations.convertAndSend("/game/sse/" + gameId,
-                    new ServerSendEvent(ServerEvent.START)); // send Hint and Stage 1 End # 1203
             future.complete(gameId);
         }, 5, TimeUnit.SECONDS);
         return future;
