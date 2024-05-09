@@ -104,13 +104,13 @@ export default function GamePage({ params }: { params: { gameId: string } }) {
 
     clientRef.current.activate()
 
-    clientRef.current.publish({
-      headers: {
-        Auth: localStorage.getItem('accessToken') as string,
-      },
-      destination: gameStartPublishUrl,
-      body: JSON.stringify(gameStartRequest),
-    })
+    // clientRef.current.publish({
+    //   headers: {
+    //     Auth: localStorage.getItem('accessToken') as string,
+    //   },
+    //   destination: gameStartPublishUrl,
+    //   body: JSON.stringify(gameStartRequest),
+    // })
 
     return () => {
       clientRef.current.deactivate()
