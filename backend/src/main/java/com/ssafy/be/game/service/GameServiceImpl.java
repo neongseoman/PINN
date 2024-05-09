@@ -51,13 +51,10 @@ public class GameServiceImpl implements GameService {
             int gameId = gameStartRequestDTO.getGameId();
             GameComponent existGame = gameManager.getGames().get(gameId);
             if (existGame == null) {
-                log.info("여기");
                 throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
             }
             // 요청 보낸 gamer_id가 GM/game의 leader_id와 일치하는지 확인
             if (gamerId != existGame.getLeaderId()) {
-
-                log.info("저기");
                 throw new BaseException(BaseResponseStatus.OOPS);
             }
 
@@ -78,11 +75,13 @@ public class GameServiceImpl implements GameService {
 
 //            log.info(gameStartRequestDTO);
             return gameStartVO;
-//        } catch (BaseException e) {
-////            log.error("Socket Error");
-//            throw new SocketException(e.getStatus(),gamerId); // Socket에도 던지고 싶다면 GamerID를 주세요.
+        } catch (BaseException e) {
+//            log.error("Socket Error");
+            e.printStackTrace();
+            throw new BaseException(e.getStatus(),gamerId); // Socket에도 던지고 싶다면 GamerID를 주세요.
         } catch(Exception e){
-            throw new BaseException(BaseResponseStatus.OOPS);
+            e.printStackTrace();
+            throw new BaseException(BaseResponseStatus.OOPS,gamerId);
         }
     }
 
@@ -203,9 +202,13 @@ public class GameServiceImpl implements GameService {
             gameInitVO.setStartedTime(existGame.getStartedTime());
 
             return gameInitVO;
-        } catch (Exception e) {
-//            e.printStackTrace();
-            throw new BaseException(BaseResponseStatus.OOPS);
+        } catch (BaseException e) {
+//            log.error("Socket Error");
+            e.printStackTrace();
+            throw new BaseException(e.getStatus(),gamerId); // Socket에도 던지고 싶다면 GamerID를 주세요.
+        } catch(Exception e){
+            e.printStackTrace();
+            throw new BaseException(BaseResponseStatus.OOPS,gamerId);
         }
     }
 
@@ -250,9 +253,13 @@ public class GameServiceImpl implements GameService {
             roundInitVO.setHints(stage1Hints);
 
             return roundInitVO;
-        } catch (Exception e) {
-//            e.printStackTrace();
-            throw new BaseException(BaseResponseStatus.OOPS);
+        } catch (BaseException e) {
+//            log.error("Socket Error");
+            e.printStackTrace();
+            throw new BaseException(e.getStatus(),gamerId); // Socket에도 던지고 싶다면 GamerID를 주세요.
+        } catch(Exception e){
+            e.printStackTrace();
+            throw new BaseException(BaseResponseStatus.OOPS,gamerId);
         }
     }
 
@@ -291,9 +298,13 @@ public class GameServiceImpl implements GameService {
             stage2InitVO.setHints(stage2Hints);
 
             return stage2InitVO;
-        } catch (Exception e) {
-//            e.printStackTrace();
-            throw new BaseException(BaseResponseStatus.OOPS);
+        }  catch (BaseException e) {
+//            log.error("Socket Error");
+            e.printStackTrace();
+            throw new BaseException(e.getStatus(),gamerId); // Socket에도 던지고 싶다면 GamerID를 주세요.
+        } catch(Exception e){
+            e.printStackTrace();
+            throw new BaseException(BaseResponseStatus.OOPS,gamerId);
         }
     }
 

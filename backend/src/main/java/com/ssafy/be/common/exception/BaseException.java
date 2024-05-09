@@ -11,9 +11,14 @@ import org.slf4j.LoggerFactory;
 public class BaseException extends RuntimeException{
     private static final Logger log = LoggerFactory.getLogger(BaseException.class);
     private BaseResponseStatus status;
+    private int gamerId;
     public BaseException(BaseResponseStatus status) {
         this.status = status;
     }
 
+    public BaseException(BaseResponseStatus status, int gamerId) {
+        this.status = status;
+        this.gamerId = gamerId;
+    }
 
 }

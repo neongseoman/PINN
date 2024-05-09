@@ -59,14 +59,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 //        sendingOperations.convertAndSend("/user/error/2",ex);
 //    }
 
-    @MessageExceptionHandler(SocketException.class)
-    public void StompMessageExceptionHandler(SocketException ex) {
+    @MessageExceptionHandler(BaseException.class)
+    public void StompMessageExceptionHandler(BaseException ex) {
         log.error("MessageException : {}, {}", ex.getStatus(),ex.getGamerId());
-//        ex.printStackTrace(); // 나중에 지우세
-//        sendingOperations.convertAndSendToUser(principal.getName(),"/user/error/"+ex.getGamerId(),ex.getStatus());
+        ex.printStackTrace(); // 나중에 지우세
         sendingOperations.convertAndSend("/user/error/"+ex.getGamerId(),
                 new ExceptionReturn(ex.getStatus().getCode(), ex.getStatus().getMessage()));
     }
+
+//    @MessageExceptionHandler(SocketException.class)
+//    public void StompMessageExceptionHandler(SocketException ex) {
+//        log.error("MessageException : {}, {}", ex.getStatus(),ex.getGamerId());
+//        ex.printStackTrace(); // 나중에 지우세
+////        sendingOperations.convertAndSendToUser(principal.getName(),"/user/error/"+ex.getGamerId(),ex.getStatus());
+//        sendingOperations.convertAndSend("/user/error/"+ex.getGamerId(),
+//                new ExceptionReturn(ex.getStatus().getCode(), ex.getStatus().getMessage()));
+//    }
 
 
 //    @ExceptionHandler(Exception.class)

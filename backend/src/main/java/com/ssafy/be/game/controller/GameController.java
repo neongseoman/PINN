@@ -78,7 +78,7 @@ public class GameController {
             return scheduleProvider.scheduleFuture(gameInitVO.getGameId(), 5); // 방으로 돌아가라
         }).exceptionally(ex -> {
             log.error("Error occurred in the CompletableFuture chain: ", ex);
-            throw new SocketException(BaseResponseStatus.OOPS,gamerId);
+            throw new BaseException(BaseResponseStatus.OOPS,gamerId);
         });
     }
 

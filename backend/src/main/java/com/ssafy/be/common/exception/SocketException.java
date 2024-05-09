@@ -7,8 +7,7 @@ import lombok.Getter;
 public class SocketException extends BaseException{
     private int gamerId;
     public SocketException(BaseResponseStatus status, int gamerId) {
-        super(status);
-        this.gamerId = gamerId;
+        super(status);        this.gamerId = gamerId;
 
     }
 }
