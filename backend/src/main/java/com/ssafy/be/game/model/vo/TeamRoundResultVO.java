@@ -29,7 +29,7 @@ public class TeamRoundResultVO implements Comparable<TeamRoundResultVO> { // 각
     private double submitLng; // 가장 최근(or guess한) 핀 찍은 경도
 
     @Override
-    public int compareTo(@NotNull TeamRoundResultVO o) {
-        return 0;
+    public int compareTo(@NotNull TeamRoundResultVO o) { // 정렬 기준: 현 라운드 점수 내림차순
+        return o.roundScore - this.roundScore;
     }
 }

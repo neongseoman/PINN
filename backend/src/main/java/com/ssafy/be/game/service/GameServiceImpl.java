@@ -16,9 +16,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -39,6 +37,8 @@ public class GameServiceImpl implements GameService {
         this.hintRepository = hintRepository;
         this.hintTypeRepository = hintTypeRepository;
     }
+
+    private final static int NOT_GUESSED = 3;
 
     /////
     // TODO: BaseException에 임시로 null 넣어둔 거 exception 종류에 맞게 수정
@@ -75,7 +75,7 @@ public class GameServiceImpl implements GameService {
             return gameStartVO;
         } catch (Exception e) {
 //            log.error("Socket Error");
-            throw new BaseException(BaseResponseStatus.OOPS,gamerId); // Socket에도 던지고 싶다면 GamerID를 주세요.
+            throw new BaseException(BaseResponseStatus.OOPS, gamerId); // Socket에도 던지고 싶다면 GamerID를 주세요.
         }
     }
 
@@ -375,7 +375,6 @@ public class GameServiceImpl implements GameService {
         pinGuessVO.setCodeAndMsg(1116, "소속 팀의 현재 라운드 Guess가 완료되었습니다.");
 
         return pinGuessVO;
-
     }
 
     @Override
@@ -387,8 +386,13 @@ public class GameServiceImpl implements GameService {
             throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
         }
 
-        // 모든 팀의 teamRound 받아오기
+        // 모든 팀 정보 받아오기
         ConcurrentHashMap<Integer, TeamComponent> teams = existGame.getTeams();
+
+        // 현 라운드 결과 담을 teamRoundResults 생성
+        List<TeamRoundResultVO> teamRoundResults = new ArrayList<>();
+
+        // 팀별로 TeamRoundResultVO 만들어서 teamRoundResults에 채우기
         for (int i = 1; i <= existGame.getTeamCount(); ++i) {
             TeamComponent team = teams.get(i);
             if (team.getTeamGamers() == null || team.getTeamGamers().isEmpty()) { // teamGamers가 없거나 0명인 경우, 유효하지 않은 팀으로 간주
@@ -398,39 +402,75 @@ public class GameServiceImpl implements GameService {
             // i팀의 현재 라운드 최신 핀 위치 정보
             TeamRoundComponent teamRound = team.getTeamRounds().get(roundFinishRequestDTO.getRoundNumber());
 
-            // guess한 팀인지 확인
-            if (teamRound.isGuessed()) {
-                // CASE: Guess 한 팀
+            // i팀의 현재 라운드 결과 담을 TRR VO 생성
+            TeamRoundResultVO teamRoundResult = new TeamRoundResultVO();
 
+            // TRR VO 채우기
+            if (!teamRound.isGuessed()) { // guess 안 한 팀인 경우
+                // teamRound의 submitTime, submitStage를 '라운드 종료' 시점으로 업데이트
+                teamRound.setSubmitTime(roundFinishRequestDTO.getSenderDateTime());
+                teamRound.setSubmitStage(NOT_GUESSED); // TODO: guess 안 한 팀의 submitStage 어떻게 처리할 것인지 결정해야 함!
 
-            } else {
-                // CASE: Guess 안 한 팀
-
-                // 핀 찍은 적 있는 팀인지 확인
-                if (teamRound.getSubmitTime() == null) {
-                    // CASE: 핀 찍은 적 없는 팀
-
-                    // 0점 부여
-                    teamRound.setRoundScore(0);
-                    // TeamRoundResultVO에 정보 세팅
-
-                } else {
-                    // CASE: 핀 찍은 적 있으나 guess 누르지 않은 팀
-
-                    // submitTime이랑 submitStage 업데이트하고 guess 처리
-
-                    //
+                if (teamRound.getSubmitLat() == -1 || teamRound.getSubmitLng() == -1) { // 핀 한 번도 안 찍고 guess도 안 한 팀인 경우
+                    teamRound.setRoundScore(0); // 0점 부여
                 }
             }
+            team.setFinalScore(team.getFinalScore() + teamRound.getRoundScore()); // team의 획득 총점 업데이트
+            setTeamRoundResult(team, teamRound, teamRoundResult, roundFinishRequestDTO.getRoundNumber());
 
-
+            // 다 채운 TRR VO를 teamRoundResults 리스트에 추가
+            teamRoundResults.add(teamRoundResult);
         }
 
-        return null;
+        // 다 채운 TRRs 리스트를 roundScore 기준으로 정렬 (현 랭킹)
+        Collections.sort(teamRoundResults);
+        // roundScore 정렬 기준으로 각 teamRoundResult의 roundRank 채우기
+        for (int i = 1; i <= teamRoundResults.size(); ++i) {
+            teamRoundResults.get(i - 1).setRoundRank(i);
+        }
+
+        // totalScore 기준으로 정렬 (종합 랭킹)
+        sortByTotalScore(teamRoundResults);
+        // totalScore 정렬 기준으로 각 teamRoundResult의 totalRank 채우기
+        for (int i = 1; i <= teamRoundResults.size(); ++i) {
+            teamRoundResults.get(i - 1).setTotalRank(i);
+        }
+
+        // TODO: 모든 team의 finalRank 업데이트 - 근데 이게 라운드 종료 시마다 필요한 작업인지는 더 생각해봐야 함
+
+        // TODO: 모든 team의 teamRound를 DB에 insert
+
+        // RF VO에 TRRs 담아서 리턴
+        RoundFinishVO roundFinishVO = new RoundFinishVO(roundFinishRequestDTO.getSenderNickname(), roundFinishRequestDTO.getSenderGameId(), roundFinishRequestDTO.getSenderTeamId(), teamRoundResults);
+        roundFinishVO.setCodeAndMsg(1117, roundFinishRequestDTO.getRoundNumber() + "라운드 결과가 정상 계산되었습니다.");
+        return roundFinishVO;
     }
 
 
 ///////
+
+    // teamRoundResultVO 리스트를 totalScore 기준으로 내림차순으로 정렬
+    private static void sortByTotalScore(List<TeamRoundResultVO> teamRoundResults) {
+        teamRoundResults.sort(new Comparator<TeamRoundResultVO>() {
+            @Override
+            public int compare(TeamRoundResultVO o1, TeamRoundResultVO o2) {
+                return o2.getTotalScore() - o1.getTotalScore(); // totalScore를 기준으로 내림차순으로 정렬
+            }
+        });
+    }
+
+    // team, teamRound 기반으로 teamRoundResult에 데이터 채움
+    private void setTeamRoundResult(TeamComponent team, TeamRoundComponent teamRound, TeamRoundResultVO teamRoundResult, int roundNumber) {
+        teamRoundResult.setRoundNumber(roundNumber); // 몇 라운드 결과인지 기록
+        teamRoundResult.setRoundScore(teamRound.getRoundScore()); // 라운드 점수
+        teamRoundResult.setTotalScore(team.getFinalScore()); // 지금까지 총점
+
+        teamRoundResult.setGuessed(teamRound.isGuessed());
+        teamRoundResult.setSubmitStage(teamRound.getSubmitStage());
+        teamRoundResult.setSubmitTime(teamRound.getSubmitTime());
+        teamRoundResult.setSubmitLat(teamRound.getSubmitLat());
+        teamRoundResult.setSubmitLng(teamRound.getSubmitLng());
+    }
 
     // 0 ~ maxIndex 중 count 개의 숫자를 List로 반환
     public static List<Integer> getRandomIndices(int maxIndex, int count) {
@@ -463,8 +503,9 @@ public class GameServiceImpl implements GameService {
         return R * c;
     }
 
+    // 'answer 위치'와 'submit 위치' 사이의 거리 기반 score 계산
     public static int calculateScore(double answerLat, double answerLng, double submitLat, double submitLng) {
-        // TODO: 계산된 거리+제출 스테이지에 따른 점수 계산 로직 추가 필요
+        // TODO: 계산된 거리+제출 스테이지에 따른 점수 계산 로직 추가
         return (int) calculateDistance(answerLat, answerLng, submitLat, submitLng);
     }
 

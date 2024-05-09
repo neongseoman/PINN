@@ -14,12 +14,11 @@ import java.util.List;
 @ToString
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class RoundFinishVO extends SocketDTO {
-    // TODO: 보내줄 "라운드 결과" 형식 정의 필요
     // gameId: socketDTO의 senderGameId
     List<TeamRoundResultVO> teamRoundResults;
 
-    RoundFinishVO(String senderNickname, int senderGameId, int senderTeamId/**/) {
+    public RoundFinishVO(String senderNickname, int senderGameId, int senderTeamId, List<TeamRoundResultVO> teamRoundResults) {
         super(senderNickname, senderGameId, senderTeamId);
-        //
+        setTeamRoundResults(teamRoundResults);
     }
 }
