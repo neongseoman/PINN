@@ -30,5 +30,5 @@ public class GameComponent {
     private final int TeamCount = 10;
 
     private List<QuestionComponent> questions; // 이 게임에서 출제될 문제 목록
-
+    private List<List<TeamRoundComponent>> roundResults; // 라운드별 결과 리스트
 }

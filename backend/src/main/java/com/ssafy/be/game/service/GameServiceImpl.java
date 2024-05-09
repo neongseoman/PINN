@@ -119,6 +119,7 @@ public class GameServiceImpl implements GameService {
                     ConcurrentHashMap<Integer, TeamRoundComponent> teamRounds = new ConcurrentHashMap<>();
                     for (int j = 1; j <= existGame.getRoundCount(); ++j) {
                         TeamRoundComponent teamRound = new TeamRoundComponent();
+                        teamRound.setTeamId(team.getTeamId());
                         teamRound.setRoundNumber(j); // roundNumber 설정
                         teamRound.setSubmitLat(-1);
                         teamRound.setSubmitLng(-1); // 최초 핀찍기 이전 위, 경도 초기값 기본 "-1"으로 설정
@@ -184,6 +185,11 @@ public class GameServiceImpl implements GameService {
             }
 
             existGame.setQuestions(questions);
+
+            /*
+             game의 라운드별 결과 저장할 roundResults 리스트 new 해서 생성
+             */
+            existGame.setRoundResults(new LinkedList<>());
 
             // game의 정보 중 필요한 것들을 gIRD에 담아서 return
             gameInitVO.setGameId(existGame.getGameId());
@@ -377,6 +383,10 @@ public class GameServiceImpl implements GameService {
         return pinGuessVO;
     }
 
+    /*
+    각 팀의 teamRound 최종 업데이트해서 <라운드 결과> 만듦
+    & RoundFinishVO 만들어서 GameManager에 담음
+     */
     @Override
     public RoundFinishVO finishRound(RoundFinishRequestDTO roundFinishRequestDTO) throws BaseException {
 
@@ -390,36 +400,34 @@ public class GameServiceImpl implements GameService {
         ConcurrentHashMap<Integer, TeamComponent> teams = existGame.getTeams();
 
         // 현 라운드 결과 담을 teamRoundResults 생성
-        List<TeamRoundResultVO> teamRoundResults = new ArrayList<>();
+        List<TeamRoundComponent> teamRoundResults = new ArrayList<>();
 
-        // 팀별로 TeamRoundResultVO 만들어서 teamRoundResults에 채우기
+        // 팀별로 TeamRoundComponent 완성해서 teamRoundResults에 채우기
         for (int i = 1; i <= existGame.getTeamCount(); ++i) {
             TeamComponent team = teams.get(i);
             if (team.getTeamGamers() == null || team.getTeamGamers().isEmpty()) { // teamGamers가 없거나 0명인 경우, 유효하지 않은 팀으로 간주
                 continue; // 패스!
             }
 
-            // i팀의 현재 라운드 최신 핀 위치 정보
+            // i팀의 현재 라운드 최신 핀 위치 정보+라운드 결과 저장할 teamRound 받아오기
             TeamRoundComponent teamRound = team.getTeamRounds().get(roundFinishRequestDTO.getRoundNumber());
-
-            // i팀의 현재 라운드 결과 담을 TRR VO 생성
-            TeamRoundResultVO teamRoundResult = new TeamRoundResultVO();
 
             // TRR VO 채우기
             if (!teamRound.isGuessed()) { // guess 안 한 팀인 경우
                 // teamRound의 submitTime, submitStage를 '라운드 종료' 시점으로 업데이트
                 teamRound.setSubmitTime(roundFinishRequestDTO.getSenderDateTime());
-                teamRound.setSubmitStage(NOT_GUESSED); // TODO: guess 안 한 팀의 submitStage 어떻게 처리할 것인지 결정해야 함!
+                teamRound.setSubmitStage(NOT_GUESSED); // TODO: guess 안 한 팀의 submitStage 어떻게 처리할 것인지 결정해야 함
 
                 if (teamRound.getSubmitLat() == -1 || teamRound.getSubmitLng() == -1) { // 핀 한 번도 안 찍고 guess도 안 한 팀인 경우
                     teamRound.setRoundScore(0); // 0점 부여
                 }
             }
             team.setFinalScore(team.getFinalScore() + teamRound.getRoundScore()); // team의 획득 총점 업데이트
-            setTeamRoundResult(team, teamRound, teamRoundResult, roundFinishRequestDTO.getRoundNumber());
+            teamRound.setTotalScore(team.getFinalScore()); // 현 라운드까지의 총점 업데이트
+            // 나머지 값은 그대로임.
 
-            // 다 채운 TRR VO를 teamRoundResults 리스트에 추가
-            teamRoundResults.add(teamRoundResult);
+            // 다 채운 TR을 teamRoundResults 리스트에 추가
+            teamRoundResults.add(teamRound);
         }
 
         // 다 채운 TRRs 리스트를 roundScore 기준으로 정렬 (현 랭킹)
@@ -440,36 +448,32 @@ public class GameServiceImpl implements GameService {
 
         // TODO: 모든 team의 teamRound를 DB에 insert
 
+        // GameManager의 gameComponent의 roundResults에 teamRoundResults 담아서 gm이 라운드 결과 들고 있게 하기!
+        // TODO: gm도 gm인데 DB에 저장해야 해...
+        existGame.getRoundResults().add(teamRoundResults);
+
         // RF VO에 TRRs 담아서 리턴
         RoundFinishVO roundFinishVO = new RoundFinishVO(roundFinishRequestDTO.getSenderNickname(), roundFinishRequestDTO.getSenderGameId(), roundFinishRequestDTO.getSenderTeamId(), teamRoundResults);
         roundFinishVO.setCodeAndMsg(1117, roundFinishRequestDTO.getRoundNumber() + "라운드 결과가 정상 계산되었습니다.");
         return roundFinishVO;
     }
 
+    @Override
+    public RoundFinishVO getRoundResult(RoundFinishRequestDTO roundFinishRequestDTO) throws BaseException {
+        return null;
+    }
+
 
 ///////
 
-    // teamRoundResultVO 리스트를 totalScore 기준으로 내림차순으로 정렬
-    private static void sortByTotalScore(List<TeamRoundResultVO> teamRoundResults) {
-        teamRoundResults.sort(new Comparator<TeamRoundResultVO>() {
+    // teamRoundComponent 리스트를 totalScore 기준으로 내림차순으로 정렬
+    private static void sortByTotalScore(List<TeamRoundComponent> teamRoundResults) {
+        teamRoundResults.sort(new Comparator<TeamRoundComponent>() {
             @Override
-            public int compare(TeamRoundResultVO o1, TeamRoundResultVO o2) {
+            public int compare(TeamRoundComponent o1, TeamRoundComponent o2) {
                 return o2.getTotalScore() - o1.getTotalScore(); // totalScore를 기준으로 내림차순으로 정렬
             }
         });
-    }
-
-    // team, teamRound 기반으로 teamRoundResult에 데이터 채움
-    private void setTeamRoundResult(TeamComponent team, TeamRoundComponent teamRound, TeamRoundResultVO teamRoundResult, int roundNumber) {
-        teamRoundResult.setRoundNumber(roundNumber); // 몇 라운드 결과인지 기록
-        teamRoundResult.setRoundScore(teamRound.getRoundScore()); // 라운드 점수
-        teamRoundResult.setTotalScore(team.getFinalScore()); // 지금까지 총점
-
-        teamRoundResult.setGuessed(teamRound.isGuessed());
-        teamRoundResult.setSubmitStage(teamRound.getSubmitStage());
-        teamRoundResult.setSubmitTime(teamRound.getSubmitTime());
-        teamRoundResult.setSubmitLat(teamRound.getSubmitLat());
-        teamRoundResult.setSubmitLng(teamRound.getSubmitLng());
     }
 
     // 0 ~ maxIndex 중 count 개의 숫자를 List로 반환
