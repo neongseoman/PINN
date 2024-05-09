@@ -2,7 +2,9 @@ package com.ssafy.be.game.service;
 
 import com.ssafy.be.common.component.*;
 import com.ssafy.be.common.exception.BaseException;
+import com.ssafy.be.common.exception.SocketException;
 import com.ssafy.be.common.model.repository.GameRepository;
+import com.ssafy.be.common.response.BaseResponse;
 import com.ssafy.be.common.response.BaseResponseStatus;
 import com.ssafy.be.game.model.domain.Hint;
 import com.ssafy.be.game.model.domain.HintType;
@@ -49,10 +51,13 @@ public class GameServiceImpl implements GameService {
             int gameId = gameStartRequestDTO.getGameId();
             GameComponent existGame = gameManager.getGames().get(gameId);
             if (existGame == null) {
+                log.info("여기");
                 throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
             }
             // 요청 보낸 gamer_id가 GM/game의 leader_id와 일치하는지 확인
             if (gamerId != existGame.getLeaderId()) {
+
+                log.info("저기");
                 throw new BaseException(BaseResponseStatus.OOPS);
             }
 
@@ -73,9 +78,11 @@ public class GameServiceImpl implements GameService {
 
 //            log.info(gameStartRequestDTO);
             return gameStartVO;
-        } catch (Exception e) {
-//            log.error("Socket Error");
-            throw new BaseException(BaseResponseStatus.OOPS,gamerId); // Socket에도 던지고 싶다면 GamerID를 주세요.
+//        } catch (BaseException e) {
+////            log.error("Socket Error");
+//            throw new SocketException(e.getStatus(),gamerId); // Socket에도 던지고 싶다면 GamerID를 주세요.
+        } catch(Exception e){
+            throw new BaseException(BaseResponseStatus.OOPS);
         }
     }
 

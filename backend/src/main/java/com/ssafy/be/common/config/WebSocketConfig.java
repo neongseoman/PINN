@@ -26,7 +26,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer  {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         String endPoint = "/game";
-        registry.addEndpoint(endPoint).setAllowedOriginPatterns("*").setHandshakeHandler(new CustomHandshakeHandler());
+        registry.addEndpoint(endPoint).setAllowedOriginPatterns("*");
 //        registry.setErrorHandler(stompErrorHandler);
     }
 
