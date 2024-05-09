@@ -3,6 +3,7 @@ package com.ssafy.be.game.controller;
 import com.ssafy.be.auth.jwt.JwtProvider;
 import com.ssafy.be.common.Provider.ScheduleProvider;
 import com.ssafy.be.common.exception.BaseException;
+import com.ssafy.be.common.exception.SocketException;
 import com.ssafy.be.common.model.dto.ServerEvent;
 import com.ssafy.be.common.model.dto.ServerSendEvent;
 import com.ssafy.be.common.response.BaseResponseStatus;
@@ -37,62 +38,48 @@ public class GameController {
 
     @MessageMapping("/game/start")
     public void startGame(GameStartRequestDTO gameStartRequestDTO, StompHeaderAccessor accessor) throws ExecutionException, InterruptedException, BaseException {
-//        log.info("Is this async? Start of Method : {}", LocalDateTime.now());
-//        log.info(gameStartRequestDTO.toString());
+        log.debug("Is this async? Start of Method : {}", LocalDateTime.now());
+
         int gamerId = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor).getGamerId();
         GameStartVO gameStartVO = gameService.startGame(gamerId, gameStartRequestDTO);
         GameInitVO gameInitVO = gameService.initGame(gamerId, gameStartRequestDTO);
-
+//        log.info(gameInitVO.getGameId());
         log.info("{} game started at {}", gameStartRequestDTO.getGameId(), LocalDateTime.now());
-        sendingOperations.convertAndSend("/game/sse/" + gameInitVO.getGameId(), new ServerSendEvent(ServerEvent.START));
-
-        CompletableFuture<Integer> startFuture = scheduleProvider.startGame(gameStartRequestDTO.getGameId(), gameInitVO);
+        sendingOperations.convertAndSend("/game/sse/" + gameInitVO.getGameId(),
+                new ServerSendEvent(ServerEvent.START));
+        CompletableFuture<Integer> startFuture = scheduleProvider.startGame(gameStartRequestDTO.getGameId());
 
         startFuture.thenCompose((result) -> { // startFuture에서 5초 보냈고 Game Init도 보냄.
             log.info("{} game round 1 started at {}", gameStartRequestDTO.getGameId(), LocalDateTime.now());
-            RoundInitRequestDTO roundInitRequestDTO =
-                    new RoundInitRequestDTO(gameStartVO.getSenderNickname(), gameStartVO.getSenderGameId(),
-                            gameStartVO.getSenderTeamId(), gameStartVO.getGameId(), 1);
-            roundInitRequestDTO.setSenderNickname("");
-            roundInitRequestDTO.setSenderTeamId(10000);
-            RoundInitVO roundInitVO = gameService.findStage1Info(gamerId, roundInitRequestDTO);
-            roundInitVO.setCode(ServerEvent.ROUND_START.getCode());
-            roundInitVO.setMsg(ServerEvent.ROUND_START.getMsg());
-            sendingOperations.convertAndSend("/game/sse/" + gameInitVO.getGameId(), roundInitVO); // 여기까지 게임 준비 및 시작
 
-            return scheduleProvider.sendHint(result, gameStartRequestDTO.getStage1Time()); // 지금부터 stage 1
+            sendingOperations.convertAndSend("/game/sse/" + gameInitVO.getGameId(),
+                    new ServerSendEvent(ServerEvent.ROUND_START));
+
+            return scheduleProvider.scheduleFuture(result, gameStartRequestDTO.getStage1Time()); // 지금부터 stage 1
 //            return scheduleProvider.sendHint(result, 5); // 지금부터 stage 1 test time 5초
         }).thenCompose((result) -> {
             log.info("{} game send Hint at {}", gameStartRequestDTO.getGameId(), LocalDateTime.now());
-            Stage2InitRequestDTO stage2InitRequestDTO =
-                    new Stage2InitRequestDTO(gameStartVO.getSenderNickname(), gameStartVO.getSenderGameId(),
-                            gameStartVO.getSenderTeamId(), gameStartVO.getGameId(), 1); // 현재 라운드 번호
-            Stage2InitVO stage2InitVO = gameService.findStage2Info(gamerId, stage2InitRequestDTO);
-            stage2InitVO.setCode(ServerEvent.HINT.getCode());
-            stage2InitVO.setMsg(ServerEvent.HINT.getMsg());
-            sendingOperations.convertAndSend("/game/sse/" + gameInitVO.getGameId(), stage2InitVO);
 
-            return scheduleProvider.roundEnd(result, gameStartRequestDTO.getStage2Time()); // 지금부터 stage 2
+            sendingOperations.convertAndSend("/game/sse/" + gameInitVO.getGameId(),
+                    new ServerSendEvent(ServerEvent.STAGE_2_END));
+            return scheduleProvider.scheduleFuture(result, gameStartRequestDTO.getStage2Time()); // 지금부터 stage 2
 //            return scheduleProvider.roundEnd(result, 5); // 지금부터 stage 2 test time 5초
         }).thenCompose((result) -> {
-            log.info("{} game round 1 is end at {}", gameStartRequestDTO.getGameId(), LocalDateTime.now()); // 점수 정산
+            log.info("{} game Stage 2 is end at {}", gameStartRequestDTO.getGameId(), LocalDateTime.now()); // 점수 정산
 
-            sendingOperations.convertAndSend("/game/sse/" + gameInitVO.getGameId(), new ServerSendEvent(ServerEvent.ROUND_SCORE));
-            return scheduleProvider.roundEnd(result, gameStartRequestDTO.getScorePageTime()); // 지금부터 score page
+            sendingOperations.convertAndSend("/game/sse/" + gameInitVO.getGameId(),
+                    new ServerSendEvent(ServerEvent.STAGE_2_END));
+            return scheduleProvider.scheduleFuture(result, gameStartRequestDTO.getScorePageTime()); // 지금부터 score page
 //            return scheduleProvider.roundEnd(result, 5); // 지금부터 score page
         }).thenCompose((a) -> { // 이건 게임이 끝나
-            log.info(" {}  Game is End at {}", gameInitVO.getGameId(), LocalDateTime.now());
-            ServerSendEvent serverMsg = new ServerSendEvent(ServerEvent.GO_TO_ROOM);
-            sendingOperations.convertAndSend("/game/sse/" + gameInitVO.getGameId(), serverMsg);
-
-            return scheduleProvider.goToRoom(gameInitVO.getGameId(), 5); // 방으로 돌아가라
+            log.info("{} game is End at {}", gameInitVO.getGameId(), LocalDateTime.now());
+            sendingOperations.convertAndSend("/game/sse/" + gameInitVO.getGameId(),
+                    new ServerSendEvent(ServerEvent.GO_TO_ROOM));
+            return scheduleProvider.scheduleFuture(gameInitVO.getGameId(), 5); // 방으로 돌아가라
         }).exceptionally(ex -> {
             log.error("Error occurred in the CompletableFuture chain: ", ex);
-            throw new BaseException(BaseResponseStatus.EMPTY_SIGN);
+            throw new BaseException(BaseResponseStatus.OOPS,gamerId);
         });
-
-//        log.info("Is this async? End of Method : {}", LocalDateTime.now());
-
     }
 
     @MessageMapping("/game/round/init") // 라운드 시작(문제의 lat, lng + stage1 hint broadcast)

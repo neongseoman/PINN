@@ -2,7 +2,9 @@ package com.ssafy.be.game.service;
 
 import com.ssafy.be.common.component.*;
 import com.ssafy.be.common.exception.BaseException;
+import com.ssafy.be.common.exception.SocketException;
 import com.ssafy.be.common.model.repository.GameRepository;
+import com.ssafy.be.common.response.BaseResponse;
 import com.ssafy.be.common.response.BaseResponseStatus;
 import com.ssafy.be.game.model.domain.Hint;
 import com.ssafy.be.game.model.domain.HintType;
@@ -73,9 +75,13 @@ public class GameServiceImpl implements GameService {
 
 //            log.info(gameStartRequestDTO);
             return gameStartVO;
-        } catch (Exception e) {
+        } catch (BaseException e) {
 //            log.error("Socket Error");
-            throw new BaseException(BaseResponseStatus.OOPS,gamerId); // Socket에도 던지고 싶다면 GamerID를 주세요.
+            e.printStackTrace();
+            throw new BaseException(e.getStatus(),gamerId); // Socket에도 던지고 싶다면 GamerID를 주세요.
+        } catch(Exception e){
+            e.printStackTrace();
+            throw new BaseException(BaseResponseStatus.OOPS,gamerId);
         }
     }
 
@@ -196,9 +202,13 @@ public class GameServiceImpl implements GameService {
             gameInitVO.setStartedTime(existGame.getStartedTime());
 
             return gameInitVO;
-        } catch (Exception e) {
-//            e.printStackTrace();
-            throw new BaseException(BaseResponseStatus.OOPS);
+        } catch (BaseException e) {
+//            log.error("Socket Error");
+            e.printStackTrace();
+            throw new BaseException(e.getStatus(),gamerId); // Socket에도 던지고 싶다면 GamerID를 주세요.
+        } catch(Exception e){
+            e.printStackTrace();
+            throw new BaseException(BaseResponseStatus.OOPS,gamerId);
         }
     }
 
@@ -243,9 +253,13 @@ public class GameServiceImpl implements GameService {
             roundInitVO.setHints(stage1Hints);
 
             return roundInitVO;
-        } catch (Exception e) {
-//            e.printStackTrace();
-            throw new BaseException(BaseResponseStatus.OOPS);
+        } catch (BaseException e) {
+//            log.error("Socket Error");
+            e.printStackTrace();
+            throw new BaseException(e.getStatus(),gamerId); // Socket에도 던지고 싶다면 GamerID를 주세요.
+        } catch(Exception e){
+            e.printStackTrace();
+            throw new BaseException(BaseResponseStatus.OOPS,gamerId);
         }
     }
 
@@ -284,9 +298,13 @@ public class GameServiceImpl implements GameService {
             stage2InitVO.setHints(stage2Hints);
 
             return stage2InitVO;
-        } catch (Exception e) {
-//            e.printStackTrace();
-            throw new BaseException(BaseResponseStatus.OOPS);
+        }  catch (BaseException e) {
+//            log.error("Socket Error");
+            e.printStackTrace();
+            throw new BaseException(e.getStatus(),gamerId); // Socket에도 던지고 싶다면 GamerID를 주세요.
+        } catch(Exception e){
+            e.printStackTrace();
+            throw new BaseException(BaseResponseStatus.OOPS,gamerId);
         }
     }
 

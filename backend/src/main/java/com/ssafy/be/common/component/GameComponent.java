@@ -20,6 +20,7 @@ public class GameComponent {
     private int themeId;
     private int leaderId;
     private int roundCount;
+    private int currentRound;// 이거 추가하면 어때?
     private int stage1Time;
     private int stage2Time;
     private LocalDateTime roomCreateTime;
