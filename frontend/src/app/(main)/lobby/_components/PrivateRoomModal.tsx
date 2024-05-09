@@ -1,11 +1,11 @@
 'use client'
 
-import useUserStore from '@/stores/userStore';
-import { Client, IFrame } from '@stomp/stompjs';
-import { useRouter } from 'next/navigation';
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
-import { IoIosLock } from "react-icons/io";
-import styles from '../lobby.module.css';
+import useUserStore from '@/stores/userStore'
+import { Client, IFrame } from '@stomp/stompjs'
+import { useRouter } from 'next/navigation'
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
+import { IoIosLock } from 'react-icons/io'
+import styles from '../lobby.module.css'
 
 interface PrivateRoomModalProps {
   gameId: number
@@ -13,14 +13,18 @@ interface PrivateRoomModalProps {
   setShowModal: Dispatch<SetStateAction<boolean>>
 }
 
-export default function PrivateRoomModal({ gameId, roomName, setShowModal }: PrivateRoomModalProps) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
-  const [password, setPassword] = useState<string>('');
-  const { nickname } = useUserStore();
-  const router = useRouter();
+export default function PrivateRoomModal({
+  gameId,
+  roomName,
+  setShowModal,
+}: PrivateRoomModalProps) {
+  const dialogRef = useRef<HTMLDialogElement>(null)
+  const [password, setPassword] = useState<string>('')
+  const { nickname } = useUserStore()
+  const router = useRouter()
   const clientRef = useRef<Client>(
     new Client({
-      brokerURL: process.env.NEXT_PUBLIC_SOCKET_URL,
+      brokerURL: process.env.NEXT_PUBLIC_SERVER_SOCKET_URL,
       debug: function (str: string) {
         // console.log(str)
       },
@@ -28,7 +32,7 @@ export default function PrivateRoomModal({ gameId, roomName, setShowModal }: Pri
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
     }),
-  );
+  )
 
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(event.target.value)
@@ -39,12 +43,12 @@ export default function PrivateRoomModal({ gameId, roomName, setShowModal }: Pri
   }, [])
 
   const showModal = () => {
-    dialogRef.current?.showModal();
-    clientRef.current.activate();
+    dialogRef.current?.showModal()
+    clientRef.current.activate()
     clientRef.current.onConnect = function (_frame: IFrame) {
       clientRef.current.subscribe(`/game/${gameId}`, () => {})
-    };
-  };
+    }
+  }
 
   const closeModal = () => {
     setShowModal(false)
@@ -53,11 +57,19 @@ export default function PrivateRoomModal({ gameId, roomName, setShowModal }: Pri
 
   const enterPassword = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/lobby/${gameId}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('accessToken') as string}`
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/lobby/${gameId}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${
+              localStorage.getItem('accessToken') as string
+            }`,
+          },
+          body: JSON.stringify({
+            password: password,
+          }),
         },
       )
 
@@ -65,8 +77,8 @@ export default function PrivateRoomModal({ gameId, roomName, setShowModal }: Pri
         console.log('비밀방 입장 요청 통신 성공')
         const responseData = await response.json()
         if (responseData.code === 1000) {
-          console.log('비밀방 입장 요청 성공!', responseData);
-          
+          console.log('비밀방 입장 요청 성공!', responseData)
+
           clientRef.current.publish({
             headers: {
               Auth: localStorage.getItem('accessToken') as string,
@@ -74,15 +86,15 @@ export default function PrivateRoomModal({ gameId, roomName, setShowModal }: Pri
             destination: `/app/game/enter/${gameId}`,
             body: JSON.stringify({
               senderNickname: nickname,
-              senderGameId: gameId
+              senderGameId: gameId,
             }),
           })
 
           console.log(`${gameId}번 방으로 입장합니다`)
           router.push(`/room/${gameId}`)
         } else {
-          console.log('비밀방 입장 요청 실패!', responseData.code);
-          alert(responseData.message);
+          console.log('비밀방 입장 요청 실패!', responseData.code)
+          alert(responseData.message)
         }
       } else {
         console.error('비밀방 입장 요청 통신 실패', response)
@@ -90,7 +102,7 @@ export default function PrivateRoomModal({ gameId, roomName, setShowModal }: Pri
     } catch (error) {
       console.error('에러 발생: ', error)
     }
-  };
+  }
 
   return (
     <dialog className={styles.privateRoomModalWrapper} ref={dialogRef}>
