@@ -74,8 +74,8 @@ public class GameServiceImpl implements GameService {
 //            log.info(gameStartRequestDTO);
             return gameStartVO;
         } catch (Exception e) {
-//            e.printStackTrace();
-            throw new BaseException(BaseResponseStatus.OOPS);
+//            log.error("Socket Error");
+            throw new BaseException(BaseResponseStatus.OOPS,gamerId); // Socket에도 던지고 싶다면 GamerID를 주세요.
         }
     }
 

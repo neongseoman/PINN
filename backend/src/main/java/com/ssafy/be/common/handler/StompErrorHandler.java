@@ -35,8 +35,6 @@ public class StompErrorHandler extends StompSubProtocolErrorHandler {
 
     private Message<byte[]> prepareErrorMessage(Message<byte[]> clientMessage,String message , String errorCode)
     {
-
-
         StompHeaderAccessor accessor = StompHeaderAccessor.create(StompCommand.ERROR);
 
         accessor.setMessage(errorCode);
