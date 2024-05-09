@@ -2,6 +2,7 @@ package com.ssafy.be.game.service;
 
 import com.ssafy.be.common.component.*;
 import com.ssafy.be.common.exception.BaseException;
+import com.ssafy.be.common.model.dto.SocketDTO;
 import com.ssafy.be.common.model.repository.GameRepository;
 import com.ssafy.be.common.response.BaseResponseStatus;
 import com.ssafy.be.game.model.domain.Hint;
@@ -459,6 +460,15 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
+    public GameFinishVO finishGame(SocketDTO gameFinishRequestDTO) throws BaseException {
+        // 1. gameManager의 roundResults를 바탕으로 gameResult 만들기
+
+        // 2. 모든 team에 대해 team
+
+        return null;
+    }
+
+    @Override
     public RoundResultVO getRoundResult(int gamerId, RoundResultRequestDTO roundResultRequestDTO) throws BaseException {
         int gameId = roundResultRequestDTO.getGameId();
         GameComponent existGame = gameManager.getGames().get(gameId);
@@ -476,6 +486,11 @@ public class GameServiceImpl implements GameService {
         roundResultVO.setRoundResult(roundResult);
 
         return roundResultVO;
+    }
+
+    @Override
+    public GameResultVO getGameResult(int gamerId, GameResultRequestDTO gameResultRequestDTO) throws BaseException {
+        return null;
     }
 
 
