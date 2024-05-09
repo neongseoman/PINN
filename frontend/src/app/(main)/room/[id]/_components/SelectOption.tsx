@@ -1,6 +1,6 @@
 'use client'
 
-import styles from './option.module.css'
+import styles from './selectOption.module.css'
 
 import { useEffect, useState } from "react"
 

@@ -39,9 +39,8 @@ export default function PublicRoomModal({
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${
-              localStorage.getItem('accessToken') as string
-            }`,
+            Authorization: `Bearer ${localStorage.getItem('accessToken') as string
+              }`,
           },
           body: JSON.stringify({
             password: null,

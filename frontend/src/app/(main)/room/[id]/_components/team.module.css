@@ -10,10 +10,22 @@
   justify-content: center;
   box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.5);
   cursor: pointer;
+  opacity: 1;
 }
 
 .team:hover {
   transform: scale(1.01);
+}
+
+.myTeam {
+  composes: team;
+  border: var(--Main-Yellow) solid 4px;
+  box-sizing: border-box;
+}
+
+.noMember {
+  composes: team;
+  opacity: 0.5;
 }
 
 .teamName {

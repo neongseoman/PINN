@@ -54,7 +54,7 @@ export default function LobbyPage() {
       } else {
         console.error('게임 목록 요청 통신 실패', response);
       }
-    } 
+    }
 
     roomList()
   }, []);
@@ -73,7 +73,7 @@ export default function LobbyPage() {
           <CreateRoomModal />
           <p className={styles.buttons} onClick={fastStart}>빠른 시작</p>
         </div>
-          <RuleModal />
+        <RuleModal />
       </div>
       <div className={styles.bottom}>
         {gameList.map((game, i) => (
