@@ -66,7 +66,6 @@ export default function LobbyPage() {
 
     roomList()
   }, [])
-  console.log(gameList)
 
   return (
     <main className={styles.lobby}>
