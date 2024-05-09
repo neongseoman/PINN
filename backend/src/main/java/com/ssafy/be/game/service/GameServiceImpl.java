@@ -51,7 +51,6 @@ public class GameServiceImpl implements GameService {
             if (existGame == null) {
                 throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
             }
-            log.info(gameId);
             // 요청 보낸 gamer_id가 GM/game의 leader_id와 일치하는지 확인
             if (gamerId != existGame.getLeaderId()) {
                 throw new BaseException(BaseResponseStatus.OOPS);
@@ -72,7 +71,7 @@ public class GameServiceImpl implements GameService {
 
             gameStartVO.setGameId(existGame.getGameId());
 
-            log.info(gameStartRequestDTO);
+//            log.info(gameStartRequestDTO);
             return gameStartVO;
         } catch (Exception e) {
 //            e.printStackTrace();
@@ -139,7 +138,6 @@ public class GameServiceImpl implements GameService {
              */
             int themeId = existGame.getThemeId();
             List<Question> questionDatas = questionRepository.findByUsedAndThemeId(1, themeId); // 사용 중이고 + themeId 일치하는 것만 가져오기
-            log.info(questionDatas);
 
             // 랜덤 (roundCount)개의 인덱스 선택
             List<Integer> randomIndices = getRandomIndices(questionDatas.size(), existGame.getRoundCount());
@@ -184,6 +182,7 @@ public class GameServiceImpl implements GameService {
                 // 문제 완성. list에 넣기
                 questions.add(question);
             }
+
             existGame.setQuestions(questions);
 
             // game의 정보 중 필요한 것들을 gIRD에 담아서 return
@@ -196,7 +195,6 @@ public class GameServiceImpl implements GameService {
             gameInitVO.setStage2Time(existGame.getStage2Time());
             gameInitVO.setStartedTime(existGame.getStartedTime());
 
-            log.info(gameInitVO);
             return gameInitVO;
         } catch (Exception e) {
 //            e.printStackTrace();
