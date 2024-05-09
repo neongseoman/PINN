@@ -2,8 +2,11 @@ package com.ssafy.be.game.controller;
 
 import com.ssafy.be.auth.jwt.JwtProvider;
 import com.ssafy.be.common.Provider.ScheduleProvider;
+import com.ssafy.be.common.exception.BaseException;
+import com.ssafy.be.common.exception.SocketException;
 import com.ssafy.be.common.model.dto.ServerEvent;
 import com.ssafy.be.common.model.dto.ServerSendEvent;
+import com.ssafy.be.common.response.BaseResponseStatus;
 import com.ssafy.be.game.model.dto.*;
 import com.ssafy.be.game.model.vo.*;
 import com.ssafy.be.game.service.GameService;
@@ -39,9 +42,9 @@ public class GameController {
     // 단순 game status 변경 + 참가자들에게 시작 소식 broadcast 하여 로딩 화면으로 넘어갈 수 있도록 함
 
     @MessageMapping("/game/start")
-    public void startGame(GameStartRequestDTO gameStartRequestDTO, StompHeaderAccessor accessor) throws ExecutionException, InterruptedException {
+    public void startGame(GameStartRequestDTO gameStartRequestDTO, StompHeaderAccessor accessor) throws ExecutionException, InterruptedException, BaseException,SocketException {
 //        log.info("Is this async? Start of Method : {}", LocalDateTime.now());
-        log.info(gameStartRequestDTO.toString());
+//        log.info(gameStartRequestDTO.toString());
         int gamerId = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor).getGamerId();
         GameStartVO gameStartVO = gameService.startGame(gamerId, gameStartRequestDTO);
         GameInitVO gameInitVO = gameService.initGame(gamerId, gameStartRequestDTO);
@@ -91,7 +94,7 @@ public class GameController {
             return scheduleProvider.goToRoom(gameInitVO.getGameId(), 5); // 방으로 돌아가라
         }).exceptionally(ex -> {
             log.error("Error occurred in the CompletableFuture chain: ", ex);
-            return null;
+            throw new BaseException(BaseResponseStatus.EMPTY_SIGN);
         });
 
 //        log.info("Is this async? End of Method : {}", LocalDateTime.now());

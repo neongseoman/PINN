@@ -1,13 +1,12 @@
 package com.ssafy.be.common.config;
 
 import com.ssafy.be.common.Interceptor.StompInboundMessageInterceptor;
-import com.ssafy.be.common.config.handler.StompErrorHandler;
+import com.ssafy.be.common.handler.StompErrorHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.web.socket.config.annotation.*;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.web.socket.messaging.StompSubProtocolErrorHandler;
 
 
 @Configuration
@@ -20,7 +19,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer  {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/game","/team","/guess"); // sub
+        config.enableSimpleBroker("/game","/team","/guess,/user"); // sub
         config.setApplicationDestinationPrefixes("/app");
     }
     @Override

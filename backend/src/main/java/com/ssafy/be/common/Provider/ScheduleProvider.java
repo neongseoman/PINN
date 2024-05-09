@@ -1,6 +1,8 @@
 package com.ssafy.be.common.Provider;
 
 
+import com.ssafy.be.common.exception.BaseException;
+import com.ssafy.be.common.exception.SocketException;
 import com.ssafy.be.common.model.dto.ServerEvent;
 import com.ssafy.be.common.model.dto.ServerSendEvent;
 import com.ssafy.be.game.model.dto.GameStartRequestDTO;
@@ -25,14 +27,9 @@ public class ScheduleProvider {
 
     // 5초 지났고 게임 시작합시다.
     public CompletableFuture<Integer> startGame
-    (int gameId, GameInitVO gameInitVO) {
+    (int gameId, GameInitVO gameInitVO) throws SocketException, BaseException {
         CompletableFuture<Integer> future = new CompletableFuture<>();
         executorService.schedule(() -> {
-//            log.info("Starting gameId : {} at {}", gameId, LocalDateTime.now());
-//            ServerSendEvent serverMsg = new ServerSendEvent(ServerEvent.ROUND_START);
-//            gameInitVO.setCode(serverMsg.getCode());
-//            gameInitVO.setMsg(serverMsg.getMsg());
-//            sendingOperations.convertAndSend("/game/" + gameInitVO.getGameId());
             future.complete(gameId);
         },5, TimeUnit.SECONDS);
         return future;
