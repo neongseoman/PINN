@@ -53,7 +53,7 @@ export default function GamePage({ params }: { params: { gameId: string } }) {
 
   const clientRef = useRef<Client>(
     new Client({
-      brokerURL: process.env.NEXT_PUBLIC_SOCKET_URL,
+      brokerURL: process.env.NEXT_PUBLIC_SERVER_SOCKET_URL,
       debug: function (str: string) {
         console.log(str)
       },
