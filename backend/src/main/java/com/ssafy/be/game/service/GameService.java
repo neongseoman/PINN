@@ -17,4 +17,6 @@ public interface GameService {
     PinMoveVO movePin(int gamerId, PinMoveRequestDTO pinMoveRequestDTO) throws BaseException;
 
     PinGuessVO guessPin(int gamerId, PinGuessRequestDTO pinGuessRequestDTO) throws BaseException;
+
+    RoundFinishVO finishRound(RoundFinishRequestDTO roundFinishRequestDTO) throws BaseException;
 }

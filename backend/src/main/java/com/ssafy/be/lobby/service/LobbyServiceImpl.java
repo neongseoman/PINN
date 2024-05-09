@@ -77,17 +77,35 @@ public class LobbyServiceImpl implements LobbyService {
     }
 
     @Override
-    public SearchVO searchRoom() {
-        SearchVO searchVO = new SearchVO();
-        searchVO.setReadyGames(new ArrayList<GameComponent>());
-        List<GameComponent> readyGames = searchVO.getReadyGames();
+    public List<SearchVO> searchRoom() {
+
+        List<SearchVO> result = new ArrayList<>();
 
         for (GameComponent gameComponent: gameManager.getGames().values()) {
             if(gameComponent.getStatus().equals(GameStatus.READY)){
-                readyGames.add(gameComponent);
+                // 게임 정보 삽입
+                SearchVO searchVO = new SearchVO(gameComponent);
+                // 게임 인원 삽입
+                searchVO.setCountPerson(countPerson(gameComponent));
+
+                result.add(searchVO);
             }
         }
-        return searchVO;
+        return result;
+    }
+
+    // 게임에 존재하는 사람수
+    public int countPerson(GameComponent gameComponent){
+
+        int count = 0;
+        ConcurrentHashMap<Integer, TeamComponent> teams = gameComponent.getTeams();
+        for(TeamComponent team : teams.values()){
+            if(team.getTeamGamers() != null){
+                count += team.getTeamGamers().size();
+            }
+        }
+
+        return count;
     }
 
 }

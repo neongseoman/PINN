@@ -9,9 +9,11 @@ import com.ssafy.be.common.exception.BaseException;
 import com.ssafy.be.common.model.dto.SocketDTO;
 import com.ssafy.be.common.response.BaseResponse;
 import com.ssafy.be.common.response.BaseResponseStatus;
-import java.util.List;
+import com.ssafy.be.gamer.model.GamerPrincipalVO;
+import com.ssafy.be.room.model.dto.MoveTeamDTO;
+import com.ssafy.be.lobby.model.vo.ExitRoomVO;
+import com.ssafy.be.room.model.vo.MoveTeamVO;
 import java.util.Map.Entry;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
@@ -82,8 +84,8 @@ public class GameManager {
                 // 팀멤버 객체가 없다면 생성
                 if(team.getValue().getTeamGamers() == null){
                     team.getValue().setTeamGamers(new ConcurrentHashMap<>());
-                } else if(team.getValue().getTeamGamers().size() < 3){
-                    // 팀멤버 객체가 있다면 멤버가 3명 미만
+                } else if(team.getValue().getTeamGamers().size() == 3){
+                    // 팀멤버 객체가 있다면 멤버가 3명이라면 넘어감
                     continue;
                 }
                 // 팀 내 멤버 수 + 1번째 (원래는 DB에 넣고 해당 key id를 넣어야 했음)
@@ -99,18 +101,67 @@ public class GameManager {
                 return teamGamerComponent;
             }
         }
+
+        // TODO : 들어갈 수 있는 공간이 없는 경우 Exception 처리
         return null;
     }
 
     // 방 나가기위한 method
-    public void exitRoom(SocketDTO socketDTO, int gamerId) {
+    public ExitRoomVO exitRoom(SocketDTO socketDTO, GamerPrincipalVO gamerPrincipalVO) {
+
+        // TODO : 각각의 경우 Exception 처리
         // game
         GameComponent gameComponent = games.get(socketDTO.getSenderGameId());
         // team
         TeamComponent teamComponent = gameComponent.teams.get(socketDTO.getSenderTeamId());
         // teamGamer
         ConcurrentHashMap<Integer, TeamGamerComponent> teamGamers = teamComponent.getTeamGamers();
+        // TeamGamerComponent to ExitRoomVO
+        TeamGamerComponent teamGamerComponent = teamGamers.get(gamerPrincipalVO.getGamerId());
+        ExitRoomVO exitRoomVO = ExitRoomVO.builder()
+                .senderDateTime(socketDTO.getSenderDateTime())
+                .senderNickname(socketDTO.getSenderNickname())
+                .senderGameId(socketDTO.getSenderGameId())
+                .senderTeamId(socketDTO.getSenderTeamId())
+                .senderTeamNumber(teamComponent.getTeamNumber())
+                .code(1011)
+                .msg(gamerPrincipalVO.getNickname() + "님이 " + socketDTO.getSenderGameId() + "번 방 " + socketDTO.getSenderTeamId() + "팀 " + teamComponent.getTeamNumber() + "번째 자리에서 나갔습니다.")
+                .build();
+
         // remove gamer
-        teamGamers.remove(gamerId);
+        teamGamers.remove(gamerPrincipalVO.getGamerId());
+        return exitRoomVO;
+    }
+
+    // 팀 옮기기위한 method
+    public MoveTeamVO enterSpecificTeam(MoveTeamDTO moveTeamDTO, GamerPrincipalVO gamerPrincipalVO) {
+        String nickname = moveTeamDTO.getSenderNickname();
+
+        // 게임
+        GameComponent gameComponent = games.get(moveTeamDTO.getSenderGameId());
+        // 팀
+        ConcurrentHashMap<Integer, TeamComponent> teams = gameComponent.getTeams();
+        TeamComponent oldTeam = teams.get(moveTeamDTO.getOldTeamId());
+        TeamComponent newTeam = teams.get(moveTeamDTO.getNewTeamId());
+
+        // 들어가려는 팀에 공간이 있는지 에러처리
+//        if(newTeam.size() == 3){
+//
+//        }
+
+        // 공간이 있다면
+
+
+        // VO 생성
+        MoveTeamVO moveTeamVO = MoveTeamVO.builder()
+                .oldTeamId(moveTeamDTO.getOldTeamId())
+                .newTeamId(moveTeamDTO.getNewTeamId())
+                .senderDateTime(moveTeamDTO.getSenderDateTime())
+                .senderNickname(moveTeamDTO.getSenderNickname())
+                .senderGameId(moveTeamDTO.getSenderGameId())
+                .code(1010)
+                .msg(nickname + "님이 " + moveTeamDTO.getSenderTeamId() + "팀에서 " + moveTeamDTO.getNewTeamId() + "팀으로 이동했습니다.")
+                .build();
+        return moveTeamVO;
     }
 }
