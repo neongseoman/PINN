@@ -3,7 +3,6 @@ package com.ssafy.be.game.controller;
 import com.ssafy.be.auth.jwt.JwtProvider;
 import com.ssafy.be.common.Provider.ScheduleProvider;
 import com.ssafy.be.common.exception.BaseException;
-import com.ssafy.be.common.exception.SocketException;
 import com.ssafy.be.common.model.dto.ServerEvent;
 import com.ssafy.be.common.model.dto.ServerSendEvent;
 import com.ssafy.be.common.response.BaseResponseStatus;
@@ -43,43 +42,21 @@ public class GameController {
         int gamerId = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor).getGamerId();
         GameStartVO gameStartVO = gameService.startGame(gamerId, gameStartRequestDTO);
         GameInitVO gameInitVO = gameService.initGame(gamerId, gameStartRequestDTO);
-//        log.info(gameInitVO.getGameId());
-        log.info("{} game started at {}", gameStartRequestDTO.getGameId(), LocalDateTime.now());
-        sendingOperations.convertAndSend("/game/sse/" + gameInitVO.getGameId(),
-                new ServerSendEvent(ServerEvent.START));
-        CompletableFuture<Integer> startFuture = scheduleProvider.startGame(gameStartRequestDTO.getGameId());
+        int gameId = gameInitVO.getGameId();
+        int currentRound =0;
 
-        startFuture.thenCompose((result) -> { // startFuture에서 5초 보냈고 Game Init도 보냄.
-            log.info("{} game round 1 started at {}", gameStartRequestDTO.getGameId(), LocalDateTime.now());
-
-            sendingOperations.convertAndSend("/game/sse/" + gameInitVO.getGameId(),
-                    new ServerSendEvent(ServerEvent.ROUND_START));
-
-            return scheduleProvider.scheduleFuture(result, gameStartRequestDTO.getStage1Time()); // 지금부터 stage 1
-//            return scheduleProvider.sendHint(result, 5); // 지금부터 stage 1 test time 5초
-        }).thenCompose((result) -> {
-            log.info("{} game send Hint at {}", gameStartRequestDTO.getGameId(), LocalDateTime.now());
-
-            sendingOperations.convertAndSend("/game/sse/" + gameInitVO.getGameId(),
-                    new ServerSendEvent(ServerEvent.STAGE_2_END));
-            return scheduleProvider.scheduleFuture(result, gameStartRequestDTO.getStage2Time()); // 지금부터 stage 2
-//            return scheduleProvider.roundEnd(result, 5); // 지금부터 stage 2 test time 5초
-        }).thenCompose((result) -> {
-            log.info("{} game Stage 2 is end at {}", gameStartRequestDTO.getGameId(), LocalDateTime.now()); // 점수 정산
-
-            sendingOperations.convertAndSend("/game/sse/" + gameInitVO.getGameId(),
-                    new ServerSendEvent(ServerEvent.STAGE_2_END));
-            return scheduleProvider.scheduleFuture(result, gameStartRequestDTO.getScorePageTime()); // 지금부터 score page
-//            return scheduleProvider.roundEnd(result, 5); // 지금부터 score page
-        }).thenCompose((a) -> { // 이건 게임이 끝나
-            log.info("{} game is End at {}", gameInitVO.getGameId(), LocalDateTime.now());
-            sendingOperations.convertAndSend("/game/sse/" + gameInitVO.getGameId(),
-                    new ServerSendEvent(ServerEvent.GO_TO_ROOM));
-            return scheduleProvider.scheduleFuture(gameInitVO.getGameId(), 5); // 방으로 돌아가라
-        }).exceptionally(ex -> {
-            log.error("Error occurred in the CompletableFuture chain: ", ex);
-            throw new BaseException(BaseResponseStatus.OOPS,gamerId);
-        });
+        // round가 늘어난다면 이걸 늘리면 될 것 같음.
+        scheduleProvider.startGame(gameInitVO.getGameId(),currentRound
+                ).thenCompose(r ->
+                    scheduleProvider.roundScheduler(gameId, gameStartRequestDTO, r+1)
+                ).thenCompose(r ->
+                        scheduleProvider.roundScheduler(gameId, gameStartRequestDTO, r+1)
+                ).thenCompose(r ->
+                        scheduleProvider.roundScheduler(gameId, gameStartRequestDTO, r+1)
+                ).exceptionally(ex -> {
+                    log.error("Error occurred in the CompletableFuture chain: ", ex);
+                    throw new BaseException(BaseResponseStatus.OOPS, gameId);
+                });
     }
 
     @MessageMapping("/game/round/init") // 라운드 시작(문제의 lat, lng + stage1 hint broadcast)
@@ -135,6 +112,6 @@ public class GameController {
         RoundFinishVO roundFinishVO = gameService.finishRound(roundFinishRequestDTO);
 
         // '/game/{gameId}'를 구독 중인 모든 사용자에게 publish
-        sendingOperations.convertAndSend("/game/"+roundFinishVO.getSenderGameId(), roundFinishVO);
+        sendingOperations.convertAndSend("/game/" + roundFinishVO.getSenderGameId(), roundFinishVO);
     }
 }
