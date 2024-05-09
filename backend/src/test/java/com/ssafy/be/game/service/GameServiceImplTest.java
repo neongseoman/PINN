@@ -38,8 +38,6 @@ class GameServiceImplTest {
     void setUp() { // game 테스트할 수 있는 게임 방 만들기
         MockitoAnnotations.openMocks(this); // Initialize mocks
         ConcurrentHashMap<Integer, TeamComponent> teams = new ConcurrentHashMap<>();
-        // Create a room using the mocked lobbyService
-//        CreateRoomDTO createRoomDTO = new CreateRoomDTO(2, "테스트 방", 3, 30, 15, "abc123", 123);
         GameComponent testGameComponent = GameComponent.builder()
                 .teams(teams)
                 .gameId(123)
@@ -72,55 +70,4 @@ class GameServiceImplTest {
         assertEquals(existGame.getGameId(),123);
     }
 
-    @DisplayName("Init Game Test")
-    @Test
-    void findGameInfo() {
-        int gamerId = 123;
-
-
-    }
-
-    @Test
-    void findStage1Info() {
-    }
-
-    @Test
-    void findStage2Info() {
-    }
-
-    @Test
-    void startGame() {
-    }
-
-    @Test
-    void initGame() {
-    }
-
-    @Test
-    void testFindStage1Info() {
-    }
-
-    @Test
-    void testFindStage2Info() {
-    }
-
-    @Test
-    void movePin() {
-    }
-
-    @Test
-    void guessPin() {
-    }
-
-    @Test
-    void getRandomIndices() {
-    }
-
-    @Test
-    void calculateDistance() {
-    }
-
-    @Test
-    void calculateScore() {
-    }
 }
