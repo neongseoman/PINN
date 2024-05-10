@@ -29,7 +29,7 @@ public class StompInboundMessageInterceptor implements ChannelInterceptor {
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
 //        log.info(headerAccessor.toString());
-        log.info(headerAccessor.getCommand() + " " + headerAccessor.getSessionId());
+//        log.info(headerAccessor.getCommand() + " " + headerAccessor.getSessionId());
 //        if (StompCommand.ACK.equals(headerAccessor.getCommand())){
 //            log.info("STOMP ACK :  {}",headerAccessor.getAck());
 //        }
@@ -41,6 +41,7 @@ public class StompInboundMessageInterceptor implements ChannelInterceptor {
                 String token = headerAccessor.getNativeHeader("Auth").get(0);
                 UsernamePasswordAuthenticationToken authentication = jwtProvider.getAuthentication(token);
             } catch (BaseException e) {
+                log.error(e);
                 throw e;
             }
 
