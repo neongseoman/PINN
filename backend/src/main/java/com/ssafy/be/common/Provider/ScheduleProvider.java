@@ -70,8 +70,7 @@ public class ScheduleProvider {
                     log.info("{} game {} Round End  : {}", gameStartRequestDTO.getGameId(), currentRound, LocalDateTime.now());
                     sendingOperations.convertAndSend("/game/sse/" + gameId,
                             new ServerSendEvent(ServerEvent.ROUND_END, currentRound)); // Round End stage 1, 2 score # 1205
-                    RoundFinishRequestDTO finishRequestDTO = new RoundFinishRequestDTO(gameStartRequestDTO.getSenderNickname(), gameStartRequestDTO.getSenderGameId(), gameStartRequestDTO.getSenderTeamId(), currentRound);
-                    gameService.finishRound(finishRequestDTO);
+
                     return scheduleFuture(gameId, 1);
                 }).thenRun(() -> future.complete(currentRound));
         return future;
