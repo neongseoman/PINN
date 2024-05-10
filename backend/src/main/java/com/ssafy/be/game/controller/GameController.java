@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDateTime;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.IntStream;
 
 @RestController
 @Log4j2
@@ -49,61 +50,35 @@ public class GameController {
 
     @MessageMapping("/game/start")
     public void startGame(GameStartRequestDTO gameStartRequestDTO, StompHeaderAccessor accessor) throws ExecutionException, InterruptedException, BaseException {
-//        log.info("Is this async? Start of Method : {}", LocalDateTime.now());
-//        log.info(gameStartRequestDTO.toString());
+        log.debug("Is this async? Start of Method : {}", LocalDateTime.now());
+
         int gamerId = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor).getGamerId();
         GameStartVO gameStartVO = gameService.startGame(gamerId, gameStartRequestDTO);
         GameInitVO gameInitVO = gameService.initGame(gamerId, gameStartRequestDTO);
+        int gameId = gameInitVO.getGameId();
+        int currentRound = 0;
 
-        log.info("{} game started at {}", gameStartRequestDTO.getGameId(), LocalDateTime.now());
-        sendingOperations.convertAndSend("/game/sse/" + gameInitVO.getGameId(), new ServerSendEvent(ServerEvent.START));
+        // round가 늘어난다면 이걸 늘리면 될 것 같음.
 
-        CompletableFuture<Integer> startFuture = scheduleProvider.startGame(gameStartRequestDTO.getGameId(), gameInitVO);
+        scheduleProvider.startGame(gameInitVO.getGameId(), currentRound)
+                .thenCompose(v -> {
+                    // IntStream으로 라운드 수만큼 체인 생성
+                    CompletableFuture<Integer> roundChain = CompletableFuture.completedFuture(currentRound);
 
-        startFuture.thenCompose((result) -> { // startFuture에서 5초 보냈고 Game Init도 보냄.
-            log.info("{} game round 1 started at {}", gameStartRequestDTO.getGameId(), LocalDateTime.now());
-            RoundInitRequestDTO roundInitRequestDTO =
-                    new RoundInitRequestDTO(gameStartVO.getSenderNickname(), gameStartVO.getSenderGameId(),
-                            gameStartVO.getSenderTeamId(), gameStartVO.getGameId(), 1);
-            roundInitRequestDTO.setSenderNickname("");
-            roundInitRequestDTO.setSenderTeamId(10000);
-            RoundInitVO roundInitVO = gameService.findStage1Info(gamerId, roundInitRequestDTO);
-            roundInitVO.setCode(ServerEvent.ROUND_START.getCode());
-            roundInitVO.setMsg(ServerEvent.ROUND_START.getMsg());
-            sendingOperations.convertAndSend("/game/sse/" + gameInitVO.getGameId(), roundInitVO); // 여기까지 게임 준비 및 시작
+                    // 각 라운드에 대해 체인에 비동기 작업을 연결
+                    for (int round = 1; round <= gameStartRequestDTO.getRoundCount(); round++) {
+                        final int currentRoundInLoop = round;
+                        roundChain = roundChain.thenCompose(ignored -> scheduleProvider.roundScheduler(gameId, gameStartRequestDTO, currentRoundInLoop));
+                    }
 
-            return scheduleProvider.sendHint(result, gameStartRequestDTO.getStage1Time()); // 지금부터 stage 1
-//            return scheduleProvider.sendHint(result, 5); // 지금부터 stage 1 test time 5초
-        }).thenCompose((result) -> {
-            log.info("{} game send Hint at {}", gameStartRequestDTO.getGameId(), LocalDateTime.now());
-            Stage2InitRequestDTO stage2InitRequestDTO =
-                    new Stage2InitRequestDTO(gameStartVO.getSenderNickname(), gameStartVO.getSenderGameId(),
-                            gameStartVO.getSenderTeamId(), gameStartVO.getGameId(), 1); // 현재 라운드 번호
-            Stage2InitVO stage2InitVO = gameService.findStage2Info(gamerId, stage2InitRequestDTO);
-            stage2InitVO.setCode(ServerEvent.HINT.getCode());
-            stage2InitVO.setMsg(ServerEvent.HINT.getMsg());
-            sendingOperations.convertAndSend("/game/sse/" + gameInitVO.getGameId(), stage2InitVO);
+                    // 마지막 결과를 `CompletableFuture<Void>`로 변환
+                    return roundChain.thenApply(ignored -> null);
+                })
+                .exceptionally(ex -> {
+                    log.error("Error occurred in the CompletableFuture chain: ", ex);
+                    throw new BaseException(BaseResponseStatus.OOPS, gameId);
+                });
 
-            return scheduleProvider.roundEnd(result, gameStartRequestDTO.getStage2Time()); // 지금부터 stage 2
-//            return scheduleProvider.roundEnd(result, 5); // 지금부터 stage 2 test time 5초
-        }).thenCompose((result) -> {
-            log.info("{} game round 1 is end at {}", gameStartRequestDTO.getGameId(), LocalDateTime.now()); // 점수 정산
-
-            sendingOperations.convertAndSend("/game/sse/" + gameInitVO.getGameId(), new ServerSendEvent(ServerEvent.ROUND_SCORE));
-            return scheduleProvider.roundEnd(result, gameStartRequestDTO.getScorePageTime()); // 지금부터 score page
-//            return scheduleProvider.roundEnd(result, 5); // 지금부터 score page
-        }).thenCompose((a) -> { // 이건 게임이 끝나
-            log.info(" {}  Game is End at {}", gameInitVO.getGameId(), LocalDateTime.now());
-            ServerSendEvent serverMsg = new ServerSendEvent(ServerEvent.GO_TO_ROOM);
-            sendingOperations.convertAndSend("/game/sse/" + gameInitVO.getGameId(), serverMsg);
-
-            return scheduleProvider.goToRoom(gameInitVO.getGameId(), 5); // 방으로 돌아가라
-        }).exceptionally(ex -> {
-            log.error("Error occurred in the CompletableFuture chain: ", ex);
-            throw new BaseException(BaseResponseStatus.EMPTY_SIGN);
-        });
-
-//        log.info("Is this async? End of Method : {}", LocalDateTime.now());
 
     }
 
