@@ -8,15 +8,15 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class Stage2InitRequestDTO extends SocketDTO {
+//@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+public class Stage2InitRequestDTO /* extends SocketDTO */ {
     private int gameId;
     private int round;
 
-    @Builder
-    public Stage2InitRequestDTO(String senderNickname, int senderGameId, int senderTeamId, int gameId, int round) {
-        super(senderNickname, senderGameId, senderTeamId);
-        this.gameId = gameId;
-        this.round = round;
-    }
+//    @Builder
+//    public Stage2InitRequestDTO(String senderNickname, int senderGameId, int senderTeamId, int gameId, int round) {
+//        super(senderNickname, senderGameId, senderTeamId);
+//        this.gameId = gameId;
+//        this.round = round;
+//    }
 }

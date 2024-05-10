@@ -3,9 +3,7 @@ package com.ssafy.be.game.service;
 import com.ssafy.be.common.component.*;
 import com.ssafy.be.common.exception.BaseException;
 import com.ssafy.be.common.model.dto.SocketDTO;
-import com.ssafy.be.common.exception.SocketException;
 import com.ssafy.be.common.model.repository.GameRepository;
-import com.ssafy.be.common.response.BaseResponse;
 import com.ssafy.be.common.response.BaseResponseStatus;
 import com.ssafy.be.game.model.domain.Hint;
 import com.ssafy.be.game.model.domain.HintType;
@@ -79,10 +77,10 @@ public class GameServiceImpl implements GameService {
         } catch (BaseException e) {
 //            log.error("Socket Error");
             e.printStackTrace();
-            throw new BaseException(e.getStatus(),gamerId); // Socket에도 던지고 싶다면 GamerID를 주세요.
-        } catch(Exception e){
+            throw new BaseException(e.getStatus(), gamerId); // Socket에도 던지고 싶다면 GamerID를 주세요.
+        } catch (Exception e) {
             e.printStackTrace();
-            throw new BaseException(BaseResponseStatus.OOPS,gamerId);
+            throw new BaseException(BaseResponseStatus.OOPS, gamerId);
         }
     }
 
@@ -109,9 +107,6 @@ public class GameServiceImpl implements GameService {
             if (gamerId != existGame.getLeaderId()) {
                 throw new BaseException(BaseResponseStatus.OOPS);
             }
-
-            GameInitVO gameInitVO = new GameInitVO(gameInitRequestDTO.getSenderDateTime(), gameInitRequestDTO.getSenderNickname(), gameInitRequestDTO.getSenderGameId(), gameInitRequestDTO.getSenderTeamId(), gameInitRequestDTO.getCode(), gameInitRequestDTO.getMsg());
-            gameInitVO.setCodeAndMsg(1112, "게임 초기 설정이 정상적으로 완료되었습니다.");
 
             /*
              team 마다 roundCount개의 teamRounds 생성
@@ -198,6 +193,8 @@ public class GameServiceImpl implements GameService {
              */
             existGame.setRoundResults(new LinkedList<>());
 
+            // TODO: 필요 없는 작업. 리팩터링 필요.
+            GameInitVO gameInitVO = new GameInitVO();
             // game의 정보 중 필요한 것들을 gIRD에 담아서 return
             gameInitVO.setGameId(existGame.getGameId());
             gameInitVO.setRoomName(existGame.getRoomName());
@@ -207,15 +204,15 @@ public class GameServiceImpl implements GameService {
             gameInitVO.setStage1Time(existGame.getStage1Time());
             gameInitVO.setStage2Time(existGame.getStage2Time());
             gameInitVO.setStartedTime(existGame.getStartedTime());
-
             return gameInitVO;
+
         } catch (BaseException e) {
 //            log.error("Socket Error");
             e.printStackTrace();
-            throw new BaseException(e.getStatus(),gamerId); // Socket에도 던지고 싶다면 GamerID를 주세요.
-        } catch(Exception e){
+            throw new BaseException(e.getStatus(), gamerId); // Socket에도 던지고 싶다면 GamerID를 주세요.
+        } catch (Exception e) {
             e.printStackTrace();
-            throw new BaseException(BaseResponseStatus.OOPS,gamerId);
+            throw new BaseException(BaseResponseStatus.OOPS, gamerId);
         }
     }
 
@@ -231,13 +228,11 @@ public class GameServiceImpl implements GameService {
         }
 
         try {
+            // TODO: 요청 보낸 gamerId 사용자가 game에 속해 있는지 확인
             // 요청 보낸 gamer_id가 GM/game의 leader_id와 일치하는지 확인
-            if (gamerId != existGame.getLeaderId()) {
-                throw new BaseException(BaseResponseStatus.OOPS);
-            }
-
-            RoundInitVO roundInitVO = new RoundInitVO(roundInitRequestDTO.getSenderDateTime(), roundInitRequestDTO.getSenderNickname(), roundInitRequestDTO.getSenderGameId(), roundInitRequestDTO.getSenderTeamId(), -1, null);
-            roundInitVO.setCodeAndMsg(1113, "라운드 초기 정보를 받아오는 데에 성공했습니다.");
+//            if (gamerId != existGame.getLeaderId()) {
+//                throw new BaseException(BaseResponseStatus.OOPS);
+//            }
 
             int round = roundInitRequestDTO.getRound();
             QuestionComponent question = existGame.getQuestions().get(round - 1);
@@ -250,6 +245,10 @@ public class GameServiceImpl implements GameService {
                 }
             }
 
+//            RoundInitVO roundInitVO = new RoundInitVO(roundInitRequestDTO.getSenderDateTime(), roundInitRequestDTO.getSenderNickname(), roundInitRequestDTO.getSenderGameId(), roundInitRequestDTO.getSenderTeamId(), -1, null);
+//            roundInitVO.setCodeAndMsg(1113, "라운드 초기 정보를 받아오는 데에 성공했습니다.");
+
+            RoundInitVO roundInitVO = new RoundInitVO();
             // 문제 정보 + 문제의 스테이지1 힌트 정보 담아 보내기 ..
             roundInitVO.setGameId(existGame.getGameId());
             roundInitVO.setRound(round);
@@ -263,10 +262,10 @@ public class GameServiceImpl implements GameService {
         } catch (BaseException e) {
 //            log.error("Socket Error");
             e.printStackTrace();
-            throw new BaseException(e.getStatus(),gamerId); // Socket에도 던지고 싶다면 GamerID를 주세요.
-        } catch(Exception e){
+            throw new BaseException(e.getStatus()); // Socket에도 던지고 싶다면 GamerID를 주세요.
+        } catch (Exception e) {
             e.printStackTrace();
-            throw new BaseException(BaseResponseStatus.OOPS,gamerId);
+            throw new BaseException(BaseResponseStatus.OOPS);
         }
     }
 
@@ -285,8 +284,9 @@ public class GameServiceImpl implements GameService {
                 throw new BaseException(BaseResponseStatus.OOPS); // TODO: EXCEPTION TYPE 정의
             }
 
-            Stage2InitVO stage2InitVO = new Stage2InitVO(stage2InitRequestDTO.getSenderDateTime(), stage2InitRequestDTO.getSenderNickname(), stage2InitRequestDTO.getSenderGameId(), stage2InitRequestDTO.getSenderTeamId(), stage2InitRequestDTO.getCode(), stage2InitRequestDTO.getMsg());
-            stage2InitVO.setCodeAndMsg(1114, "stage2 추가 힌트를 받아오는 데에 성공했습니다.");
+//            Stage2InitVO stage2InitVO = new Stage2InitVO(stage2InitRequestDTO.getSenderDateTime(), stage2InitRequestDTO.getSenderNickname(), stage2InitRequestDTO.getSenderGameId(), stage2InitRequestDTO.getSenderTeamId(), stage2InitRequestDTO.getCode(), stage2InitRequestDTO.getMsg());
+//            stage2InitVO.setCodeAndMsg(1114, "stage2 추가 힌트를 받아오는 데에 성공했습니다.");
+            Stage2InitVO stage2InitVO = new Stage2InitVO();
 
             int round = stage2InitRequestDTO.getRound();
             QuestionComponent question = existGame.getQuestions().get(round - 1);
@@ -305,13 +305,13 @@ public class GameServiceImpl implements GameService {
             stage2InitVO.setHints(stage2Hints);
 
             return stage2InitVO;
-        }  catch (BaseException e) {
+        } catch (BaseException e) {
 //            log.error("Socket Error");
             e.printStackTrace();
-            throw new BaseException(e.getStatus(),gamerId); // Socket에도 던지고 싶다면 GamerID를 주세요.
-        } catch(Exception e){
+            throw new BaseException(e.getStatus(), gamerId); // Socket에도 던지고 싶다면 GamerID를 주세요.
+        } catch (Exception e) {
             e.printStackTrace();
-            throw new BaseException(BaseResponseStatus.OOPS,gamerId);
+            throw new BaseException(BaseResponseStatus.OOPS, gamerId);
         }
     }
 
@@ -435,7 +435,7 @@ public class GameServiceImpl implements GameService {
             if (!teamRound.isGuessed()) { // guess 안 한 팀인 경우
                 // teamRound의 submitTime, submitStage를 '라운드 종료' 시점으로 업데이트
                 teamRound.setSubmitTime(roundFinishRequestDTO.getSenderDateTime());
-                teamRound.setSubmitStage(NOT_GUESSED); // TODO: guess 안 한 팀의 submitStage 어떻게 처리할 것인지 결정해야 함
+                teamRound.setSubmitStage(0); // TODO: guess 안 한 팀의 submitStage 어떻게 처리할 것인지 결정해야 함
 
                 if (teamRound.getSubmitLat() == -1 || teamRound.getSubmitLng() == -1) { // 핀 한 번도 안 찍고 guess도 안 한 팀인 경우
                     teamRound.setRoundScore(0); // 0점 부여
@@ -468,7 +468,7 @@ public class GameServiceImpl implements GameService {
         // TODO: 모든 team의 teamRound를 DB에 insert
 
         // GameManager의 gameComponent의 roundResults에 teamRoundResults 담아서 gm이 라운드 결과 들고 있게 하기!
-        // TODO: gm도 gm인데 DB에도 저장해야 해...
+        // TODO: gm도 gm인데 DB에도 저장해야 해... (어디서요?)
         existGame.getRoundResults().add(teamRoundResults);
 
         // RF VO에 TRRs 담아서 리턴
@@ -479,11 +479,34 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public GameFinishVO finishGame(SocketDTO gameFinishRequestDTO) throws BaseException {
-        // 1. gameManager의 roundResults를 바탕으로 gameResult 만들기
-
-        // 2. 모든 team에 대해 team
 
         return null;
+    }
+
+    //////////////////////////////////////
+
+    @Override
+    public GameInitVO getGameInfo(int gamerId, int gameId) throws BaseException {
+
+        GameComponent existGame = gameManager.getGames().get(gameId);
+        if (existGame == null) { // 존재하는 게임인지 확인
+            throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
+        }
+        
+        // TODO: gamerId가 gameId에 해당하는 게임에 속한 사용자인지 확인
+
+        // game의 정보 중 필요한 것들을 GI VO에 담아서 return
+        GameInitVO gameInitVO = new GameInitVO();
+        gameInitVO.setGameId(existGame.getGameId());
+        gameInitVO.setRoomName(existGame.getRoomName());
+        gameInitVO.setLeaderId(existGame.getLeaderId()); // 방장 gamerId가 필요한가?
+        gameInitVO.setRoundCount(existGame.getRoundCount());
+        gameInitVO.setThemeId(existGame.getThemeId());
+        gameInitVO.setStage1Time(existGame.getStage1Time());
+        gameInitVO.setStage2Time(existGame.getStage2Time());
+        gameInitVO.setStartedTime(existGame.getStartedTime());
+
+        return gameInitVO;
     }
 
     @Override
@@ -516,11 +539,8 @@ public class GameServiceImpl implements GameService {
 
     // List<TeamRoundComponent> 를 totalScore 기준으로 내림차순 정렬
     private static void sortByTotalScore(List<TeamRoundComponent> teamRoundResults) {
-        teamRoundResults.sort(new Comparator<TeamRoundComponent>() {
-            @Override
-            public int compare(TeamRoundComponent o1, TeamRoundComponent o2) {
-                return o2.getTotalScore() - o1.getTotalScore(); // totalScore를 기준으로 내림차순으로 정렬
-            }
+        teamRoundResults.sort((o1, o2) -> {
+            return o2.getTotalScore() - o1.getTotalScore(); // totalScore를 기준으로 내림차순으로 정렬
         });
     }
 
