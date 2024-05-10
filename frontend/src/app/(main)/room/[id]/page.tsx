@@ -26,13 +26,15 @@ interface Team {
 
 export default function RoomPage({ params }: { params: { id: number } }) {
 
-  const { teams, setTeams, setMove } = useTeamStore()
+  const teamStore = useTeamStore(params.id)
+  const { teams, setMove } = teamStore()
+
   const { gamerId, nickname } = useUserStore()
   const router = useRouter()
 
   const clientRef = useRef<Client>(
     new Client({
-      brokerURL: process.env.NEXT_PUBLIC_SOCKET_URL,
+      brokerURL: process.env.NEXT_PUBLIC_SERVER_SOCKET_URL,
       debug: function (str: string) {
       },
       reconnectDelay: 5000,
@@ -46,7 +48,7 @@ export default function RoomPage({ params }: { params: { id: number } }) {
   const subscribeUrl = `/game/${params.id}`
   const publishChatUrl = `/app/game/chat/${params.id}`
   // 유저 입장
-  const publishUserUrl = `/app/game/enter/z${params.id}`
+  const publishUserUrl = `/app/game/enter/${params.id}`
   // 방나가기
   const publishExitUrl = `/app/game/exit/${params.id}`
 
@@ -54,10 +56,13 @@ export default function RoomPage({ params }: { params: { id: number } }) {
 
   useEffect(() => {
     clientRef.current.onConnect = function (_frame: IFrame) {
-      clientRef.current.subscribe(subscribeUrl, (res: any) => {
-        const messageResponse = JSON.parse(res.body)
-        console.log(res.body)
+      clientRef.current.publish({
+        headers: {
+          Auth: localStorage.getItem('accessToken') as string,
+        },
+        destination: publishUserUrl
       })
+      console.log('엔터')
     }
 
     clientRef.current.onStompError = function (frame: IFrame) {
@@ -79,6 +84,32 @@ export default function RoomPage({ params }: { params: { id: number } }) {
       setMove(teamNumber, nickname)
   };
 
+  useEffect(() => {
+    const roomList = async () => {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/room/${params.id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('accessToken') as string}`
+        },
+      });
+
+      if (response.ok) {
+        console.log('팀 목록 요청 통신 성공');
+        const responseData = await response.json();
+        if (responseData.code === 1000) {
+          console.log('팀 목록 출력 성공!', responseData);
+        } else {
+          console.log('팀 목록 출력 실패!', responseData.code);
+        }
+      } else {
+        console.error('팀 목록 요청 통신 실패', response);
+      }
+    }
+
+    roomList()
+  }, []);
+
 
 
   const handleOutClick = () => {
@@ -87,11 +118,11 @@ export default function RoomPage({ params }: { params: { id: number } }) {
         Auth: localStorage.getItem('accessToken') as string,
       },
       destination: publishUserUrl,
-      // body: JSON.stringify({
-      //   senderNickname: nickname,
-      //   senderGameId: gamerId,
-      //   senderTeamId: 1,
-      // })
+      body: JSON.stringify({
+        senderNickname: nickname,
+        senderGameId: gamerId,
+        senderTeamId: 1,
+      })
     })
     router.push(`/lobby}`)
   }
