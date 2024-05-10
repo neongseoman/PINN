@@ -217,105 +217,6 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public RoundInitVO findStage1Info(int gamerId, RoundInitRequestDTO roundInitRequestDTO) throws BaseException {
-
-        // 해당 라운드의 문제 + 스테이지1에 해당하는 힌트 return
-
-        int gameId = roundInitRequestDTO.getGameId();
-        GameComponent existGame = gameManager.getGames().get(gameId);
-        if (existGame == null) {
-            throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
-        }
-
-        try {
-            // TODO: 요청 보낸 gamerId 사용자가 game에 속해 있는지 확인
-            // 요청 보낸 gamer_id가 GM/game의 leader_id와 일치하는지 확인
-//            if (gamerId != existGame.getLeaderId()) {
-//                throw new BaseException(BaseResponseStatus.OOPS);
-//            }
-
-            int round = roundInitRequestDTO.getRound();
-            QuestionComponent question = existGame.getQuestions().get(round - 1);
-
-            // stage1 힌트만 골라내기
-            List<HintComponent> stage1Hints = new ArrayList<>();
-            for (HintComponent hint : question.getHints()) {
-                if (hint.getOfferStage() == 1) {
-                    stage1Hints.add(hint);
-                }
-            }
-
-//            RoundInitVO roundInitVO = new RoundInitVO(roundInitRequestDTO.getSenderDateTime(), roundInitRequestDTO.getSenderNickname(), roundInitRequestDTO.getSenderGameId(), roundInitRequestDTO.getSenderTeamId(), -1, null);
-//            roundInitVO.setCodeAndMsg(1113, "라운드 초기 정보를 받아오는 데에 성공했습니다.");
-
-            RoundInitVO roundInitVO = new RoundInitVO();
-            // 문제 정보 + 문제의 스테이지1 힌트 정보 담아 보내기 ..
-            roundInitVO.setGameId(existGame.getGameId());
-            roundInitVO.setRound(round);
-            roundInitVO.setQuestionId(question.getQuestionId());
-            roundInitVO.setQuestionName(question.getQuestionName());
-            roundInitVO.setLat(question.getLat());
-            roundInitVO.setLng(question.getLng());
-            roundInitVO.setHints(stage1Hints);
-
-            return roundInitVO;
-        } catch (BaseException e) {
-//            log.error("Socket Error");
-            e.printStackTrace();
-            throw new BaseException(e.getStatus()); // Socket에도 던지고 싶다면 GamerID를 주세요.
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new BaseException(BaseResponseStatus.OOPS);
-        }
-    }
-
-    @Override
-    public Stage2InitVO findStage2Info(int gamerId, Stage2InitRequestDTO stage2InitRequestDTO) throws BaseException {
-
-        int gameId = stage2InitRequestDTO.getGameId();
-        GameComponent existGame = gameManager.getGames().get(gameId);
-        if (existGame == null) {
-            throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
-        }
-
-        try {
-            // 요청 보낸 gamer_id가 GM/game의 leader_id와 일치하는지 확인
-            if (gamerId != existGame.getLeaderId()) {
-                throw new BaseException(BaseResponseStatus.OOPS); // TODO: EXCEPTION TYPE 정의
-            }
-
-//            Stage2InitVO stage2InitVO = new Stage2InitVO(stage2InitRequestDTO.getSenderDateTime(), stage2InitRequestDTO.getSenderNickname(), stage2InitRequestDTO.getSenderGameId(), stage2InitRequestDTO.getSenderTeamId(), stage2InitRequestDTO.getCode(), stage2InitRequestDTO.getMsg());
-//            stage2InitVO.setCodeAndMsg(1114, "stage2 추가 힌트를 받아오는 데에 성공했습니다.");
-            Stage2InitVO stage2InitVO = new Stage2InitVO();
-
-            int round = stage2InitRequestDTO.getRound();
-            QuestionComponent question = existGame.getQuestions().get(round - 1);
-
-            // stage2 힌트만 골라내기
-            List<HintComponent> stage2Hints = new ArrayList<>();
-            for (HintComponent hint : question.getHints()) {
-                if (hint.getOfferStage() == 2) {
-                    stage2Hints.add(hint);
-                }
-            }
-
-            stage2InitVO.setGameId(gameId);
-            stage2InitVO.setRound(round);
-            stage2InitVO.setStage(2);
-            stage2InitVO.setHints(stage2Hints);
-
-            return stage2InitVO;
-        } catch (BaseException e) {
-//            log.error("Socket Error");
-            e.printStackTrace();
-            throw new BaseException(e.getStatus(), gamerId); // Socket에도 던지고 싶다면 GamerID를 주세요.
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new BaseException(BaseResponseStatus.OOPS, gamerId);
-        }
-    }
-
-    @Override
     public PinMoveVO movePin(int gamerId, PinMoveRequestDTO pinMoveRequestDTO) throws BaseException {
 
         int gameId = pinMoveRequestDTO.getSenderGameId();
@@ -507,6 +408,105 @@ public class GameServiceImpl implements GameService {
         gameInitVO.setStartedTime(existGame.getStartedTime());
 
         return gameInitVO;
+    }
+
+    @Override
+    public RoundInitVO findStage1Info(int gamerId, RoundInitRequestDTO roundInitRequestDTO) throws BaseException {
+
+        // 해당 라운드의 문제 + 스테이지1에 해당하는 힌트 return
+
+        int gameId = roundInitRequestDTO.getGameId();
+        GameComponent existGame = gameManager.getGames().get(gameId);
+        if (existGame == null) {
+            throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
+        }
+
+        try {
+            // TODO: 요청 보낸 gamerId 사용자가 game에 속해 있는지 확인
+            // 요청 보낸 gamer_id가 GM/game의 leader_id와 일치하는지 확인
+//            if (gamerId != existGame.getLeaderId()) {
+//                throw new BaseException(BaseResponseStatus.OOPS);
+//            }
+
+            int round = roundInitRequestDTO.getRound();
+            QuestionComponent question = existGame.getQuestions().get(round - 1);
+
+            // stage1 힌트만 골라내기
+            List<HintComponent> stage1Hints = new ArrayList<>();
+            for (HintComponent hint : question.getHints()) {
+                if (hint.getOfferStage() == 1) {
+                    stage1Hints.add(hint);
+                }
+            }
+
+//            RoundInitVO roundInitVO = new RoundInitVO(roundInitRequestDTO.getSenderDateTime(), roundInitRequestDTO.getSenderNickname(), roundInitRequestDTO.getSenderGameId(), roundInitRequestDTO.getSenderTeamId(), -1, null);
+//            roundInitVO.setCodeAndMsg(1113, "라운드 초기 정보를 받아오는 데에 성공했습니다.");
+
+            RoundInitVO roundInitVO = new RoundInitVO();
+            // 문제 정보 + 문제의 스테이지1 힌트 정보 담아 보내기 ..
+            roundInitVO.setGameId(existGame.getGameId());
+            roundInitVO.setRound(round);
+            roundInitVO.setQuestionId(question.getQuestionId());
+            roundInitVO.setQuestionName(question.getQuestionName());
+            roundInitVO.setLat(question.getLat());
+            roundInitVO.setLng(question.getLng());
+            roundInitVO.setHints(stage1Hints);
+
+            return roundInitVO;
+        } catch (BaseException e) {
+//            log.error("Socket Error");
+            e.printStackTrace();
+            throw new BaseException(e.getStatus()); // Socket에도 던지고 싶다면 GamerID를 주세요.
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BaseException(BaseResponseStatus.OOPS);
+        }
+    }
+
+    @Override
+    public Stage2InitVO findStage2Info(int gamerId, Stage2InitRequestDTO stage2InitRequestDTO) throws BaseException {
+
+        int gameId = stage2InitRequestDTO.getGameId();
+        GameComponent existGame = gameManager.getGames().get(gameId);
+        if (existGame == null) {
+            throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
+        }
+
+        try {
+            // 요청 보낸 gamer_id가 GM/game의 leader_id와 일치하는지 확인
+            if (gamerId != existGame.getLeaderId()) {
+                throw new BaseException(BaseResponseStatus.OOPS); // TODO: EXCEPTION TYPE 정의
+            }
+
+//            Stage2InitVO stage2InitVO = new Stage2InitVO(stage2InitRequestDTO.getSenderDateTime(), stage2InitRequestDTO.getSenderNickname(), stage2InitRequestDTO.getSenderGameId(), stage2InitRequestDTO.getSenderTeamId(), stage2InitRequestDTO.getCode(), stage2InitRequestDTO.getMsg());
+//            stage2InitVO.setCodeAndMsg(1114, "stage2 추가 힌트를 받아오는 데에 성공했습니다.");
+            Stage2InitVO stage2InitVO = new Stage2InitVO();
+
+            int round = stage2InitRequestDTO.getRound();
+            QuestionComponent question = existGame.getQuestions().get(round - 1);
+
+            // stage2 힌트만 골라내기
+            List<HintComponent> stage2Hints = new ArrayList<>();
+            for (HintComponent hint : question.getHints()) {
+                if (hint.getOfferStage() == 2) {
+                    stage2Hints.add(hint);
+                }
+            }
+
+            stage2InitVO.setGameId(gameId);
+            stage2InitVO.setRound(round);
+            stage2InitVO.setStage(2);
+            stage2InitVO.setHints(stage2Hints);
+
+            return stage2InitVO;
+        } catch (BaseException e) {
+//            log.error("Socket Error");
+            e.printStackTrace();
+            throw new BaseException(e.getStatus(), gamerId); // Socket에도 던지고 싶다면 GamerID를 주세요.
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BaseException(BaseResponseStatus.OOPS, gamerId);
+        }
     }
 
     @Override
