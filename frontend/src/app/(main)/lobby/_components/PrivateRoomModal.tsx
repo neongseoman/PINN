@@ -1,5 +1,6 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 import { IoIosLock } from 'react-icons/io'
 import styles from '../lobby.module.css'
@@ -15,10 +16,20 @@ export default function PrivateRoomModal({
   roomName,
   setShowModal,
 }: PrivateRoomModalProps) {
-  // dialog 참조 ref
   const dialogRef = useRef<HTMLDialogElement>(null)
-  // 사용자 입력 비밀번호
   const [password, setPassword] = useState<string>('')
+  const router = useRouter()
+  // const clientRef = useRef<Client>(
+  //   new Client({
+  //     brokerURL: process.env.NEXT_PUBLIC_SERVER_SOCKET_URL,
+  //     debug: function (str: string) {
+  //       // console.log(str)
+  //     },
+  //     reconnectDelay: 5000,
+  //     heartbeatIncoming: 4000,
+  //     heartbeatOutgoing: 4000,
+  //   }),
+  // )
 
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(event.target.value)
@@ -30,6 +41,10 @@ export default function PrivateRoomModal({
 
   const showModal = () => {
     dialogRef.current?.showModal()
+    // clientRef.current.activate()
+    // clientRef.current.onConnect = function (_frame: IFrame) {
+    //   clientRef.current.subscribe(`/game/${gameId}`, () => {})
+    // }
   }
 
   const closeModal = () => {
@@ -40,7 +55,7 @@ export default function PrivateRoomModal({
   const enterPassword = async () => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/app/game/enter/${gameId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/lobby/${gameId}`,
         {
           method: 'POST',
           headers: {
@@ -60,10 +75,23 @@ export default function PrivateRoomModal({
         const responseData = await response.json()
         if (responseData.code === 1000) {
           console.log('비밀방 입장 요청 성공!', responseData)
-          // 방 입장
-          // 해당 방으로 이동
+
+          // clientRef.current.publish({
+          //   headers: {
+          //     Auth: localStorage.getItem('accessToken') as string,
+          //   },
+          //   destination: `/app/game/enter/${gameId}`,
+          //   body: JSON.stringify({
+          //     senderNickname: nickname,
+          //     senderGameId: gameId,
+          //   }),
+          // })
+
+          console.log(`${gameId}번 방으로 입장합니다`)
+          router.push(`/room/${gameId}`)
         } else {
           console.log('비밀방 입장 요청 실패!', responseData.code)
+          alert(responseData.message)
         }
       } else {
         console.error('비밀방 입장 요청 통신 실패', response)
@@ -72,9 +100,6 @@ export default function PrivateRoomModal({
       console.error('에러 발생: ', error)
     }
   }
-  // 입장 버튼 클릭
-  // `${process.env.NEXT_PUBLIC_API_URL}/app/game/enter/${gameId}` post 요청
-  // `${process.env.NEXT_PUBLIC_SERVER_SOCKET_URL}/game/${gameId}` websocket 구독
 
   return (
     <dialog className={styles.privateRoomModalWrapper} ref={dialogRef}>
