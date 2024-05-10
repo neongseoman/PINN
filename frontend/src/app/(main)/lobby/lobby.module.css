@@ -457,6 +457,19 @@
   }
 }
 
+.exitIcon {
+  font-size: 30px;
+  color: var(--Main-Navy);
+  position: fixed;
+  top: 75px;
+  right: 360px;
+  &:hover {
+    cursor: pointer;
+    transform: scale(1.1);
+    transition: transform 0.3s ease;
+  }
+}
+
 .ruleContents {
   display: flex;
   flex-direction: column;

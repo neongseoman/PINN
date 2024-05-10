@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef } from 'react'
+import { IoExitOutline } from 'react-icons/io5'
 import { PiSealWarningFill } from 'react-icons/pi'
 import styles from '../lobby.module.css'
 
@@ -22,6 +23,9 @@ export default function RuleModal() {
       </p>
 
       <dialog className={styles.ruleWrapper} ref={dialogRef}>
+        <p className={styles.exitIcon} onClick={closeModal}>
+          <IoExitOutline />
+        </p>
         <div className={styles.ruleContents}>
           <p className={styles.ruleTitle}>참여 방법</p>
           <div className={styles.ruleBox}>
