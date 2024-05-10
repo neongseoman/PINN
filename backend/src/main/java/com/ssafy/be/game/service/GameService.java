@@ -1,6 +1,7 @@
 package com.ssafy.be.game.service;
 
 import com.ssafy.be.common.exception.BaseException;
+import com.ssafy.be.common.model.dto.SocketDTO;
 import com.ssafy.be.game.model.dto.*;
 import com.ssafy.be.game.model.vo.*;
 
@@ -19,4 +20,11 @@ public interface GameService {
     PinGuessVO guessPin(int gamerId, PinGuessRequestDTO pinGuessRequestDTO) throws BaseException;
 
     RoundFinishVO finishRound(RoundFinishRequestDTO roundFinishRequestDTO) throws BaseException;
+
+    GameFinishVO finishGame(SocketDTO gameFinishRequestDTO) throws BaseException;
+
+    RoundResultVO getRoundResult(int gamerId, RoundResultRequestDTO roundFinishRequestDTO) throws BaseException;
+
+    GameResultVO getGameResult(int gamerId, GameResultRequestDTO gameResultRequestDTO) throws BaseException;
+
 }
