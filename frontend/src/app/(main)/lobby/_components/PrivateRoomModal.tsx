@@ -1,7 +1,5 @@
 'use client'
 
-import useUserStore from '@/stores/userStore'
-import { Client, IFrame } from '@stomp/stompjs'
 import { useRouter } from 'next/navigation'
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 import { IoIosLock } from 'react-icons/io'
@@ -20,19 +18,18 @@ export default function PrivateRoomModal({
 }: PrivateRoomModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const [password, setPassword] = useState<string>('')
-  const { nickname } = useUserStore()
   const router = useRouter()
-  const clientRef = useRef<Client>(
-    new Client({
-      brokerURL: process.env.NEXT_PUBLIC_SERVER_SOCKET_URL,
-      debug: function (str: string) {
-        // console.log(str)
-      },
-      reconnectDelay: 5000,
-      heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
-    }),
-  )
+  // const clientRef = useRef<Client>(
+  //   new Client({
+  //     brokerURL: process.env.NEXT_PUBLIC_SERVER_SOCKET_URL,
+  //     debug: function (str: string) {
+  //       // console.log(str)
+  //     },
+  //     reconnectDelay: 5000,
+  //     heartbeatIncoming: 4000,
+  //     heartbeatOutgoing: 4000,
+  //   }),
+  // )
 
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(event.target.value)
@@ -44,10 +41,10 @@ export default function PrivateRoomModal({
 
   const showModal = () => {
     dialogRef.current?.showModal()
-    clientRef.current.activate()
-    clientRef.current.onConnect = function (_frame: IFrame) {
-      clientRef.current.subscribe(`/game/${gameId}`, () => {})
-    }
+    // clientRef.current.activate()
+    // clientRef.current.onConnect = function (_frame: IFrame) {
+    //   clientRef.current.subscribe(`/game/${gameId}`, () => {})
+    // }
   }
 
   const closeModal = () => {
@@ -79,16 +76,16 @@ export default function PrivateRoomModal({
         if (responseData.code === 1000) {
           console.log('비밀방 입장 요청 성공!', responseData)
 
-          clientRef.current.publish({
-            headers: {
-              Auth: localStorage.getItem('accessToken') as string,
-            },
-            destination: `/app/game/enter/${gameId}`,
-            body: JSON.stringify({
-              senderNickname: nickname,
-              senderGameId: gameId,
-            }),
-          })
+          // clientRef.current.publish({
+          //   headers: {
+          //     Auth: localStorage.getItem('accessToken') as string,
+          //   },
+          //   destination: `/app/game/enter/${gameId}`,
+          //   body: JSON.stringify({
+          //     senderNickname: nickname,
+          //     senderGameId: gameId,
+          //   }),
+          // })
 
           console.log(`${gameId}번 방으로 입장합니다`)
           router.push(`/room/${gameId}`)

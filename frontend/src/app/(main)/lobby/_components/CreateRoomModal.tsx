@@ -1,7 +1,6 @@
 'use client'
 
 import useUserStore from '@/stores/userStore'
-import { Client, IFrame } from '@stomp/stompjs'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import React, { useRef, useState } from 'react'
@@ -17,19 +16,18 @@ export default function CreateRoomModal() {
   const [stage1Time, setStage1Time] = useState<number>(30)
   const [stage2Time, setStage2Time] = useState<number>(20)
   const [themeId, setThemeId] = useState<number>(1)
-  const [gameId, setGameId] = useState<number | null>(0)
   const router = useRouter()
-  const clientRef = useRef<Client>(
-    new Client({
-      brokerURL: process.env.NEXT_PUBLIC_SERVER_SOCKET_URL,
-      debug: function (str: string) {
-        // console.log(str)
-      },
-      reconnectDelay: 5000,
-      heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
-    }),
-  )
+  // const clientRef = useRef<Client>(
+  //   new Client({
+  //     brokerURL: process.env.NEXT_PUBLIC_SERVER_SOCKET_URL,
+  //     debug: function (str: string) {
+  //       // console.log(str)
+  //     },
+  //     reconnectDelay: 5000,
+  //     heartbeatIncoming: 4000,
+  //     heartbeatOutgoing: 4000,
+  //   }),
+  // )
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRoomName(event.target.value)
@@ -64,10 +62,10 @@ export default function CreateRoomModal() {
 
   const showModal = () => {
     dialogRef.current?.showModal()
-    clientRef.current.activate()
-    clientRef.current.onConnect = function (_frame: IFrame) {
-      clientRef.current.subscribe(`/game/${gameId}`, () => {})
-    }
+    // clientRef.current.activate()
+    // clientRef.current.onConnect = function (_frame: IFrame) {
+    //   clientRef.current.subscribe(`/game/${gameId}`, () => {})
+    // }
   }
 
   const closeModal = () => {
@@ -104,16 +102,16 @@ export default function CreateRoomModal() {
         if (responseData.code === 1000) {
           console.log('게임 생성 성공!', responseData)
           const gameId = responseData.result.gameId
-          clientRef.current.publish({
-            headers: {
-              Auth: localStorage.getItem('accessToken') as string,
-            },
-            destination: `/app/game/enter/${gameId}`,
-            body: JSON.stringify({
-              senderNickname: nickname,
-              senderGameId: gameId,
-            }),
-          })
+          // clientRef.current.publish({
+          //   headers: {
+          //     Auth: localStorage.getItem('accessToken') as string,
+          //   },
+          //   destination: `/app/game/enter/${gameId}`,
+          //   body: JSON.stringify({
+          //     senderNickname: nickname,
+          //     senderGameId: gameId,
+          //   }),
+          // })
           if (!roomName || roomName.length > 20 || roomName.length < 1) {
             alert('방 제목은 1글자 이상, 20글자 이하여야 합니다.')
             return
