@@ -3,9 +3,10 @@
 import Chatting from '@/components/Chatting'
 import Timer from '@/components/Timer'
 import themeStyles from '@/components/theme.module.css'
-import { IngameResponse } from '@/types/IngameTypes'
+import { GameProgressInfo } from '@/types/IngameTypes'
 import { Loader } from '@googlemaps/js-api-loader'
 import { Client, IFrame, IMessage } from '@stomp/stompjs'
+import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import { LuPin, LuPinOff } from 'react-icons/lu'
 import GameInfo from './_components/GameInfo'
@@ -15,11 +16,17 @@ import StreetView from './_components/StreetView'
 import ThemeInfo from './_components/ThemeInfo'
 import styles from './game.module.css'
 
-export default function GamePage({ params }: { params: { gameId: string } }) {
+export default function GamePage({
+  params,
+}: {
+  params: { gameId: string; round: string }
+}) {
   const [chatFocus, setChatFocus] = useState<boolean>(false)
   const [chatPin, setChatPin] = useState<boolean>(false)
   const [hintPin, setHintPin] = useState<boolean>(false)
   const [mapPin, setMapPin] = useState<boolean>(false)
+
+  const router = useRouter()
 
   //힌트
   const hints = ['hint 1', 'hint 2', 'hint 3']
@@ -79,19 +86,28 @@ export default function GamePage({ params }: { params: { gameId: string } }) {
   useEffect(() => {
     clientRef.current.onConnect = function (_frame: IFrame) {
       clientRef.current.subscribe(ingameSubscribeUrl, (message: IMessage) => {
-        const ingameResponse = JSON.parse(message.body) as IngameResponse
-        switch (ingameResponse.code) {
+        const gameProgressResponse = JSON.parse(
+          message.body,
+        ) as GameProgressInfo
+        switch (gameProgressResponse.code) {
           case 1201:
+            // 게임스타트
             break
           case 1202:
+            // 라운드 스타트
             break
           case 1203:
+            // 스테이지 스타트
             break
           case 1204:
+            // 스테이지 2 끝
+            router.push(`/game/${params.gameId}/${params.round}/result`)
             break
           case 1205:
             break
           case 1206:
+            // 라운드 끝
+            router.push(`/game/${params.gameId}/${Number(params.round) + 1}`)
             break
         }
       })
@@ -152,7 +168,7 @@ export default function GamePage({ params }: { params: { gameId: string } }) {
         </div>
         <Chatting
           chatTitle={chatTitle}
-          subsrcibeUrl={subscribeUrl}
+          subscribeUrl={subscribeUrl}
           publishUrl={publishUrl}
         />
       </div>
@@ -163,7 +179,12 @@ export default function GamePage({ params }: { params: { gameId: string } }) {
         >
           {mapPin ? <LuPinOff /> : <LuPin />}
         </div>
-        <IngameMap theme={theme} loader={loader} />
+        <IngameMap
+          theme={theme}
+          loader={loader}
+          gameId={params.gameId}
+          round={params.round}
+        />
       </div>
       <div className={styles.streetView}>
         <StreetView lat={lat} lng={lng} loader={loader} />

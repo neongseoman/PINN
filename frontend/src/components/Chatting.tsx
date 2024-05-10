@@ -18,13 +18,13 @@ interface MessageRespnose {
 
 interface ChattingProps {
   chatTitle: string
-  subsrcibeUrl: string
+  subscribeUrl: string
   publishUrl: string
 }
 
 export default function Chatting({
   chatTitle,
-  subsrcibeUrl,
+  subscribeUrl,
   publishUrl,
 }: ChattingProps) {
   const [messages, setMessages] = useState<MessageRespnose[]>([])
@@ -47,7 +47,7 @@ export default function Chatting({
 
   useEffect(() => {
     clientRef.current.onConnect = function (_frame: IFrame) {
-      clientRef.current.subscribe(subsrcibeUrl, (message: IMessage) => {
+      clientRef.current.subscribe(subscribeUrl, (message: IMessage) => {
         const messageResponse = JSON.parse(message.body) as MessageRespnose
         setMessages((prevMessages) => [...prevMessages, messageResponse])
       })
@@ -63,7 +63,7 @@ export default function Chatting({
     return () => {
       clientRef.current.deactivate()
     }
-  }, [subsrcibeUrl, publishUrl])
+  }, [subscribeUrl, publishUrl])
 
   useEffect(() => {
     if (chatContainerRef.current) {
