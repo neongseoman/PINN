@@ -1,6 +1,8 @@
 package com.ssafy.be.common.component;
 
 import static com.ssafy.be.common.response.BaseResponseStatus.ALREADY_START_GAME;
+import static com.ssafy.be.common.response.BaseResponseStatus.FULL_ROOM_ERROR;
+import static com.ssafy.be.common.response.BaseResponseStatus.FULL_TEAM_ERROR;
 import static com.ssafy.be.common.response.BaseResponseStatus.NOT_EXIST_GAME;
 import static com.ssafy.be.common.response.BaseResponseStatus.NOT_EXIST_UNREADY_TEAM;
 import static com.ssafy.be.common.response.BaseResponseStatus.NOT_MATCH_PASSWORD;
@@ -80,7 +82,7 @@ public class GameManager {
 
     public TeamGamerComponent enterTeam(GameComponent gameComponent, Integer gamerId){
         for (Entry<Integer, TeamComponent> team : gameComponent.teams.entrySet()) {
-            // 준비가 아직 안 된 & 팀 내 멤버가 2명 이하
+            // 준비가 아직 안 된 & 팀 내 멤버가 3명 초과하지 않음
             if(!team.getValue().isReady()){
                 // 팀멤버 객체가 없다면 생성
                 if(team.getValue().getTeamGamers() == null){
@@ -103,8 +105,8 @@ public class GameManager {
             }
         }
 
-        // TODO : 들어갈 수 있는 공간이 없는 경우 Exception 처리
-        return null;
+        //  들어갈 수 있는 공간이 없는 경우 Exception 처리
+        throw new BaseException(FULL_ROOM_ERROR, gamerId);
     }
 
     // 방 나가기위한 method
@@ -116,6 +118,10 @@ public class GameManager {
         // team
         TeamComponent teamComponent = gameComponent.teams.get(socketDTO.getSenderTeamId());
         // teamGamer
+        // TeamComponent가 없다면 객체 생성
+//        if(teamComponent == null){
+//            teamComponent = new TeamComponent();
+//        }
         ConcurrentHashMap<Integer, TeamGamerComponent> teamGamers = teamComponent.getTeamGamers();
         // TeamGamerComponent to ExitRoomVO
         TeamGamerComponent teamGamerComponent = teamGamers.get(gamerPrincipalVO.getGamerId());
@@ -137,6 +143,7 @@ public class GameManager {
     // 팀 옮기기위한 method
     public MoveTeamVO enterSpecificTeam(MoveTeamDTO moveTeamDTO, GamerPrincipalVO gamerPrincipalVO) {
         String nickname = moveTeamDTO.getSenderNickname();
+        int newTeamNumber=0;
 
         // 게임
         GameComponent gameComponent = games.get(moveTeamDTO.getSenderGameId());
@@ -145,12 +152,16 @@ public class GameManager {
         TeamComponent newTeam = teams.get(moveTeamDTO.getNewTeamId());
         ConcurrentHashMap<Integer, TeamGamerComponent> teamGamers = newTeam.getTeamGamers();
 
-        if(teamGamers != null && teamGamers.size() == 3){
+        // TeamGamer가 null이라면
+        if (teamGamers == null){
+            newTeam.setTeamGamers(new ConcurrentHashMap<>());
+            teamGamers = newTeam.getTeamGamers();
+        }
+
+        if(teamGamers.size() == 3){
             // 들어가려는 팀에 공간이 없다면 Exception
+            throw new BaseException(FULL_TEAM_ERROR);
         } else {
-            if (teamGamers == null){
-                teamGamers = new ConcurrentHashMap<>();
-            }
             // 공간이 있으므로 할당
             boolean[] teamPersonNumber = new boolean[4];
             for (TeamGamerComponent person: teamGamers.values()){
@@ -159,11 +170,15 @@ public class GameManager {
 
             for (int i = 1; i < 4; i++) {
                 if (!teamPersonNumber[i]){
+                    newTeamNumber = i;
                     TeamGamerComponent teamGamerComponent = TeamGamerComponent.builder()
                             .gamerId(moveTeamDTO.getSenderGameId())
                             .teamId(moveTeamDTO.getNewTeamId())
-                            .teamGamerNumber(i)
+                            .gamerId(gamerPrincipalVO.getGamerId())
+                            .teamGamerNumber(newTeamNumber)
                             .build();
+                    // 팀에 해당 게이머 삽입
+                    teamGamers.put(gamerPrincipalVO.getGamerId(), teamGamerComponent);
                     break;
                 }
             }
@@ -176,8 +191,9 @@ public class GameManager {
                 .senderDateTime(moveTeamDTO.getSenderDateTime())
                 .senderNickname(moveTeamDTO.getSenderNickname())
                 .senderGameId(moveTeamDTO.getSenderGameId())
+                .newTeamNumber(newTeamNumber)
                 .code(1010)
-                .msg(nickname + "님이 " + moveTeamDTO.getSenderTeamId() + "팀에서 " + moveTeamDTO.getNewTeamId() + "팀으로 이동했습니다.")
+                .msg(nickname + "님이 " + moveTeamDTO.getOldTeamId() + "팀에서 " + moveTeamDTO.getNewTeamId() + "팀 " + newTeamNumber + "번째로 이동했습니다.")
                 .build();
         return moveTeamVO;
     }
