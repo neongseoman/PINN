@@ -11,9 +11,10 @@ import java.util.List;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @ToString
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class RoundInitVO extends SocketDTO {
+public class RoundInitVO {
     private int gameId;
     private int round;
     private int questionId; // db에서의 문제 id
@@ -21,8 +22,4 @@ public class RoundInitVO extends SocketDTO {
     private double lat; // 위도
     private double lng; // 경도
     private List<HintComponent> hints; // 이 문제의 힌트
-
-    public RoundInitVO(LocalDateTime senderDateTime, String senderNickname, int senderGameId, int senderTeamId, int code, String msg) {
-        super(senderDateTime, senderNickname, senderGameId, senderTeamId, code, msg);
-    }
 }

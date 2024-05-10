@@ -1,11 +1,8 @@
 package com.ssafy.be.game.controller;
 
-import com.fasterxml.jackson.databind.ser.Serializers;
 import com.ssafy.be.auth.jwt.JwtProvider;
 import com.ssafy.be.common.Provider.ScheduleProvider;
 import com.ssafy.be.common.exception.BaseException;
-import com.ssafy.be.common.model.dto.ServerEvent;
-import com.ssafy.be.common.model.dto.ServerSendEvent;
 import com.ssafy.be.common.model.dto.SocketDTO;
 import com.ssafy.be.common.response.BaseResponse;
 import com.ssafy.be.common.response.BaseResponseStatus;
@@ -13,7 +10,6 @@ import com.ssafy.be.game.model.dto.*;
 import com.ssafy.be.game.model.vo.*;
 import com.ssafy.be.game.service.GameService;
 import com.ssafy.be.gamer.model.GamerPrincipalVO;
-import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -22,13 +18,11 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.IntStream;
 
 @RestController
 @Log4j2
@@ -84,26 +78,6 @@ public class GameController {
 
     }
 
-    @MessageMapping("/game/round/init") // 라운드 시작(문제의 lat, lng + stage1 hint broadcast)
-    public void initStage1(RoundInitRequestDTO roundInitRequestDTO, StompHeaderAccessor accessor) {
-        int gamerId = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor).getGamerId();
-
-        RoundInitVO roundInitVO = gameService.findStage1Info(gamerId, roundInitRequestDTO);
-
-        // /game/{gameId} 를 구독 중인 모든 사용자에게 publish
-        sendingOperations.convertAndSend("/game/" + roundInitVO.getGameId(), roundInitVO);
-    }
-
-    @MessageMapping("/game/round/stage2/init") // stage2 hint broadcast
-    public void initStage2(Stage2InitRequestDTO stage2InitRequestDTO, StompHeaderAccessor accessor) {
-        int gamerId = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor).getGamerId();
-
-        Stage2InitVO stage2InitVO = gameService.findStage2Info(gamerId, stage2InitRequestDTO);
-
-        // /game/{gameId} 를 구독 중인 모든 사용자에게 publish
-        sendingOperations.convertAndSend("/game/" + stage2InitVO.getGameId(), stage2InitVO);
-    }
-
     @MessageMapping("/team/pin") // 핀 위치 변경 시, 동일 팀원+guess 마친 팀들에게 변경한 핀 위치 broadcast
     public void movePin(PinMoveRequestDTO pinMoveRequestDTO, StompHeaderAccessor accessor) {
         int gamerId = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor).getGamerId();
@@ -126,7 +100,6 @@ public class GameController {
         sendingOperations.convertAndSend("/guess/" + pinGuessVO.getSenderGameId(), pinGuessVO);
     }
 
-    // 일단은 Controller에도 @MM 추가함 (삭제해도 OK)
     @MessageMapping("/game/round/finish")
     public void finishRound(RoundFinishRequestDTO roundFinishRequestDTO, StompHeaderAccessor accessor) {
         int gamerId = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor).getGamerId();
@@ -141,9 +114,10 @@ public class GameController {
     public void finishGame(SocketDTO gameFinishRequestDTO, StompHeaderAccessor accessor) {
         int gamerId = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor).getGamerId();
 
-        gameService.finishGame(gameFinishRequestDTO);
+        GameFinishVO gameFinishVO = gameService.finishGame(gameFinishRequestDTO);
 
         // '/game/{gameId}'를 구독 중인 모든 사용자에게 publish
+        sendingOperations.convertAndSend("/game/" + gameFinishRequestDTO.getSenderGameId(), gameFinishVO);
     }
 
     ////////////////////////////////////////////
@@ -152,7 +126,56 @@ public class GameController {
     REST API
      */
 
-    // TODO: RoundFinishRequestDTO, RoundFinishVO가 SocketDTO extends 하고 있음... REST API에 맞는 형식으로 수정 필요
+    @PostMapping("/game/init")
+    public BaseResponse<?> getGameInfo(@RequestBody int gameId, ServletRequest req) {
+        // 요청 보낸 사용자의 gamerId
+        GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
+        int gamerId = gamerPrincipalVO.getGamerId();
+
+        GameInitVO gameInitVO = gameService.getGameInfo(gamerId, gameId);
+
+        return new BaseResponse<>(gameInitVO);
+    }
+
+    @PostMapping("/game/round/init") // 라운드 시작(문제의 lat, lng + stage1 hint)
+    public BaseResponse<?> initStage1(RoundInitRequestDTO roundInitRequestDTO, ServletRequest req) {
+        // 요청 보낸 사용자의 gamerId
+        GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
+        int gamerId = gamerPrincipalVO.getGamerId();
+
+        RoundInitVO roundInitVO = gameService.findStage1Info(gamerId, roundInitRequestDTO);
+
+        // /game/{gameId} 를 구독 중인 모든 사용자에게 publish
+//        sendingOperations.convertAndSend("/game/" + roundInitVO.getGameId(), roundInitVO);
+
+        return new BaseResponse<>(roundInitVO);
+    }
+
+    @PostMapping("/game/round/stage2/init") // stage2 hint
+    public BaseResponse<?> initStage2(Stage2InitRequestDTO stage2InitRequestDTO, ServletRequest req) {
+        // 요청 보낸 사용자의 gamerId
+        GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
+        int gamerId = gamerPrincipalVO.getGamerId();
+
+        Stage2InitVO stage2InitVO = gameService.findStage2Info(gamerId, stage2InitRequestDTO);
+
+        // /game/{gameId} 를 구독 중인 모든 사용자에게 publish
+//        sendingOperations.convertAndSend("/game/" + stage2InitVO.getGameId(), stage2InitVO);
+
+        return new BaseResponse<>(stage2InitVO);
+    }
+
+    @PostMapping("/game/round/guessed")
+    public BaseResponse<?> roundGuessed(/* requestbody, */ ServletRequest req) {
+        // 요청 보낸 사용자의 gamerId
+        GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
+        int gamerId = gamerPrincipalVO.getGamerId();
+
+        // RoundGuessedVO roundGuessedVO = gameService.getCurPinInfo(gamerId, ~~);
+
+        return new BaseResponse<>(null /*roundGuessedVO*/);
+    }
+
     @PostMapping("/game/round/result")
     public BaseResponse<?> roundResult(@RequestBody RoundResultRequestDTO roundResultRequestDTO, ServletRequest req) {
         // 요청 보낸 사용자의 gamerId
@@ -161,7 +184,6 @@ public class GameController {
 
         RoundResultVO roundFinishVO = gameService.getRoundResult(gamerId, roundResultRequestDTO);
 
-        // TODO: 이렇게 쓰는 거 맞나? ㅎㅎ ;; 확인 필요
         return new BaseResponse<>(roundFinishVO);
     }
 

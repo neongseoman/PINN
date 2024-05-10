@@ -10,8 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class GameInitVO extends SocketDTO {
+public class GameInitVO {
     private int gameId;
     private String roomName;
     private int themeId;
@@ -20,9 +19,4 @@ public class GameInitVO extends SocketDTO {
     private int stage1Time;
     private int stage2Time;
     private LocalDateTime startedTime;
-
-
-    public GameInitVO(LocalDateTime senderDateTime, String senderNickname, int senderGameId, int senderTeamId, int code, String msg) {
-        super(senderDateTime, senderNickname, senderGameId, senderTeamId, code, msg);
-    }
 }
