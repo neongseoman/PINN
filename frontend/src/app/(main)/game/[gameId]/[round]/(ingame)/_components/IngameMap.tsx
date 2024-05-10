@@ -5,6 +5,7 @@ import useUserStore from '@/stores/userStore'
 import { PinRespoonse } from '@/types/IngameTypes'
 import { Loader } from '@googlemaps/js-api-loader'
 import { Client, IFrame, IMessage } from '@stomp/stompjs'
+import { useRouter } from 'next/navigation'
 import { useEffect, useRef } from 'react'
 import styles from './ingamemap.module.css'
 
@@ -26,9 +27,11 @@ export default function IngameMap({
   gameId,
   round,
 }: IngameMapProps) {
-  const mapRef = useRef<any>()
+  const mapShowRef = useRef<HTMLDivElement | null>(null)
+  const mapObjectRef = useRef<google.maps.Map | null>(null)
   const currentMarker = useRef<google.maps.Marker | null>(null)
   const myGuess = useRef<MyGuess | null>(null)
+  const router = useRouter()
 
   const clientRef = useRef<Client>(
     new Client({
@@ -49,13 +52,14 @@ export default function IngameMap({
   const guessUrl = `/app/team/guess`
   const pinUrl = '/app/team/pin'
 
+  // 지도 핀 변경
   function changePin(lat: number, lng: number) {
     if (currentMarker.current) {
       currentMarker.current.setMap(null)
     }
     const newMarker = new google.maps.Marker({
       position: { lat, lng },
-      map: mapRef.current,
+      map: mapObjectRef.current,
       icon: {
         path: google.maps.SymbolPath.CIRCLE,
         scale: 10,
@@ -73,6 +77,7 @@ export default function IngameMap({
     }
   }
 
+  // 지도 init
   useEffect(() => {
     loader.importLibrary('maps').then(async () => {
       const position = { lat: 37.5642135, lng: 127.0016985 }
@@ -80,34 +85,14 @@ export default function IngameMap({
         'maps',
       )) as google.maps.MapsLibrary
 
-      const map = new Map(mapRef.current, {
+      const map = new Map(mapShowRef.current!, {
         center: position,
         disableDefaultUI: true,
         clickableIcons: false,
         zoom: 8,
       })
       map.addListener('click', (e: google.maps.MapMouseEvent) => {
-        if (currentMarker.current) {
-          currentMarker.current.setMap(null)
-        }
-        const newMarker = new google.maps.Marker({
-          position: e.latLng!,
-          map: map,
-          icon: {
-            path: google.maps.SymbolPath.CIRCLE,
-            scale: 10,
-            fillColor: 'red',
-            fillOpacity: 1,
-            strokeColor: 'black',
-            strokeWeight: 3,
-          },
-        })
-
-        currentMarker.current = newMarker
-        myGuess.current = {
-          lat: e.latLng?.lat() as number,
-          lng: e.latLng?.lng() as number,
-        }
+        changePin(e.latLng?.lat()!, e.latLng?.lng()!)
         clientRef.current.publish({
           headers: {
             Auth: localStorage.getItem('accessToken') as string,
@@ -130,9 +115,11 @@ export default function IngameMap({
         const lng = e.latLng?.lng() // 경도
         console.log(`위도: ${lat}, 경도: ${lng}`)
       })
+      mapObjectRef.current = map
     })
   }, [loader])
 
+  // 소켓 init
   useEffect(() => {
     clientRef.current.onConnect = function (_frame: IFrame) {
       clientRef.current.subscribe(subUrl, (message: IMessage) => {
@@ -141,14 +128,16 @@ export default function IngameMap({
           case 1115:
             // 핀 위치 변경
             if (
-              mesRes.submitLat != myGuess.current?.lat &&
-              mesRes.submitLng != myGuess.current?.lng
+              !myGuess.current ||
+              (mesRes.submitLat != myGuess.current?.lat &&
+                mesRes.submitLng != myGuess.current?.lng)
             ) {
               changePin(mesRes.submitLat, mesRes.submitLng)
             }
             break
           case 1116:
             // 핀 제출
+            router.push(`/game/${gameId}/${round}/waiting`)
             break
         }
       })
@@ -177,8 +166,8 @@ export default function IngameMap({
           senderNickname: nickname,
           senderGameId: gameId,
           senderTeamId: 1,
-          submitLat: 38.2222,
-          submitLng: 125.123,
+          submitLat: myGuess.current.lat,
+          submitLng: myGuess.current.lng,
           roundNumber: round,
           submitStage: 1,
         }),
@@ -187,7 +176,7 @@ export default function IngameMap({
   }
   return (
     <>
-      <div className={styles.map} ref={mapRef} />
+      <div className={styles.map} ref={mapShowRef} />
       <button
         onClick={handleSubmitGuess}
         className={`${styles.guess}  ${themeStyles[theme + '-inverse']}`}
