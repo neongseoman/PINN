@@ -402,6 +402,7 @@ public class GameServiceImpl implements GameService {
         int gameId = roundFinishRequestDTO.getSenderGameId();
         GameComponent existGame = gameManager.getGames().get(gameId);
         if (existGame == null) { // 존재하는 게임인지 확인
+            log.info(gameId);
             throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
         }
 
@@ -444,7 +445,7 @@ public class GameServiceImpl implements GameService {
 
         }
 
-        return null;
+        return new RoundFinishVO(roundFinishRequestDTO.getSenderNickname(), roundFinishRequestDTO.getSenderGameId(),roundFinishRequestDTO.getSenderTeamId());
     }
 
 

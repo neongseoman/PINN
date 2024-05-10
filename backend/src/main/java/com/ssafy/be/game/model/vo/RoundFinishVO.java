@@ -18,7 +18,7 @@ public class RoundFinishVO extends SocketDTO {
     // gameId: socketDTO의 senderGameId
     List<TeamRoundResultVO> teamRoundResults;
 
-    RoundFinishVO(String senderNickname, int senderGameId, int senderTeamId/**/) {
+    public RoundFinishVO(String senderNickname, int senderGameId, int senderTeamId/**/) {
         super(senderNickname, senderGameId, senderTeamId);
         //
     }
