@@ -202,4 +202,13 @@ public class GameManager {
         GameComponent game = games.getOrDefault(gameId, null);
         return game;
     }
+
+    public boolean removeGame(Integer gameId){
+        if (games.get(gameId) == null) {
+            throw new BaseException(NOT_EXIST_GAME);
+        }
+        games.remove(gameId);
+        return true;
+
+    }
 }

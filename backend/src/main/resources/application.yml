@@ -73,3 +73,6 @@ management:
 weather_map:
   url : ${WEATHER_STATISTICAL_URL}
   api : ${WEATHER_STATISTICAL_API}
+
+game:
+  remove: ${GAME_EXIST_LIMIT_TIME}
