@@ -83,7 +83,6 @@ public class GameController {
                     throw new BaseException(BaseResponseStatus.OOPS, gameId);
                 });
 
-
     }
 
     @MessageMapping("/game/round/init") // 라운드 시작(문제의 lat, lng + stage1 hint broadcast)
