@@ -1,19 +1,27 @@
 package com.ssafy.be.game.controller;
 
+import com.fasterxml.jackson.databind.ser.Serializers;
 import com.ssafy.be.auth.jwt.JwtProvider;
 import com.ssafy.be.common.Provider.ScheduleProvider;
 import com.ssafy.be.common.exception.BaseException;
 import com.ssafy.be.common.model.dto.ServerEvent;
 import com.ssafy.be.common.model.dto.ServerSendEvent;
+import com.ssafy.be.common.model.dto.SocketDTO;
+import com.ssafy.be.common.response.BaseResponse;
 import com.ssafy.be.common.response.BaseResponseStatus;
 import com.ssafy.be.game.model.dto.*;
 import com.ssafy.be.game.model.vo.*;
 import com.ssafy.be.game.service.GameService;
+import com.ssafy.be.gamer.model.GamerPrincipalVO;
+import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,7 +32,6 @@ import java.util.stream.IntStream;
 
 @RestController
 @Log4j2
-@RequestMapping("/game")
 @RequiredArgsConstructor()
 public class GameController {
     private final ScheduleProvider scheduleProvider;
@@ -35,6 +42,11 @@ public class GameController {
     /////
     // TODO: 한 게임에 대해 중복 요청 검증 처리 필요
     // 단순 game status 변경 + 참가자들에게 시작 소식 broadcast 하여 로딩 화면으로 넘어갈 수 있도록 함
+
+
+    /*
+    Socket
+     */
 
     @MessageMapping("/game/start")
     public void startGame(GameStartRequestDTO gameStartRequestDTO, StompHeaderAccessor accessor) throws ExecutionException, InterruptedException, BaseException {
@@ -112,10 +124,7 @@ public class GameController {
         sendingOperations.convertAndSend("/guess/" + pinGuessVO.getSenderGameId(), pinGuessVO);
     }
 
-    /*
-    일단은 Controller에도 @MM 추가함 (삭제해도 OK)
-    gameService의 finishRound(~)만 호출해서 사용하시면 됨
-     */
+    // 일단은 Controller에도 @MM 추가함 (삭제해도 OK)
     @MessageMapping("/game/round/finish")
     public void finishRound(RoundFinishRequestDTO roundFinishRequestDTO, StompHeaderAccessor accessor) {
         int gamerId = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor).getGamerId();
@@ -125,4 +134,44 @@ public class GameController {
         // '/game/{gameId}'를 구독 중인 모든 사용자에게 publish
         sendingOperations.convertAndSend("/game/" + roundFinishVO.getSenderGameId(), roundFinishVO);
     }
+
+    @MessageMapping("/game/finish")
+    public void finishGame(SocketDTO gameFinishRequestDTO, StompHeaderAccessor accessor) {
+        int gamerId = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor).getGamerId();
+
+        gameService.finishGame(gameFinishRequestDTO);
+
+        // '/game/{gameId}'를 구독 중인 모든 사용자에게 publish
+    }
+
+    ////////////////////////////////////////////
+
+    /*
+    REST API
+     */
+
+    // TODO: RoundFinishRequestDTO, RoundFinishVO가 SocketDTO extends 하고 있음... REST API에 맞는 형식으로 수정 필요
+    @PostMapping("/game/round/result")
+    public BaseResponse<?> roundResult(@RequestBody RoundResultRequestDTO roundResultRequestDTO, ServletRequest req) {
+        // 요청 보낸 사용자의 gamerId
+        GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
+        int gamerId = gamerPrincipalVO.getGamerId();
+
+        RoundResultVO roundFinishVO = gameService.getRoundResult(gamerId, roundResultRequestDTO);
+
+        // TODO: 이렇게 쓰는 거 맞나? ㅎㅎ ;; 확인 필요
+        return new BaseResponse<>(roundFinishVO);
+    }
+
+    @PostMapping("/game/result")
+    public BaseResponse<?> gameResult(@RequestBody GameResultRequestDTO gameResultRequestDTO, ServletRequest req) {
+        // 요청 보낸 사용자의 gamerId
+        GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
+        int gamerId = gamerPrincipalVO.getGamerId();
+
+        GameResultVO gameResultVO = gameService.getGameResult(gamerId, gameResultRequestDTO);
+
+        return new BaseResponse<>(gameResultVO);
+    }
+
 }
