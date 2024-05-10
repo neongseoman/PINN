@@ -3,6 +3,7 @@ package com.ssafy.be.game.controller;
 import com.fasterxml.jackson.databind.ser.Serializers;
 import com.ssafy.be.auth.jwt.JwtProvider;
 import com.ssafy.be.common.Provider.ScheduleProvider;
+import com.ssafy.be.common.component.GameManager;
 import com.ssafy.be.common.exception.BaseException;
 import com.ssafy.be.common.model.dto.ServerEvent;
 import com.ssafy.be.common.model.dto.ServerSendEvent;
@@ -38,6 +39,7 @@ public class GameController {
     private final GameService gameService;
     private final SimpMessageSendingOperations sendingOperations;
     private final JwtProvider jwtProvider;
+    private final GameManager gameManager;
 
     /////
     // TODO: 한 게임에 대해 중복 요청 검증 처리 필요
@@ -72,11 +74,11 @@ public class GameController {
                         RoundFinishRequestDTO finishRequestDTO = new RoundFinishRequestDTO(gameStartRequestDTO.getSenderNickname(), gameStartRequestDTO.getSenderGameId(), gameStartRequestDTO.getSenderTeamId(), currentRound);
                         gameService.finishRound(finishRequestDTO);
                     }
-
                     // 마지막 결과를 `CompletableFuture<Void>`로 변환
-                    return roundChain.thenApply(ignored -> null);
-                })
-                .exceptionally(ex -> {
+                    return scheduleProvider.scheduleFuture(gameId,300);
+                }).thenRun( () -> {
+                    gameManager.removeGame(gameId);
+                }).exceptionally(ex -> {
                     log.error("Error occurred in the CompletableFuture chain: ", ex);
                     throw new BaseException(BaseResponseStatus.OOPS, gameId);
                 });
