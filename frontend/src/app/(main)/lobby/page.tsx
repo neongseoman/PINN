@@ -9,7 +9,7 @@ import RuleModal from './_components/RuleModal'
 import styles from './lobby.module.css'
 
 interface GameInfo {
-  readyGames: {
+  readyGame: {
     gameId: number
     roomName: string
     themeId: number
@@ -79,6 +79,7 @@ export default function LobbyPage() {
             height={25}
             src="/assets/images/default_profile.png"
             alt="프로필 이미지"
+            priority
           />
         </div>
       </div>
@@ -96,13 +97,13 @@ export default function LobbyPage() {
           gameList.map((game, i) => (
             <RoomCard
               key={i}
-              gameId={game.readyGames.gameId}
-              themeId={game.readyGames.themeId}
-              roomName={game.readyGames.roomName}
-              roundCount={game.readyGames.roundCount}
-              stage1Time={game.readyGames.stage1Time}
-              stage2Time={game.readyGames.stage2Time}
-              password={game.readyGames.password}
+              gameId={game.readyGame.gameId}
+              themeId={game.readyGame.themeId}
+              roomName={game.readyGame.roomName}
+              roundCount={game.readyGame.roundCount}
+              stage1Time={game.readyGame.stage1Time}
+              stage2Time={game.readyGame.stage2Time}
+              password={game.readyGame.password}
               countPerson={game.countPerson}
             />
           ))}
