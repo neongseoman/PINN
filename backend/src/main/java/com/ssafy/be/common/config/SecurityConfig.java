@@ -55,7 +55,7 @@ public class SecurityConfig {
                         c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request ->
                         request.requestMatchers(AUTH_BLACKLIST).authenticated()
-                                .requestMatchers("/oauth/code/kakao/**","/game/**","/actuator").permitAll()
+                                .requestMatchers("/oauth/code/kakao/**","/game/**","/actuator/**").permitAll()
                 );
 //                .exceptionHandling((exceptionHandling) -> exceptionHandling
 //                        .authenticationEntryPoint(authenticationEntryPoint)
