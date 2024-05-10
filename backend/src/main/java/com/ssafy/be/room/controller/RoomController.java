@@ -3,12 +3,15 @@ package com.ssafy.be.room.controller;
 import com.ssafy.be.auth.jwt.JwtProvider;
 import com.ssafy.be.common.component.GameComponent;
 import com.ssafy.be.common.component.GameManager;
+import com.ssafy.be.common.model.domain.Game;
 import com.ssafy.be.common.model.dto.ChatDTO;
 import com.ssafy.be.common.model.dto.SocketDTO;
+import com.ssafy.be.common.response.BaseResponse;
 import com.ssafy.be.gamer.model.GamerPrincipalVO;
 import com.ssafy.be.room.model.dto.MoveTeamDTO;
 import com.ssafy.be.room.model.vo.MoveTeamVO;
 import java.util.concurrent.ConcurrentHashMap;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,8 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,7 +36,12 @@ public class RoomController {
 
     private final JwtProvider jwtProvider;
 
+    @GetMapping("{gameId}")
+    public BaseResponse<?> getGame(@PathVariable Integer gameId){
+        GameComponent game = gameManager.getGame(gameId);
 
+        return new BaseResponse<>(game);
+    }
 
 
     // ---------------------------------- SOCKET ---------------------------------------------
@@ -49,6 +59,7 @@ public class RoomController {
         GamerPrincipalVO gamerPrincipalVO = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor);
 
         // 일단 팀 나가기
+        moveTeamDTO.setSenderGameId(gameId);
         gameManager.exitRoom(moveTeamDTO, gamerPrincipalVO);
         // 새로운 팀에 할당
         MoveTeamVO moveTeamVO = gameManager.enterSpecificTeam(moveTeamDTO, gamerPrincipalVO);
