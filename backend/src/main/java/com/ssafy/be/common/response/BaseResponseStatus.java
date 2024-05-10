@@ -27,12 +27,19 @@ public enum BaseResponseStatus {
     VALIDATED_ERROR(false, 3000, "VALIDATED_ERROR"), // @Valid 예외 처리
     SEND_MESSAGE_ERROR(false, 3001, "메시지를 발송하는 과정 중 오류가 발생했습니다."),
 
+    // LOBBY
     CREATE_GAME_ERROR(false, 3100, "방(게임) 생성 중 문제가 발생했습니다."),
     NOT_EXIST_GAME(false, 3101, "존재하지 않는 게임입니다."),
     ALREADY_START_GAME(false, 3102, "게임을 시작한 방입니다. 다른 방을 선택해주세요."),
     NOT_MATCH_PASSWORD(false, 3103, "방 비밀번호를 다시 확인해주세요"),
     NOT_EXIST_UNREADY_TEAM(false, 3104, "모든 팀이 준비 중이라서 방에 들어갈 수 없습니다."),
+    FULL_ROOM_ERROR(false, 3105, "방 수용 인원을 초과합니다."),
 
+    //ROOM
+    FULL_TEAM_ERROR(false, 3150, "팀 수용 인원을 초과합니다."),
+
+
+    // GAME
     NOT_STARTED_GAME(false, 3201, "게임이 시작되지 않은 방이므로 초기화 작업을 수행할 수 없습니다."),
     ALREADY_GUESSED_TEAM(false, 3202, "이미 해당 라운드에 guess를 완료한 팀입니다."),
 
