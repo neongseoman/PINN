@@ -26,13 +26,13 @@ public class GamerController {
         return new BaseResponse(BaseResponseStatus.SUCCESS,gamerPrincipalVO);
     }
 
-    @PostMapping("/nickname")
-    public BaseResponse editGamerName(ServletRequest req){
-
-    }
-
-    @PostMapping("/image")
-    public BaseResponse editImage(ServletRequest req){
-        return new BaseResponse(BaseResponseStatus.SUCCESS);
-    }
+//    @PostMapping("/nickname")
+//    public BaseResponse editGamerName(ServletRequest req){
+//
+//    }
+//
+//    @PostMapping("/image")
+//    public BaseResponse editImage(ServletRequest req){
+//        return new BaseResponse(BaseResponseStatus.SUCCESS);
+//    }
 }
