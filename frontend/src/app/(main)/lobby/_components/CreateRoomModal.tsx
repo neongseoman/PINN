@@ -7,7 +7,15 @@ import React, { useRef, useState } from 'react'
 import { TiArrowSortedDown } from 'react-icons/ti'
 import styles from '../lobby.module.css'
 
-export default function CreateRoomModal() {
+interface CreateRoomModalProps {
+  hoverSound: () => void
+  clickSound: () => void
+}
+
+export default function CreateRoomModal({
+  hoverSound,
+  clickSound,
+}: CreateRoomModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const { nickname } = useUserStore()
   const [roomName, setRoomName] = useState<string>('')
@@ -61,6 +69,7 @@ export default function CreateRoomModal() {
   }
 
   const showModal = () => {
+    clickSound()
     dialogRef.current?.showModal()
     // clientRef.current.activate()
     // clientRef.current.onConnect = function (_frame: IFrame) {
@@ -131,11 +140,16 @@ export default function CreateRoomModal() {
     } catch (error) {
       console.error('에러 발생: ', error)
     }
+    clickSound()
   }
 
   return (
     <div>
-      <p className={styles.buttons} onClick={showModal}>
+      <p
+        className={styles.buttons}
+        onClick={showModal}
+        onMouseEnter={hoverSound}
+      >
         게임 생성
       </p>
 

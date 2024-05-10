@@ -9,7 +9,6 @@
   top: 0;
   display: flex;
   flex-direction: column;
-  background-color: black;
 }
 
 .top {
@@ -17,11 +16,26 @@
   justify-content: space-between;
   margin: 20px;
   margin-bottom: 65px;
+  height: 60px;
+}
+
+.logoSound {
+  display: flex;
 }
 
 .logo {
   height: 60px;
   margin-left: 10px;
+  margin-right: 15px;
+}
+
+.soundIcon {
+  cursor: pointer;
+  font-size: 60px;
+  color: white;
+  &:hover {
+    color: var(--Main-Yellow);
+  }
 }
 
 .userInfo {
@@ -73,7 +87,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: 50px;
-  /* flex-grow: 1; */
   margin: 0px 10px;
   padding: 0px 20px 10px 20px;
   color: white;
