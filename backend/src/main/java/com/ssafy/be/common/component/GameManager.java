@@ -160,7 +160,7 @@ public class GameManager {
 
         if(teamGamers.size() == 3){
             // 들어가려는 팀에 공간이 없다면 Exception
-            throw new BaseException(FULL_TEAM_ERROR);
+            throw new BaseException(FULL_TEAM_ERROR, gamerPrincipalVO.getGamerId());
         } else {
             // 공간이 있으므로 할당
             boolean[] teamPersonNumber = new boolean[4];

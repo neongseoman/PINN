@@ -1,9 +1,12 @@
 package com.ssafy.be.lobby.controller;
 
+import static com.ssafy.be.common.response.BaseResponseStatus.NOT_EXIST_GAME;
+
 import com.ssafy.be.auth.jwt.JwtProvider;
 import com.ssafy.be.common.component.GameComponent;
 import com.ssafy.be.common.component.GameManager;
 import com.ssafy.be.common.component.TeamGamerComponent;
+import com.ssafy.be.common.exception.BaseException;
 import com.ssafy.be.common.model.dto.SocketDTO;
 import com.ssafy.be.common.response.BaseResponse;
 import com.ssafy.be.common.response.BaseResponseStatus;
@@ -130,8 +133,11 @@ public class LobbyController {
     public EnterRoomVO enterRoom(@Payload SocketDTO socketDTO, @DestinationVariable Integer gameId, StompHeaderAccessor accessor){
         GamerPrincipalVO gamerPrincipalVO = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor);
         log.info(gamerPrincipalVO.getGamerId());
-        // TODO : 게임이 없는 경우 Exception
+        // 게임이 없는 경우 Exception
         ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
+        if (games == null){
+            throw new BaseException(NOT_EXIST_GAME, gamerPrincipalVO.getGamerId());
+        }
 
         // 오름차순으로 비어있는 팀에 할당
         TeamGamerComponent teamGamerComponent = gameManager.enterTeam(games.get(gameId), gamerPrincipalVO.getGamerId());
