@@ -18,6 +18,7 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
@@ -140,7 +141,9 @@ public class GameController {
     }
 
     @PostMapping("/game/round/init") // 라운드 시작(문제의 lat, lng + stage1 hint)
-    public BaseResponse<?> initStage1(RoundInitRequestDTO roundInitRequestDTO, ServletRequest req) {
+    public BaseResponse<?> initStage1(@RequestBody RoundInitRequestDTO roundInitRequestDTO, ServletRequest req) {
+//        log.info(roundInitRequestDTO);
+
         // 요청 보낸 사용자의 gamerId
         GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
         int gamerId = gamerPrincipalVO.getGamerId();
@@ -154,7 +157,9 @@ public class GameController {
     }
 
     @PostMapping("/game/round/stage2/init") // stage2 hint
-    public BaseResponse<?> initStage2(Stage2InitRequestDTO stage2InitRequestDTO, ServletRequest req) {
+    public BaseResponse<?> initStage2(@RequestBody Stage2InitRequestDTO stage2InitRequestDTO, ServletRequest req) {
+//        log.info(stage2InitRequestDTO);
+
         // 요청 보낸 사용자의 gamerId
         GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
         int gamerId = gamerPrincipalVO.getGamerId();
