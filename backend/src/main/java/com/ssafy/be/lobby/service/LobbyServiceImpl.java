@@ -85,6 +85,8 @@ public class LobbyServiceImpl implements LobbyService {
             if(gameComponent.getStatus().equals(GameStatus.READY)){
                 // 게임 정보 삽입
                 SearchVO searchVO = new SearchVO(gameComponent);
+                List<TeamComponent> searchTeams = new ArrayList<>();
+                searchTeams.addAll(gameComponent.getTeams().values());
                 // 게임 인원 삽입
                 searchVO.setCountPerson(countPerson(gameComponent));
 
