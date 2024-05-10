@@ -15,7 +15,7 @@ public class RoundFinishRequestDTO extends SocketDTO {
     // gameId는 socketDTO의 senderGameId를 사용함
     private int roundNumber;
 
-    RoundFinishRequestDTO(String senderNickname, int senderGameId, int senderTeamId, int roundNumber) {
+    public RoundFinishRequestDTO(String senderNickname, int senderGameId, int senderTeamId, int roundNumber) {
         super(senderNickname, senderGameId, senderTeamId);
         setRoundNumber(roundNumber);
     }

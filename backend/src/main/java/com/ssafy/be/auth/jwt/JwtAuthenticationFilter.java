@@ -27,7 +27,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        log.info("JWT Authentication Filter");
+//        log.debug("JWT Authentication Filter");
         String token = jwtProvider.resolveToken(request);
         if (token != null && token.startsWith("Bearer ")) { // Auth 토큰이 있으면 검증한다.
             token = token.split(" ")[1];
@@ -37,7 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             GamerPrincipalVO gamerPrincipalVO =(GamerPrincipalVO)authenticationToken.getPrincipal();
             request.setAttribute("gamerPrincipal", gamerPrincipalVO);
-            log.info("In JWT Filter => {} user access", gamerPrincipalVO.getNickname());
+//            log.info("In JWT Filter => {} user access", gamerPrincipalVO.getNickname());
         }
 //        log.info("pass");
         filterChain.doFilter(request, response);

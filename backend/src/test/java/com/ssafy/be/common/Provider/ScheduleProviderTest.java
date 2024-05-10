@@ -1,6 +1,8 @@
 package com.ssafy.be.common.Provider;
 
 import com.ssafy.be.game.model.dto.GameStartRequestDTO;
+import com.ssafy.be.game.model.dto.RoundFinishRequestDTO;
+import com.ssafy.be.game.service.GameServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -31,6 +33,8 @@ class ScheduleProviderTest {
 
     @Mock
     private SimpMessageSendingOperations sendingOperations;
+    @Mock
+    private GameServiceImpl gameService;
 
     @InjectMocks
     private ScheduleProvider scheduleProvider;
@@ -166,15 +170,17 @@ class ScheduleProviderTest {
                             executedRounds.incrementAndGet(); // 라운드 실행 횟수 증가
                             return scheduleProvider.roundScheduler(requestDTO.getGameId(), requestDTO, currentRoundInLoop);
                         });
+                        RoundFinishRequestDTO finishRequestDTO = new RoundFinishRequestDTO(requestDTO.getSenderNickname(), requestDTO.getSenderGameId(), requestDTO.getSenderTeamId(), currentRound);
+                        gameService.finishRound(finishRequestDTO);
                     }
                     // 마지막 결과를 설정
                     return roundChain;
                 }).get();
 
-        log.info("Async operation ended at: "+ LocalDateTime.now());
+        log.info(startTime + " Async operation ended at: "+ LocalDateTime.now());
         asyncEndTime.set(LocalDateTime.now());
         long compare = ChronoUnit.SECONDS.between(startTime, asyncEndTime.get());
-        long expectedTime = (2 + 3 + 4) * 3 + 5; // 각 스테이지 시간의 합 (초 단위로 계산)
+        long expectedTime = (2 + 3 + 4 + 1) * 3 + 5; // 각 스테이지 시간의 합 (초 단위로 계산) / stage 1, 2, score, wait
 
         // 비교를 위해 오차 범위 설정
         long tolerance = 1;
@@ -183,7 +189,7 @@ class ScheduleProviderTest {
 
         isPass.set(true);
         assertEquals(roundCount, executedRounds.get(), "roundScheduler 호출 횟수가 예상한 반복 횟수와 다릅니다.");
-        assertTrue(compare >= minTime && compare <= maxTime, "scheduler가 예상 시간 범위에서 벗어났습니다.");
+        assertTrue(compare >= minTime && compare <= maxTime, "scheduler가 예상 시간 범위에서 벗어났습니다. "+ compare +" "+ expectedTime);
 
     }
 

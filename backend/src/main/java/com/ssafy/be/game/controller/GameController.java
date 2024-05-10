@@ -69,6 +69,8 @@ public class GameController {
                     for (int round = 1; round <= gameStartRequestDTO.getRoundCount(); round++) {
                         final int currentRoundInLoop = round;
                         roundChain = roundChain.thenCompose(ignored -> scheduleProvider.roundScheduler(gameId, gameStartRequestDTO, currentRoundInLoop));
+                        RoundFinishRequestDTO finishRequestDTO = new RoundFinishRequestDTO(gameStartRequestDTO.getSenderNickname(), gameStartRequestDTO.getSenderGameId(), gameStartRequestDTO.getSenderTeamId(), currentRound);
+                        gameService.finishRound(finishRequestDTO);
                     }
 
                     // 마지막 결과를 `CompletableFuture<Void>`로 변환
