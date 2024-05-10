@@ -11,7 +11,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+//@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class PinMoveRequestDTO extends SocketDTO {
     // gameId, teamId : socketDTO에서 가져다 사용
     private double submitLat; // 핀 찍은 위치의 위도

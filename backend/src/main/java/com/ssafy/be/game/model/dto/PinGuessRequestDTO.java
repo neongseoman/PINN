@@ -10,7 +10,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+//@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class PinGuessRequestDTO extends SocketDTO {
     private int roundNumber; // 현재 라운드
     private int guessStage; // 현재 스테이지

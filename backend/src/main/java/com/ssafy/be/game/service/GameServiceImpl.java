@@ -474,9 +474,9 @@ public class GameServiceImpl implements GameService {
 
         try {
             // 요청 보낸 gamer_id가 GM/game의 leader_id와 일치하는지 확인
-            if (gamerId != existGame.getLeaderId()) {
-                throw new BaseException(BaseResponseStatus.OOPS); // TODO: EXCEPTION TYPE 정의
-            }
+//            if (gamerId != existGame.getLeaderId()) {
+//                throw new BaseException(BaseResponseStatus.OOPS); // TODO: EXCEPTION TYPE 정의
+//            }
 
 //            Stage2InitVO stage2InitVO = new Stage2InitVO(stage2InitRequestDTO.getSenderDateTime(), stage2InitRequestDTO.getSenderNickname(), stage2InitRequestDTO.getSenderGameId(), stage2InitRequestDTO.getSenderTeamId(), stage2InitRequestDTO.getCode(), stage2InitRequestDTO.getMsg());
 //            stage2InitVO.setCodeAndMsg(1114, "stage2 추가 힌트를 받아오는 데에 성공했습니다.");
