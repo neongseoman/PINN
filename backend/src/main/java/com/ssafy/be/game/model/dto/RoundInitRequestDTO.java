@@ -8,6 +8,8 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 //@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class RoundInitRequestDTO /*extends SocketDTO*/ {
 

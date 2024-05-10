@@ -9,7 +9,7 @@ import lombok.*;
 @ToString
 @Getter
 @Setter
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+//@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class GameStartRequestDTO extends SocketDTO {
 
     private int gameId;

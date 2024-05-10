@@ -10,7 +10,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+//@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class RoundFinishRequestDTO extends SocketDTO {
     // gameId는 socketDTO의 senderGameId를 사용함
     private int roundNumber;

@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+//@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class RoundFinishVO extends SocketDTO {
     // gameId: socketDTO의 senderGameId
     List<TeamRoundComponent> teamRoundResults;

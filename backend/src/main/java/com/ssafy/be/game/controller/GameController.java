@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -127,11 +128,12 @@ public class GameController {
      */
 
     @PostMapping("/game/init")
-    public BaseResponse<?> getGameInfo(@RequestBody int gameId, ServletRequest req) {
+    public BaseResponse<?> getGameInfo(@RequestBody Map<String, Integer> map, ServletRequest req) {
         // 요청 보낸 사용자의 gamerId
         GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
         int gamerId = gamerPrincipalVO.getGamerId();
 
+        int gameId = map.get("gameId");
         GameInitVO gameInitVO = gameService.getGameInfo(gamerId, gameId);
 
         return new BaseResponse<>(gameInitVO);
