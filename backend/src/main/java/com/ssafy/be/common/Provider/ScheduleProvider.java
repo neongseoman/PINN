@@ -29,10 +29,10 @@ public class ScheduleProvider {
 
 
     // 5초 지났고 게임 시작합시다.
-    public CompletableFuture<Integer> startGame(int gameId,int round) throws BaseException {
+    public CompletableFuture<Integer> startGame(int gameId, int round) throws BaseException {
         log.info("{} game start after 5 sec : {}", gameId, LocalDateTime.now());
         sendingOperations.convertAndSend("/game/sse/" + gameId,
-                new ServerSendEvent(ServerEvent.START,round)); // send Hint and Stage 1 End # 1203
+                new ServerSendEvent(ServerEvent.START, round)); // #1201 game start
         CompletableFuture<Integer> future = new CompletableFuture<>();
         executorService.schedule(() -> {
             future.complete(round);
@@ -49,31 +49,31 @@ public class ScheduleProvider {
         return future;
     }
 
-    public CompletableFuture<Integer> roundScheduler(int gameId, GameStartRequestDTO gameStartRequestDTO,int currentRound) {
+    public CompletableFuture<Integer> roundScheduler(int gameId, GameStartRequestDTO gameStartRequestDTO, int currentRound) {
         CompletableFuture<Integer> future = new CompletableFuture<>();
         // Round 시작
-        log.info("{} Round {} Start: {}", gameStartRequestDTO.getGameId(), currentRound , LocalDateTime.now());
+        log.info("{} Round {} Start: {}", gameStartRequestDTO.getGameId(), currentRound, LocalDateTime.now());
         sendingOperations.convertAndSend("/game/sse/" + gameId,
                 new ServerSendEvent(ServerEvent.ROUND_START, currentRound)); // Game Start # 12
         scheduleFuture(gameId, gameStartRequestDTO.getStage1Time())
                 .thenCompose(r -> { // Round Start stage 1
                     log.info("{} game stage 1 End : {}", gameStartRequestDTO.getGameId(), LocalDateTime.now());
                     sendingOperations.convertAndSend("/game/sse/" + gameId,
-                            new ServerSendEvent(ServerEvent.STAGE_1_END,currentRound)); // send Hint and Stage 1 End # 1203
+                            new ServerSendEvent(ServerEvent.STAGE_1_END, currentRound)); // send Hint and Stage 1 End # 1203
                     return scheduleFuture(gameId, gameStartRequestDTO.getStage2Time());  // Stage 2 기다리기
                 }).thenCompose(r -> { // Stage 2
                     log.info("{} game stage 2 End : {}", gameStartRequestDTO.getGameId(), LocalDateTime.now());
                     sendingOperations.convertAndSend("/game/sse/" + gameId,
-                            new ServerSendEvent(ServerEvent.STAGE_2_END,currentRound)); // Stage 2 End go To Score # 1204
+                            new ServerSendEvent(ServerEvent.STAGE_2_END, currentRound)); // Stage 2 End go To Score # 1204
                     return scheduleFuture(gameId, gameStartRequestDTO.getScorePageTime());
-                }).thenRun(() -> { // Score까지 봤고 라운드가 끝났다.
-                    log.info("{} game {} Round End  : {}", gameStartRequestDTO.getGameId(),currentRound ,LocalDateTime.now());
+                }).thenCompose(r -> {
+                    log.info("{} game {} Round End  : {}", gameStartRequestDTO.getGameId(), currentRound, LocalDateTime.now());
                     sendingOperations.convertAndSend("/game/sse/" + gameId,
-                            new ServerSendEvent(ServerEvent.ROUND_END,currentRound)); // Round End stage 1, 2 score # 1205
-                    RoundFinishRequestDTO finishRequestDTO = new RoundFinishRequestDTO(gameStartRequestDTO.getSenderNickname(),gameStartRequestDTO.getSenderGameId(),gameStartRequestDTO.getSenderTeamId(),currentRound);
+                            new ServerSendEvent(ServerEvent.ROUND_END, currentRound)); // Round End stage 1, 2 score # 1205
+                    RoundFinishRequestDTO finishRequestDTO = new RoundFinishRequestDTO(gameStartRequestDTO.getSenderNickname(), gameStartRequestDTO.getSenderGameId(), gameStartRequestDTO.getSenderTeamId(), currentRound);
                     gameService.finishRound(finishRequestDTO);
-                    future.complete(currentRound);
-                });
+                    return scheduleFuture(gameId, 1);
+                }).thenRun(() -> future.complete(currentRound));
         return future;
     }
 
