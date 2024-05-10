@@ -262,6 +262,7 @@ export default function CreateRoomModal() {
                 height={100}
                 src="/assets/images/themes/RandomTheme.jpg"
                 alt="랜덤 이미지"
+                priority
               />
               <p className={styles.themeName}>랜덤</p>
             </div>
@@ -277,6 +278,7 @@ export default function CreateRoomModal() {
                 height={100}
                 src="/assets/images/themes/KoreaTheme.jpg"
                 alt="한국 이미지"
+                priority
               />
               <p className={styles.themeName}>한국</p>
             </div>
@@ -292,6 +294,7 @@ export default function CreateRoomModal() {
                 height={100}
                 src="/assets/images/themes/GreekTheme.jpg"
                 alt="그리스 이미지"
+                priority
               />
               <p className={styles.themeName}>그리스</p>
             </div>
@@ -307,6 +310,7 @@ export default function CreateRoomModal() {
                 height={100}
                 src="/assets/images/themes/EgyptTheme.jpg"
                 alt="이집트 이미지"
+                priority
               />
               <p className={styles.themeName}>이집트</p>
             </div>
@@ -322,6 +326,7 @@ export default function CreateRoomModal() {
                 height={100}
                 src="/assets/images/themes/LandmarkTheme.jpg"
                 alt="랜드마크 이미지"
+                priority
               />
               <p className={styles.themeName}>랜드마크</p>
             </div>
