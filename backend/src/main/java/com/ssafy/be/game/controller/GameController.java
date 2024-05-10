@@ -18,6 +18,7 @@ import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -41,6 +42,8 @@ public class GameController {
     private final JwtProvider jwtProvider;
     private final GameManager gameManager;
 
+    @Value("${game.remove}")
+    private int gameExistLimitTime;
     /////
     // TODO: 한 게임에 대해 중복 요청 검증 처리 필요
     // 단순 game status 변경 + 참가자들에게 시작 소식 broadcast 하여 로딩 화면으로 넘어갈 수 있도록 함
@@ -75,8 +78,9 @@ public class GameController {
                         gameService.finishRound(finishRequestDTO);
                     }
                     // 마지막 결과를 `CompletableFuture<Void>`로 변환
-                    return scheduleProvider.scheduleFuture(gameId,300);
+                    return scheduleProvider.scheduleFuture(gameId,gameExistLimitTime);
                 }).thenRun( () -> {
+                    log.info("{} Game is dead at {}",gameId, LocalDateTime.now());
                     gameManager.removeGame(gameId);
                 }).exceptionally(ex -> {
                     log.error("Error occurred in the CompletableFuture chain: ", ex);
