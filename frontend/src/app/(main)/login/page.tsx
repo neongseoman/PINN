@@ -7,8 +7,8 @@ import { Suspense, useEffect, useState } from 'react'
 export default function LoginPage() {
   const router = useRouter()
   const { setGamerId, setNickname } = useUserStore()
-  const [ token, setToken ] = useState<string|null>(null)
-  const [ accessToken, setAccessToken ] = useState<string|null>(null)
+  const [token, setToken] = useState<string | null>(null)
+  const [accessToken, setAccessToken] = useState<string | null>(null)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -16,7 +16,7 @@ export default function LoginPage() {
     setToken(params.get('code'))
 
     if (token !== null) {
-      setAccessToken(token.split('=')[1].split(";")[0])
+      setAccessToken(token.split('=')[1].split(';')[0])
       // console.log(accessToken)
     }
 
@@ -40,7 +40,7 @@ export default function LoginPage() {
 
     const gamerIdData = data.result.gamerId
     const nicknameData = data.result.nickname
-    
+
     if (gamerIdData && nicknameData) {
       setGamerId(gamerIdData)
       setNickname(nicknameData)
