@@ -11,6 +11,7 @@ public class MoveTeamVO {
     private int newTeamId;
     private LocalDateTime senderDateTime;  // 송신자가 보낸 시간
     private String senderNickname;
+    private int newTeamNumber;
     private int senderGameId;
     private int code;
     private String msg;
