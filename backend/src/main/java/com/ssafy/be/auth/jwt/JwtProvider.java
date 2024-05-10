@@ -76,7 +76,8 @@ public class JwtProvider {
             GamerPrincipalVO gamerPrincipalVO = new GamerPrincipalVO(gamerId,nickname);
             log.debug("{} 유저 인증 성공 " , nickname);
             return new UsernamePasswordAuthenticationToken(gamerPrincipalVO, "",List.of(new SimpleGrantedAuthority("USER")));
-        } catch (BaseException e){
+        } catch (Exception e){
+            log.error("JWT Auth fail : {}", e.getMessage());
             throw new BaseException(BaseResponseStatus.INVALID_CREDENTIAL);
         }
     }
@@ -86,7 +87,7 @@ public class JwtProvider {
 //        gamerLoginRedisRepository.save(refreshTokenDTO);
     }
 
-    public Claims validateToken(String accessToken) {
+    public Claims validateToken(String accessToken) throws ExpiredJwtException {
         log.debug(accessToken);
         try {
             Jws<Claims> claims = Jwts.parser()
@@ -94,12 +95,8 @@ public class JwtProvider {
                     .build()
                     .parseSignedClaims(accessToken);
             return claims.getPayload();
-        } catch(SignatureException e){
-            e.printStackTrace();
-            throw new SignatureException("Invalid JWT signature");
-            // 비밀키 일치 X 처리
         } catch(ExpiredJwtException e){
-            e.printStackTrace();
+            log.error(e.getMessage(), e.getHeader(), e.getClaims());
             throw new ExpiredJwtException(e.getHeader(),e.getClaims(),e.getMessage());
             // 만료 exception 처리
         }
