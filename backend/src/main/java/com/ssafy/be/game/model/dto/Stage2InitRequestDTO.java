@@ -8,6 +8,8 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 //@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class Stage2InitRequestDTO /* extends SocketDTO */ {
     private int gameId;
