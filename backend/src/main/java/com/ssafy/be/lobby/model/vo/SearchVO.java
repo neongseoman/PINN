@@ -9,10 +9,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SearchVO {
-    private GameComponent ReadyGames;
+    private GameComponent ReadyGame;
     private int countPerson;
 
-    public SearchVO(GameComponent readyGames) {
-        ReadyGames = readyGames;
+    public SearchVO(GameComponent readyGame) {
+        ReadyGame = readyGame;
     }
 }
