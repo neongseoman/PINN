@@ -6,6 +6,7 @@ import static com.ssafy.be.common.response.BaseResponseStatus.NOT_EXIST_UNREADY_
 import static com.ssafy.be.common.response.BaseResponseStatus.NOT_MATCH_PASSWORD;
 
 import com.ssafy.be.common.exception.BaseException;
+import com.ssafy.be.common.model.domain.Game;
 import com.ssafy.be.common.model.dto.SocketDTO;
 import com.ssafy.be.common.response.BaseResponse;
 import com.ssafy.be.common.response.BaseResponseStatus;
@@ -141,16 +142,32 @@ public class GameManager {
         GameComponent gameComponent = games.get(moveTeamDTO.getSenderGameId());
         // 팀
         ConcurrentHashMap<Integer, TeamComponent> teams = gameComponent.getTeams();
-        TeamComponent oldTeam = teams.get(moveTeamDTO.getOldTeamId());
         TeamComponent newTeam = teams.get(moveTeamDTO.getNewTeamId());
+        ConcurrentHashMap<Integer, TeamGamerComponent> teamGamers = newTeam.getTeamGamers();
 
-        // 들어가려는 팀에 공간이 있는지 에러처리
-//        if(newTeam.size() == 3){
-//
-//        }
+        if(teamGamers != null && teamGamers.size() == 3){
+            // 들어가려는 팀에 공간이 없다면 Exception
+        } else {
+            if (teamGamers == null){
+                teamGamers = new ConcurrentHashMap<>();
+            }
+            // 공간이 있으므로 할당
+            boolean[] teamPersonNumber = new boolean[4];
+            for (TeamGamerComponent person: teamGamers.values()){
+                teamPersonNumber[person.getTeamGamerNumber()] = true;
+            }
 
-        // 공간이 있다면
-
+            for (int i = 1; i < 4; i++) {
+                if (!teamPersonNumber[i]){
+                    TeamGamerComponent teamGamerComponent = TeamGamerComponent.builder()
+                            .gamerId(moveTeamDTO.getSenderGameId())
+                            .teamId(moveTeamDTO.getNewTeamId())
+                            .teamGamerNumber(i)
+                            .build();
+                    break;
+                }
+            }
+        }
 
         // VO 생성
         MoveTeamVO moveTeamVO = MoveTeamVO.builder()
@@ -163,5 +180,10 @@ public class GameManager {
                 .msg(nickname + "님이 " + moveTeamDTO.getSenderTeamId() + "팀에서 " + moveTeamDTO.getNewTeamId() + "팀으로 이동했습니다.")
                 .build();
         return moveTeamVO;
+    }
+
+    public GameComponent getGame(Integer gameId) {
+        GameComponent game = games.getOrDefault(gameId, null);
+        return game;
     }
 }

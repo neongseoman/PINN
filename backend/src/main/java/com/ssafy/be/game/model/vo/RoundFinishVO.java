@@ -2,6 +2,7 @@ package com.ssafy.be.game.model.vo;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.ssafy.be.common.component.TeamRoundComponent;
 import com.ssafy.be.common.model.dto.SocketDTO;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,12 +15,11 @@ import java.util.List;
 @ToString
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class RoundFinishVO extends SocketDTO {
-    // TODO: 보내줄 "라운드 결과" 형식 정의 필요
     // gameId: socketDTO의 senderGameId
-    List<TeamRoundResultVO> teamRoundResults;
+    List<TeamRoundComponent> teamRoundResults;
 
-    public RoundFinishVO(String senderNickname, int senderGameId, int senderTeamId/**/) {
+    public RoundFinishVO(String senderNickname, int senderGameId, int senderTeamId, List<TeamRoundComponent> teamRoundResults) {
         super(senderNickname, senderGameId, senderTeamId);
-        //
+        setTeamRoundResults(teamRoundResults);
     }
 }
