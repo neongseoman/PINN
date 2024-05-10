@@ -1,9 +1,8 @@
 package com.ssafy.be.common.Provider;
 
-import com.ssafy.be.common.exception.BaseException;
-import com.ssafy.be.common.response.BaseResponseStatus;
 import com.ssafy.be.game.model.dto.GameStartRequestDTO;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,15 +10,20 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("게임 각 부분 진행 시간 테스트")
 @ExtendWith(MockitoExtension.class)
+@Nested
 class ScheduleProviderTest {
     int gameId = 1234;
     int testSecond = 5;
@@ -104,7 +108,7 @@ class ScheduleProviderTest {
 
     }
 
-    @DisplayName("3라운드는 제대로 작동하나?")
+    @DisplayName("라운드 3개는 제대로 작동하나?")
     @Test
     void _test_three_round_takes_32sec() throws ExecutionException, InterruptedException, TimeoutException {
         // given
@@ -136,4 +140,51 @@ class ScheduleProviderTest {
         System.out.printf("Expected delay: " + expectDelay + " seconds, Actual delay: %d seconds%n", secondsDifference);
 
     }
+
+    @DisplayName("시작 시간 포함 라운드 시간 관리")
+    @Test
+    public void testGameProcessAsync() throws ExecutionException, InterruptedException {
+        // given
+        LocalDateTime startTime = LocalDateTime.now();
+        AtomicReference<LocalDateTime> asyncEndTime = new AtomicReference<>();
+        GameStartRequestDTO requestDTO = new GameStartRequestDTO("testUser", 1, 1, 1, 3, 2, 3, 4);
+        int currentRound = 0;
+        int roundCount = requestDTO.getRoundCount();
+        AtomicBoolean isPass = new AtomicBoolean(false);
+        AtomicInteger executedRounds = new AtomicInteger(0);
+
+        // when
+        scheduleProvider.startGame(requestDTO.getGameId(), currentRound)
+                .thenCompose(v -> {
+                    // 초기 체인 생성
+                    CompletableFuture<Integer> roundChain = CompletableFuture.completedFuture(currentRound);
+
+                    // 각 라운드에 대한 비동기 작업 체인 구축
+                    for (int round = 1; round <= roundCount; round++) {
+                        final int currentRoundInLoop = round;
+                        roundChain = roundChain.thenCompose(ignored -> {
+                            executedRounds.incrementAndGet(); // 라운드 실행 횟수 증가
+                            return scheduleProvider.roundScheduler(requestDTO.getGameId(), requestDTO, currentRoundInLoop);
+                        });
+                    }
+                    // 마지막 결과를 설정
+                    return roundChain;
+                }).get();
+
+        log.info("Async operation ended at: "+ LocalDateTime.now());
+        asyncEndTime.set(LocalDateTime.now());
+        long compare = ChronoUnit.SECONDS.between(startTime, asyncEndTime.get());
+        long expectedTime = (2 + 3 + 4) * 3 + 5; // 각 스테이지 시간의 합 (초 단위로 계산)
+
+        // 비교를 위해 오차 범위 설정
+        long tolerance = 1;
+        long minTime = expectedTime - tolerance;
+        long maxTime = expectedTime + tolerance;
+
+        isPass.set(true);
+        assertEquals(roundCount, executedRounds.get(), "roundScheduler 호출 횟수가 예상한 반복 횟수와 다릅니다.");
+        assertTrue(compare >= minTime && compare <= maxTime, "scheduler가 예상 시간 범위에서 벗어났습니다.");
+
+    }
+
 }

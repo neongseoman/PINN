@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDateTime;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.IntStream;
 
 @RestController
 @Log4j2
@@ -43,20 +44,30 @@ public class GameController {
         GameStartVO gameStartVO = gameService.startGame(gamerId, gameStartRequestDTO);
         GameInitVO gameInitVO = gameService.initGame(gamerId, gameStartRequestDTO);
         int gameId = gameInitVO.getGameId();
-        int currentRound =0;
+        int currentRound = 0;
 
         // round가 늘어난다면 이걸 늘리면 될 것 같음.
-        scheduleProvider.startGame(gameInitVO.getGameId(),currentRound
-                ).thenCompose(r ->
-                    scheduleProvider.roundScheduler(gameId, gameStartRequestDTO, r+1)
-                ).thenCompose(r ->
-                        scheduleProvider.roundScheduler(gameId, gameStartRequestDTO, r+1)
-                ).thenCompose(r ->
-                        scheduleProvider.roundScheduler(gameId, gameStartRequestDTO, r+1)
-                ).exceptionally(ex -> {
+
+        scheduleProvider.startGame(gameInitVO.getGameId(), currentRound)
+                .thenCompose(v -> {
+                    // IntStream으로 라운드 수만큼 체인 생성
+                    CompletableFuture<Integer> roundChain = CompletableFuture.completedFuture(currentRound);
+
+                    // 각 라운드에 대해 체인에 비동기 작업을 연결
+                    for (int round = 1; round <= gameStartRequestDTO.getRoundCount(); round++) {
+                        final int currentRoundInLoop = round;
+                        roundChain = roundChain.thenCompose(ignored -> scheduleProvider.roundScheduler(gameId, gameStartRequestDTO, currentRoundInLoop));
+                    }
+
+                    // 마지막 결과를 `CompletableFuture<Void>`로 변환
+                    return roundChain.thenApply(ignored -> null);
+                })
+                .exceptionally(ex -> {
                     log.error("Error occurred in the CompletableFuture chain: ", ex);
                     throw new BaseException(BaseResponseStatus.OOPS, gameId);
                 });
+
+
     }
 
     @MessageMapping("/game/round/init") // 라운드 시작(문제의 lat, lng + stage1 hint broadcast)
