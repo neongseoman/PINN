@@ -1,6 +1,7 @@
 package com.ssafy.be.common.Interceptor;
 
 import com.ssafy.be.auth.jwt.JwtProvider;
+import com.ssafy.be.common.exception.BaseException;
 import com.ssafy.be.gamer.model.GamerPrincipalVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -35,12 +36,16 @@ public class StompInboundMessageInterceptor implements ChannelInterceptor {
 //        if (StompCommand.CONNECT.equals(headerAccessor.getCommand())) {
 //            log.info(headerAccessor.getSessionId() + " connected");
 //        }
-        if (StompCommand.SEND.equals(headerAccessor.getCommand())){
-//            String token = headerAccessor.getNativeHeader("Auth").get(0);
-//            UsernamePasswordAuthenticationToken authentication = jwtProvider.getAuthentication(token);
+        if (StompCommand.SEND.equals(headerAccessor.getCommand())) {
+            try {
+                String token = headerAccessor.getNativeHeader("Auth").get(0);
+                UsernamePasswordAuthenticationToken authentication = jwtProvider.getAuthentication(token);
+            } catch (BaseException e) {
+                throw e;
+            }
+
         }
         return message;
     }
-
 
 }

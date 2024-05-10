@@ -1,11 +1,12 @@
 package com.ssafy.be.common.Provider;
 
 
+import com.ssafy.be.auth.jwt.JwtProvider;
+import com.ssafy.be.common.exception.BaseException;
 import com.ssafy.be.common.model.dto.ServerEvent;
 import com.ssafy.be.common.model.dto.ServerSendEvent;
 import com.ssafy.be.game.model.dto.GameStartRequestDTO;
-import com.ssafy.be.game.model.vo.GameInitVO;
-import com.ssafy.be.game.model.vo.RoundInitVO;
+import com.ssafy.be.game.service.GameService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -13,109 +14,97 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.*;
-import java.util.function.Consumer;
 
 @Component
 @Log4j2
 @RequiredArgsConstructor
 public class ScheduleProvider {
-    private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+    private final GameService gameService;
     private final SimpMessageSendingOperations sendingOperations;
+    private final JwtProvider jwtProvider;
+    private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 
 
     // 5초 지났고 게임 시작합시다.
-    public CompletableFuture<Integer> startGame
-    (int gameId, GameInitVO gameInitVO) {
+    public CompletableFuture<Integer> startGame(int gameId,int round) throws BaseException {
+        log.info("{} game start after 5 sec : {}", gameId, LocalDateTime.now());
+        sendingOperations.convertAndSend("/game/sse/" + gameId,
+                new ServerSendEvent(ServerEvent.START,round)); // send Hint and Stage 1 End # 1203
         CompletableFuture<Integer> future = new CompletableFuture<>();
         executorService.schedule(() -> {
-//            log.info("Starting gameId : {} at {}", gameId, LocalDateTime.now());
-//            ServerSendEvent serverMsg = new ServerSendEvent(ServerEvent.ROUND_START);
-//            gameInitVO.setCode(serverMsg.getCode());
-//            gameInitVO.setMsg(serverMsg.getMsg());
-//            sendingOperations.convertAndSend("/game/" + gameInitVO.getGameId());
-            future.complete(gameId);
-        },5, TimeUnit.SECONDS);
+            future.complete(round);
+        }, 5, TimeUnit.SECONDS);
         return future;
     }
+
     // Stage 1으로 진입하는 것.
-    public CompletableFuture<Integer> roundStart(int gameId, int delayTime) {
+    public CompletableFuture<Integer> scheduleFuture(int gameId, int delayTime) throws BaseException {
         CompletableFuture<Integer> future = new CompletableFuture<>();
         executorService.schedule(() -> {
-//            log.info("Round start: {}  at {}",gameId, LocalDateTime.now());
-////            RoundInitVO r
-//            ServerSendEvent serverMsg = new ServerSendEvent(ServerEvent.ROUND_START);
-//            sendingOperations.convertAndSend("/game/" + gameId, serverMsg);
-            // round 정보를 보내줘야함
             future.complete(gameId);
         }, delayTime, TimeUnit.SECONDS);
         return future;
     }
 
-    // Hint를 제공함.
-    // Stage 2로 진입.
-    public CompletableFuture<Integer> sendHint(int gameId, int delayTime) {
+    public CompletableFuture<Integer> roundScheduler(int gameId, GameStartRequestDTO gameStartRequestDTO,int currentRound) {
         CompletableFuture<Integer> future = new CompletableFuture<>();
-        executorService.schedule(() -> {
-//            log.info("Hint send: {}  at {}",  gameId, LocalDateTime.now());
-//            ServerSendEvent serverMsg = new ServerSendEvent(ServerEvent.HINT);
-//            sendingOperations.convertAndSend("/game/" + gameId, serverMsg);
-            future.complete(gameId);
-        }, delayTime, TimeUnit.SECONDS); // 게임 시간 인자로 받으면 수정할 수 있음.
+        // Round 시작
+        log.info("{} Round {} Start: {}", gameStartRequestDTO.getGameId(), currentRound , LocalDateTime.now());
+        sendingOperations.convertAndSend("/game/sse/" + gameId,
+                new ServerSendEvent(ServerEvent.ROUND_START, currentRound)); // Game Start # 12
+        scheduleFuture(gameId, gameStartRequestDTO.getStage1Time())
+                .thenCompose(r -> { // Round Start stage 1
+                    log.info("{} game stage 1 End : {}", gameStartRequestDTO.getGameId(), LocalDateTime.now());
+                    sendingOperations.convertAndSend("/game/sse/" + gameId,
+                            new ServerSendEvent(ServerEvent.STAGE_1_END,currentRound)); // send Hint and Stage 1 End # 1203
+                    return scheduleFuture(gameId, gameStartRequestDTO.getStage2Time());  // Stage 2 기다리기
+                }).thenCompose(r -> { // Stage 2
+                    log.info("{} game stage 2 End : {}", gameStartRequestDTO.getGameId(), LocalDateTime.now());
+                    sendingOperations.convertAndSend("/game/sse/" + gameId,
+                            new ServerSendEvent(ServerEvent.STAGE_2_END,currentRound)); // Stage 2 End go To Score # 1204
+                    return scheduleFuture(gameId, gameStartRequestDTO.getScorePageTime());
+                }).thenRun(() -> { // Score까지 봤고 라운드가 끝났다.
+                    log.info("{} game {} Round End  : {}", gameStartRequestDTO.getGameId(),currentRound ,LocalDateTime.now());
+                    sendingOperations.convertAndSend("/game/sse/" + gameId,
+                            new ServerSendEvent(ServerEvent.ROUND_END,currentRound)); // Round End stage 1, 2 score # 1205
+                    future.complete(currentRound);
+                });
         return future;
     }
 
-    // 스테이지 2까지 끝나고 라운드 종료 -> 점수 페이지로 넘어가세요.
-    // GameComponent에 있는 모든 팀들의 pin을 정산해서 점수로 환산함.
-    public CompletableFuture<Integer> roundEnd(int gameId, int delayTime) {
-        CompletableFuture<Integer> future = new CompletableFuture<>();
-        executorService.schedule(() -> {
-            log.trace("{} at {} Round is Over", LocalDateTime.now(), gameId);
-            future.complete(gameId);
-        }, delayTime, TimeUnit.SECONDS); // 게임 시간 인자로 받으면 수정할 수 있음.
-        return future;
-    }
 
-    // 결산 페이지 끝났고 다음 라운드로 넘어가세요.
-    // => Rount Start와 같은 기능인데 구분할 필요가 있을까?
-    public CompletableFuture<Integer> nextRound(int gameId, int delayTime) {
-        CompletableFuture<Integer> future = new CompletableFuture<>();
-        executorService.schedule(() -> {
-            log.trace("{} at {} go to Next Round", LocalDateTime.now(), gameId);
-            future.complete(gameId);
-        }, delayTime, TimeUnit.SECONDS); // 게임 시간 인자로 받으면 수정할 수 있음.
-        return future;
-    }
-
-    // 게임 정산 페이지로 가세요.
-    public CompletableFuture<Integer> endGame(int gameId, int delayTime) {
-        CompletableFuture<Integer> future = new CompletableFuture<>();
-        executorService.schedule(() -> {
-            log.trace("{} at {} is Game End", LocalDateTime.now(), gameId);
-            future.complete(gameId);
-        }, delayTime, TimeUnit.SECONDS);
-        return future;
-    }
-
-    public CompletableFuture<Integer> goToRoom(int gameId, int delayTime) {
-        CompletableFuture<Integer> future = new CompletableFuture<>();
-        executorService.schedule(() -> {
-            log.trace("{} at {} is go To Room", LocalDateTime.now(), gameId);
-            future.complete(gameId);
-        }, delayTime, TimeUnit.SECONDS);
-        return future;
-    }
-
-    //TODO : 나중에 수정하고 싶지만 지금은 시간이 없어서 봐준다.
-//    public CompletableFuture<Integer> gameProgress(int gameId,int progress){
+//    public CompletableFuture<Boolean> forceMoveScheduler(int gameId, GameStartRequestDTO gameStartRequestDTO) {
+//        CompletableFuture<Boolean> future = new CompletableFuture<>();
+//        // Round 시작
+//        log.info("{} Round {} Start: {}", gameStartRequestDTO.getGameId(), LocalDateTime.now());
+//        sendingOperations.convertAndSend("/game/sse/" + gameId,
+//                new ServerSendEvent(ServerEvent.ROUND_START)); // Game Start # 1202
+//        scheduleFuture(gameId, gameStartRequestDTO.getStage1Time())
+//                .thenCompose(r -> { // Round Start stage 1
+//                    log.info("{} game stage 1 End : {}", gameStartRequestDTO.getGameId(), LocalDateTime.now());
+//                    sendingOperations.convertAndSend("/game/sse/" + gameId,
+//                            new ServerSendEvent(ServerEvent.STAGE_1_END)); // send Hint and Stage 1 End # 1203
+//                    return scheduleFuture(gameId, gameStartRequestDTO.getStage2Time());  // Stage 2 기다리기
+//                }).thenCompose(r -> { // Stage 2
+//                    log.info("{} game stage 2 End : {}", gameStartRequestDTO.getGameId(), LocalDateTime.now());
+//                    sendingOperations.convertAndSend("/game/sse/" + gameId,
+//                            new ServerSendEvent(ServerEvent.STAGE_2_END)); // Stage 2 End go To Score # 1204
+//                    return scheduleFuture(gameId, gameStartRequestDTO.getScorePageTime());
+//                }).thenCompose(r -> {
+//                    log.info("{} All Round is End Go to Game Score: {}", gameStartRequestDTO.getGameId(), LocalDateTime.now());
+//                    sendingOperations.convertAndSend("/game/sse/" + gameId,
+//                            new ServerSendEvent(ServerEvent.GAME_SCORE)); // Round End stage 1, 2 score # 1205
+//                    return scheduleFuture(gameId, 180);
+//                }).thenRun(() -> {
+//                            log.info("{} Game is End Go to Room: {}", gameStartRequestDTO.getGameId(), LocalDateTime.now());
+//                            sendingOperations.convertAndSend("/game/sse/" + gameId,
+//                                    new ServerSendEvent(ServerEvent.GO_TO_ROOM)); // Round End stage 1, 2 score # 12
 //
-//    }
-//
-//    public CompletableFuture<GameStartRequestDTO> startGame(int gameId, GameStartRequestDTO gameStartRequestDTO){
-//        CompletableFuture<GameStartRequestDTO> future = new CompletableFuture<>();
-//        executorService.schedule(() ->{
-//            log.trace("{} at {} is Game Start", LocalDateTime.now(),gameId);
-//            future.complete(gameStartRequestDTO);
-//        },5, TimeUnit.SECONDS);
+//                            future.complete(true);
+//                        }
+//                );
 //        return future;
 //    }
+
+
 }

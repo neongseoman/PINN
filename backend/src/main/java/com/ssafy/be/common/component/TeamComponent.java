@@ -24,7 +24,7 @@ public class TeamComponent {
     private boolean isReady;
     private LocalDateTime lastReadyTime;
     private int finalRank;
-    private int finalScore;
+    private int finalScore; // 현재 시점에서의 획득 점수 총합
 
     private ConcurrentHashMap<Integer, TeamRoundComponent> teamRounds; // 라운드 번호로 접근 (1,2,3 ...)
 }

@@ -20,6 +20,7 @@ public class GameComponent {
     private int themeId;
     private int leaderId;
     private int roundCount;
+    private int currentRound;// 이거 추가하면 어때?
     private int stage1Time;
     private int stage2Time;
     private LocalDateTime roomCreateTime;
@@ -30,5 +31,5 @@ public class GameComponent {
     private final int TeamCount = 10;
 
     private List<QuestionComponent> questions; // 이 게임에서 출제될 문제 목록
-
+    private List<List<TeamRoundComponent>> roundResults; // 라운드별 결과 리스트
 }
