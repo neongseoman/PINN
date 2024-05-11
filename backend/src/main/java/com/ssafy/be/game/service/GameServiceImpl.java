@@ -222,7 +222,7 @@ public class GameServiceImpl implements GameService {
         int gameId = pinMoveRequestDTO.getSenderGameId();
         GameComponent existGame = gameManager.getGames().get(gameId);
         if (existGame == null) { // 존재하는 게임인지 확인
-            throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
+            throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME,gamerId);
         }
 
         // TODO: 요청자가 해당 팀의 팀원인지 확인
@@ -236,7 +236,7 @@ public class GameServiceImpl implements GameService {
 
         // 이미 guess한 팀 아닌지 확인
         if (submitTeamRound.isGuessed()) {
-            throw new BaseException(BaseResponseStatus.ALREADY_GUESSED_TEAM);
+            throw new BaseException(BaseResponseStatus.ALREADY_GUESSED_TEAM,gamerId);
         }
         // guess 안 했으면 제출된 정보로 submitTeamRound 업데이트
         submitTeamRound.setSubmitTime(pinMoveRequestDTO.getSenderDateTime());
@@ -270,7 +270,7 @@ public class GameServiceImpl implements GameService {
         int gameId = pinGuessRequestDTO.getSenderGameId();
         GameComponent existGame = gameManager.getGames().get(gameId);
         if (existGame == null) { // 존재하는 게임인지 확인
-            throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
+            throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME, gamerId);
         }
 
         // TODO: gamerId가 senderTeamId 팀의 구성원인지 확인
@@ -283,7 +283,7 @@ public class GameServiceImpl implements GameService {
         TeamRoundComponent guessTeamRound = teamRounds.get(pinGuessRequestDTO.getRoundNumber());
         // 이미 guess한 팀 아닌지 확인
         if (guessTeamRound.isGuessed()) {
-            throw new BaseException(BaseResponseStatus.ALREADY_GUESSED_TEAM);
+            throw new BaseException(BaseResponseStatus.ALREADY_GUESSED_TEAM, gamerId);
         }
 
         // 해당 라운드에서 한 번도 핀 찍은 적 없으면 점수 0점 처리하기
