@@ -218,7 +218,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public PinMoveVO movePin(int gamerId, PinMoveRequestDTO pinMoveRequestDTO) throws BaseException {
-
+        log.info(pinMoveRequestDTO.toString());
         int gameId = pinMoveRequestDTO.getSenderGameId();
         GameComponent existGame = gameManager.getGames().get(gameId);
         if (existGame == null) { // 존재하는 게임인지 확인
@@ -230,7 +230,8 @@ public class GameServiceImpl implements GameService {
         // gameManager/team/teamRound에 정보 업데이트
         ConcurrentHashMap<Integer, TeamRoundComponent> teamRounds = existGame.getTeams().get(pinMoveRequestDTO.getSenderTeamId()).getTeamRounds();
         if (teamRounds == null) {
-            throw new BaseException(BaseResponseStatus.OOPS); // TODO: exception 타입 정의
+            log.info(existGame.getTeams().get(pinMoveRequestDTO.getSenderTeamId()));
+            throw new BaseException(BaseResponseStatus.OOPS, gamerId); // TODO: exception 타입 정의
         }
         TeamRoundComponent submitTeamRound = teamRounds.get(pinMoveRequestDTO.getRoundNumber());
 
