@@ -2,7 +2,7 @@
 
 import themeStyles from '@/components/theme.module.css'
 import useUserStore from '@/stores/userStore'
-import { PinRespoonse } from '@/types/IngameTypes'
+import { PinRespoonse } from '@/types/IngameSocketTypes'
 import { Loader } from '@googlemaps/js-api-loader'
 import { Client, IFrame, IMessage } from '@stomp/stompjs'
 import { useRouter } from 'next/navigation'
@@ -14,6 +14,7 @@ interface IngameMapProps {
   loader: Loader
   gameId: string
   round: string
+  stage: number
 }
 
 interface MyGuess {
@@ -26,6 +27,7 @@ export default function IngameMap({
   loader,
   gameId,
   round,
+  stage,
 }: IngameMapProps) {
   const mapShowRef = useRef<HTMLDivElement | null>(null)
   const mapObjectRef = useRef<google.maps.Map | null>(null)
@@ -105,7 +107,7 @@ export default function IngameMap({
             submitLat: e.latLng?.lat() as number,
             submitLng: e.latLng?.lng() as number,
             roundNumber: round,
-            submitStage: 2,
+            submitStage: stage,
           }),
         })
       })
@@ -137,7 +139,7 @@ export default function IngameMap({
             break
           case 1116:
             // 핀 제출
-            router.push(`/game/${gameId}/${round}/waiting`)
+            // router.push(`/game/${gameId}/${round}/waiting`)
             break
         }
       })
@@ -153,7 +155,7 @@ export default function IngameMap({
     return () => {
       clientRef.current.deactivate()
     }
-  }, [gameId])
+  }, [gameId, round])
 
   function handleSubmitGuess() {
     if (myGuess.current) {
@@ -169,7 +171,7 @@ export default function IngameMap({
           submitLat: myGuess.current.lat,
           submitLng: myGuess.current.lng,
           roundNumber: round,
-          submitStage: 1,
+          submitStage: stage,
         }),
       })
     }
