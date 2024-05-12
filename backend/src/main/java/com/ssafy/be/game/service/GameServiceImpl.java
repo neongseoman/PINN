@@ -54,7 +54,7 @@ public class GameServiceImpl implements GameService {
             int gameId = gameStartRequestDTO.getGameId();
             GameComponent existGame = gameManager.getGames().get(gameId);
             if (existGame == null) {
-                throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
+                throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME, gamerId);
             }
 
             // 요청 보낸 gamer_id가 GM/game의 leader_id와 일치하는지 확인
@@ -72,7 +72,7 @@ public class GameServiceImpl implements GameService {
             if (existGame.getStatus() == GameStatus.READY) {
                 existGame.setStatus(GameStatus.START);
             } else {
-                throw new BaseException(BaseResponseStatus.ALREADY_START_GAME);
+                throw new BaseException(BaseResponseStatus.ALREADY_START_GAME, gamerId);
             }
 
             gameStartVO.setGameId(existGame.getGameId());
@@ -99,12 +99,12 @@ public class GameServiceImpl implements GameService {
             GameComponent existGame = gameManager.getGames().get(gameId);
             // 존재하는 game인지 확인
             if (existGame == null) {
-                throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
+                throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME, gamerId);
             }
 
             // 게임이 start 상태인지 확인
             if (existGame.getStatus() != GameStatus.START) {
-                throw new BaseException(BaseResponseStatus.NOT_STARTED_GAME);
+                throw new BaseException(BaseResponseStatus.NOT_STARTED_GAME, gamerId);
             }
 
             // 요청 보낸 gamer_id가 GM/game의 leader_id와 일치하는지 확인
@@ -163,7 +163,7 @@ public class GameServiceImpl implements GameService {
                     // hintTypeId 바탕으로 hintTypeName 받아오기
                     HintType existHintType = hintTypeRepository.findById(hintData.getHintTypeId()).orElse(null);
                     if (existHintType == null) {
-                        throw new BaseException(BaseResponseStatus.OOPS); // TODO: exception 타입 정의
+                        throw new BaseException(BaseResponseStatus.OOPS, gamerId); // TODO: exception 타입 정의
                     }
                     HintTypeDTO hintTypeDTO = new HintTypeDTO(existHintType);
 
@@ -226,7 +226,7 @@ public class GameServiceImpl implements GameService {
             int gameId = pinMoveRequestDTO.getSenderGameId();
             GameComponent existGame = gameManager.getGames().get(gameId);
             if (existGame == null) { // 존재하는 게임인지 확인
-                throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
+                throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME, gamerId);
             }
 
             // TODO: 요청자가 해당 팀의 팀원인지 확인
@@ -234,13 +234,13 @@ public class GameServiceImpl implements GameService {
             // gameManager/team/teamRound에 정보 업데이트
             ConcurrentHashMap<Integer, TeamRoundComponent> teamRounds = existGame.getTeams().get(pinMoveRequestDTO.getSenderTeamId()).getTeamRounds();
             if (teamRounds == null) {
-                throw new BaseException(BaseResponseStatus.OOPS); // TODO: exception 타입 정의
+                throw new BaseException(BaseResponseStatus.OOPS, gamerId); // TODO: exception 타입 정의
             }
             TeamRoundComponent submitTeamRound = teamRounds.get(pinMoveRequestDTO.getRoundNumber());
 
             // 이미 guess한 팀 아닌지 확인
             if (submitTeamRound.isGuessed()) {
-                throw new BaseException(BaseResponseStatus.ALREADY_GUESSED_TEAM);
+                throw new BaseException(BaseResponseStatus.ALREADY_GUESSED_TEAM, gamerId);
             }
             // guess 안 했으면 제출된 정보로 submitTeamRound 업데이트
             submitTeamRound.setSubmitTime(pinMoveRequestDTO.getSenderDateTime());
@@ -281,7 +281,7 @@ public class GameServiceImpl implements GameService {
             int gameId = pinGuessRequestDTO.getSenderGameId();
             GameComponent existGame = gameManager.getGames().get(gameId);
             if (existGame == null) { // 존재하는 게임인지 확인
-                throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
+                throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME, gamerId);
             }
 
             // TODO: gamerId가 senderTeamId 팀의 구성원인지 확인
@@ -289,12 +289,12 @@ public class GameServiceImpl implements GameService {
             // senderTeamId 팀이 roundNumber 라운드에 한 번이라도 핀 찍은 적 있는지 확인
             ConcurrentHashMap<Integer, TeamRoundComponent> teamRounds = existGame.getTeams().get(pinGuessRequestDTO.getSenderTeamId()).getTeamRounds();
             if (teamRounds == null) {
-                throw new BaseException(BaseResponseStatus.OOPS); // TODO: exception 타입 정의
+                throw new BaseException(BaseResponseStatus.OOPS, gamerId); // TODO: exception 타입 정의
             }
             TeamRoundComponent guessTeamRound = teamRounds.get(pinGuessRequestDTO.getRoundNumber());
             // 이미 guess한 팀 아닌지 확인
             if (guessTeamRound.isGuessed()) {
-                throw new BaseException(BaseResponseStatus.ALREADY_GUESSED_TEAM);
+                throw new BaseException(BaseResponseStatus.ALREADY_GUESSED_TEAM, gamerId);
             }
 
             // 해당 라운드에서 한 번도 핀 찍은 적 없으면 점수 0점 처리하기
@@ -333,7 +333,7 @@ public class GameServiceImpl implements GameService {
             int gameId = roundFinishRequestDTO.getSenderGameId();
             GameComponent existGame = gameManager.getGames().get(gameId);
             if (existGame == null) { // 존재하는 게임인지 확인
-                throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
+                throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME, DEVELOPER_GAMER_ID);
             }
 
             // 모든 팀 정보 받아오기
@@ -441,10 +441,10 @@ public class GameServiceImpl implements GameService {
 
         } catch (BaseException e) {
             e.printStackTrace();
-            throw new BaseException(e.getStatus()); // Socket에도 던지고 싶다면 GamerID를 주세요.
+            throw new BaseException(e.getStatus(), DEVELOPER_GAMER_ID); // Socket에도 던지고 싶다면 GamerID를 주세요.
         } catch (Exception e) {
             e.printStackTrace();
-            throw new BaseException(BaseResponseStatus.OOPS);
+            throw new BaseException(BaseResponseStatus.OOPS, DEVELOPER_GAMER_ID);
         }
     }
 
