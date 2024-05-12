@@ -8,32 +8,28 @@ interface TimerProp {
 }
 
 export default function Timer({ initialTime }: TimerProp) {
-  const [minutes, setMinutes] = useState<number>(Math.floor(initialTime / 60))
-  const [seconds, setSeconds] = useState<number>(initialTime % 60)
+  const [remainSeconds, setRemainSeconds] = useState<number>(initialTime)
 
   useEffect(() => {
-    let myInterval = setInterval(() => {
-      if (seconds > 0) {
-        setSeconds(seconds - 1)
+    const myInterval = setInterval(() => {
+      if (remainSeconds > 0) {
+        setRemainSeconds((prev) => prev - 1)
       } else {
-        if (minutes <= 0) {
-          clearInterval(myInterval)
-        } else {
-          setMinutes(minutes - 1)
-          setSeconds(59)
-        }
+        clearInterval(myInterval)
       }
     }, 1000)
     return () => {
       clearInterval(myInterval)
     }
-  }, [minutes, seconds])
+  }, [remainSeconds])
 
   return (
     <>
       <div className={styles.timer}>
-        {minutes.toString().padStart(2, '0')} :{' '}
-        {seconds.toString().padStart(2, '0')}
+        {Math.floor(remainSeconds / 60)
+          .toString()
+          .padStart(2, '0')}{' '}
+        : {(remainSeconds % 60).toString().padStart(2, '0')}
       </div>
     </>
   )

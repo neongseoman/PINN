@@ -1,12 +1,18 @@
 'use client'
 
+import StageTwo from '@/app/(main)/game/[gameId]/[round]/(ingame)/_components/StageTwo'
 import Chatting from '@/components/Chatting'
 import Timer from '@/components/Timer'
 import themeStyles from '@/components/theme.module.css'
-import useUserStore from '@/stores/userStore'
-import { Hint, RoundInit, StageTwoInit } from '@/types/IngameRestTypes'
+import useIngameStore from '@/stores/ingameStore'
+import {
+  GameInitInfo,
+  Hint,
+  RoundInit,
+  StageTwoInit,
+} from '@/types/IngameRestTypes'
 import { GameProgressInfo } from '@/types/IngameSocketTypes'
-import { getRoundInfo, getStageTwoHint } from '@/utils/IngameApi'
+import { getGameInfo, getRoundInfo, getStageTwoHint } from '@/utils/IngameApi'
 import { Loader } from '@googlemaps/js-api-loader'
 import { Client, IFrame, IMessage } from '@stomp/stompjs'
 import { useRouter } from 'next/navigation'
@@ -25,7 +31,6 @@ export default function GamePage({
   params: { gameId: string; round: string }
 }) {
   const router = useRouter()
-  const { nickname } = useUserStore()
 
   // 요소 투명도 조절
   const [chatFocus, setChatFocus] = useState<boolean>(false)
@@ -33,11 +38,11 @@ export default function GamePage({
   const [hintPin, setHintPin] = useState<boolean>(false)
   const [mapPin, setMapPin] = useState<boolean>(false)
 
-  // 라운드 시작 여부
-  const [roundStart, setRoundStart] = useState<boolean>(false)
+  // 단계 시작 체크
+  const [showRoundStart, setShowRoundStart] = useState<boolean>(false)
+  const [showStageTwoStart, setShowStageTwoStart] = useState<boolean>(false)
 
   // 현재 스테이지
-  const [stage, setStage] = useState<number>(1)
 
   // 힌트
   const [hints, setHints] = useState<Hint[] | null>(null)
@@ -47,6 +52,16 @@ export default function GamePage({
 
   // 스테이지 시간
   const initialTime = 100
+  const {
+    teamId,
+    currentStage,
+    setCurrentStage,
+    stage1Time,
+    setStage1Time,
+    stage2Time,
+    setStage2Time,
+    ingameReset,
+  } = useIngameStore()
 
   // 정답 좌표
   const [lat, setLat] = useState<number>()
@@ -76,6 +91,18 @@ export default function GamePage({
     }),
   )
 
+  // 게임 시작 정보 받아오기
+  async function gameStartRender() {
+    const gameInfo = (await getGameInfo(params.gameId)) as GameInitInfo
+    ingameReset()
+
+    // 시간 설정 후 멈춤
+
+    // 스테이지 시간 저장
+    setStage1Time(gameInfo.result.stage1Time)
+    setStage2Time(gameInfo.result.stage2Time)
+  }
+
   // 라운드 시작 정보 받아오기
   async function roundStartRender() {
     const roundInfo = (await getRoundInfo(
@@ -94,13 +121,16 @@ export default function GamePage({
       params.gameId,
       params.round,
     )) as StageTwoInit
-    setStage(stageTwoInfo.result.stage)
+    setCurrentStage(stageTwoInfo.result.stage)
     setHints(stageTwoInfo.result.hints)
   }
 
   // 소켓 구독
   const ingameSubscribeUrl = `/game/sse/${params.gameId}`
   useEffect(() => {
+    // 게임 시작 정보
+    gameStartRender()
+
     // 라운드 시작 정보
     roundStartRender()
 
@@ -113,19 +143,37 @@ export default function GamePage({
         ) as GameProgressInfo
         switch (gameProgressResponse.code) {
           case 1202:
-            // 라운드 스타트
-            setRoundStart(true)
+            // 라운드 시작
+            // 라운드 스타트 화면
+            setShowRoundStart(true)
+            setTimeout(() => {
+              setShowRoundStart(false)
+            }, 1000)
+
+            //
+
+            //타이머 시작
             break
           case 1203:
             // 스테이지 2 스타트
+            // 스테이지 2 스타트 화면
+            setShowStageTwoStart(true)
+            setTimeout(() => {
+              setShowStageTwoStart(false)
+            }, 1000)
+
+            // 스테이지 2 렌더링
             stageTwoRender()
             break
           case 1204:
             // 스테이지 2 끝
             // router.push(`/game/${params.gameId}/${params.round}/result`)
             break
-          case 1206:
-            router.push(`/game/${params.gameId}/${Number(params.round) + 1}`)
+
+          // 라운드 종료
+          // case 1206:
+          //   router.push(`/game/${params.gameId}/${Number(params.round) + 1}`)
+          //   break
         }
       })
     }
@@ -148,8 +196,13 @@ export default function GamePage({
 
   return (
     <main>
+      {showStageTwoStart && <StageTwo />}
       <div className={styles.infos}>
-        <GameInfo theme={theme} round={Number(params.round)} stage={stage} />
+        <GameInfo
+          theme={theme}
+          round={Number(params.round)}
+          stage={currentStage}
+        />
         <ThemeInfo theme={theme} />
       </div>
       <div
@@ -193,7 +246,7 @@ export default function GamePage({
           loader={loader}
           gameId={params.gameId}
           round={params.round}
-          stage={stage}
+          stage={currentStage}
         />
       </div>
       <div className={styles.streetView}>

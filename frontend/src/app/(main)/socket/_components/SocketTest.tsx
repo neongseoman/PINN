@@ -82,8 +82,8 @@ export default function SocketTest({
     senderTeamId: 1,
     gameId: room,
     roundCount: 3,
-    stage1Time: 10,
-    stage2Time: 10,
+    stage1Time: 30,
+    stage2Time: 30,
     scorePageTime: 10,
   }
 

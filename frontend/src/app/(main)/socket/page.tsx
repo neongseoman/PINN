@@ -57,9 +57,9 @@ export default function SocketPage() {
       body: JSON.stringify({
         themeId: 1,
         roomName: '123',
-        roundCount: 1,
-        stage1Time: 10,
-        stage2Time: 10,
+        roundCount: 3,
+        stage1Time: 30,
+        stage2Time: 30,
         password: '!234',
       }),
     })
