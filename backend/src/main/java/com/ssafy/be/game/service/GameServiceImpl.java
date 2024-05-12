@@ -583,6 +583,19 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
+    public RoundGuessedVO getCurPinsInfo(int gamerId, RoundRequestDTO roundGuessedRequestDTO) throws BaseException {
+        try {
+            return null;
+        } catch (BaseException e) {
+            e.printStackTrace();
+            throw new BaseException(e.getStatus()); // Socket에도 던지고 싶다면 GamerID를 주세요.
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BaseException(BaseResponseStatus.OOPS);
+        }
+    }
+
+    @Override
     public RoundResultVO getRoundResult(int gamerId, RoundRequestDTO roundResultRequestDTO) throws BaseException {
         try {
             int gameId = roundResultRequestDTO.getGameId();

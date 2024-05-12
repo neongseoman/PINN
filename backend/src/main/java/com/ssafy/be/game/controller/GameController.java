@@ -195,16 +195,16 @@ public class GameController {
         return new BaseResponse<>(stage2InitVO);
     }
 
-//    @PostMapping("/game/round/guessed")
-//    public BaseResponse<?> roundGuessed(@RequestBody RoundRequestDTO roundGuessedRequestDTO, ServletRequest req) {
-//        // 요청 보낸 사용자의 gamerId
-//        GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
-//        int gamerId = gamerPrincipalVO.getGamerId();
-//
-//        RoundGuessedVO roundGuessedVO = gameService.getCurPinsInfo(gamerId, roundGuessedRequestDTO);
-//
-//        return new BaseResponse<>(null /*roundGuessedVO*/);
-//    }
+    @PostMapping("/game/round/guessed")
+    public BaseResponse<?> roundGuessed(@RequestBody RoundRequestDTO roundGuessedRequestDTO, ServletRequest req) {
+        // 요청 보낸 사용자의 gamerId
+        GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
+        int gamerId = gamerPrincipalVO.getGamerId();
+
+        RoundGuessedVO roundGuessedVO = gameService.getCurPinsInfo(gamerId, roundGuessedRequestDTO);
+
+        return new BaseResponse<>(null /*roundGuessedVO*/);
+    }
 
     @PostMapping("/game/round/result")
     public BaseResponse<?> roundResult(@RequestBody RoundRequestDTO roundResultRequestDTO, ServletRequest req) {

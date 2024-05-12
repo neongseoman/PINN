@@ -33,9 +33,10 @@ public interface GameService {
 
     Stage2InitVO findStage2Info(int gamerId, RoundRequestDTO stage2InitRequestDTO) throws BaseException;
 
+    RoundGuessedVO getCurPinsInfo(int gamerId, RoundRequestDTO roundGuessedRequestDTO) throws BaseException; // not implemented
+
     RoundResultVO getRoundResult(int gamerId, RoundRequestDTO roundFinishRequestDTO) throws BaseException;
 
-    GameResultVO getGameResult(int gamerId, GameResultRequestDTO gameResultRequestDTO) throws BaseException; // not implemented
-
+    GameResultVO getGameResult(int gamerId, GameResultRequestDTO gameResultRequestDTO) throws BaseException;
 
 }
