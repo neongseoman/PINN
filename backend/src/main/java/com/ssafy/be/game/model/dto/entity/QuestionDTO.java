@@ -1,4 +1,4 @@
-package com.ssafy.be.game.model.dto;
+package com.ssafy.be.game.model.dto.entity;
 import com.ssafy.be.game.model.domain.Question;
 import lombok.*;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
