@@ -119,6 +119,15 @@ public class LobbyController {
         return new BaseResponse<>(searchVO);
     }
 
+    @GetMapping("quickEnter")
+    public BaseResponse<?> enterFastestRoom(ServletRequest req){
+        GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
+        log.info(gamerPrincipalVO.getGamerId());
+        EnterRoomVO enterRoomVO = gameManager.findFastestStartRoom(gamerPrincipalVO);
+
+        return new BaseResponse<>(enterRoomVO);
+    }
+
 
     // ---------------------------------- SOCKET ---------------------------------------------
 

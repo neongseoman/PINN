@@ -13,9 +13,12 @@ import com.ssafy.be.common.model.dto.SocketDTO;
 import com.ssafy.be.common.response.BaseResponse;
 import com.ssafy.be.common.response.BaseResponseStatus;
 import com.ssafy.be.gamer.model.GamerPrincipalVO;
+import com.ssafy.be.lobby.model.vo.EnterRoomVO;
 import com.ssafy.be.room.model.dto.MoveTeamDTO;
 import com.ssafy.be.lobby.model.vo.ExitRoomVO;
 import com.ssafy.be.room.model.vo.MoveTeamVO;
+
+import java.util.Comparator;
 import java.util.Map.Entry;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
@@ -210,5 +213,11 @@ public class GameManager {
         games.remove(gameId);
         return true;
 
+    }
+
+    public EnterRoomVO findFastestStartRoom(GamerPrincipalVO gamerPrincipalVO) {
+        TeamGamerComponent teamGamerComponent = games.values().stream()
+                .filter(game-> game.getStatus() == GameStatus.READY)
+                .max(Comparator.comparingInt())
     }
 }
