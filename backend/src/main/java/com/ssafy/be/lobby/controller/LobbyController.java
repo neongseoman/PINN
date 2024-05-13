@@ -122,7 +122,7 @@ public class LobbyController {
     @GetMapping("quickEnter")
     public BaseResponse<?> enterFastestRoom(ServletRequest req){
         GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
-        log.info(gamerPrincipalVO.getGamerId());
+        log.info("빠른 시작 컨트롤러 : {}", gamerPrincipalVO.getGamerId());
         EnterRoomVO enterRoomVO = gameManager.findFastestStartRoom(gamerPrincipalVO);
 
         return new BaseResponse<>(enterRoomVO);

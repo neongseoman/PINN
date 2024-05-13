@@ -217,6 +217,7 @@ public class GameManager {
     }
 
     public EnterRoomVO findFastestStartRoom(GamerPrincipalVO gamerPrincipalVO) {
+        log.info("{} 빠른 입장 GameManager", gamerPrincipalVO.getGamerId());
         GameComponent gameComponent = games.values().stream()
                 .filter(game-> game.getStatus() == GameStatus.READY)
                 .filter(game -> game.getTeams().values().stream().
@@ -225,7 +226,10 @@ public class GameManager {
                         .mapToInt(team -> team.getTeamGamers().values().size())
                         .sum()))
                 .orElse(null);
-        if (gameComponent == null) throw new BaseException(BaseResponseStatus.NOT_EXIST_READY_GAME);
+        if (gameComponent == null) {
+            log.error("에러 발생 Game Component가 없음.");
+            throw new BaseException(BaseResponseStatus.NOT_EXIST_READY_GAME);
+        };
 
         TeamComponent teamComponent = gameComponent.getTeams().values().stream()
                 .filter(team -> !team.isReady()).findFirst().get();
