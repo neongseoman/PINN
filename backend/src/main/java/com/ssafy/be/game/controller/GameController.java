@@ -203,7 +203,7 @@ public class GameController {
 
         RoundGuessedVO roundGuessedVO = gameService.getCurPinsInfo(gamerId, roundGuessedRequestDTO);
 
-        return new BaseResponse<>(null /*roundGuessedVO*/);
+        return new BaseResponse<>(roundGuessedVO);
     }
 
     @PostMapping("/game/round/result")
