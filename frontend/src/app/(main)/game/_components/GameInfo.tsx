@@ -1,5 +1,5 @@
+import themeStyles from '@/components/theme.module.css'
 import styles from './info.module.css'
-import themeStyles from '@/app/components/theme.module.css'
 
 interface GameInfoProps {
   theme: string

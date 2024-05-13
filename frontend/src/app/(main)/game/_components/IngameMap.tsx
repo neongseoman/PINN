@@ -1,9 +1,9 @@
 'use client'
 
-import styles from './ingamemap.module.css'
-import themeStyles from '@/app/components/theme.module.css'
+import themeStyles from '@/components/theme.module.css'
 import { Loader } from '@googlemaps/js-api-loader'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
+import styles from './ingamemap.module.css'
 
 interface IngameMapProps {
   theme: string
@@ -55,20 +55,34 @@ export default function IngameMap({ theme, loader }: IngameMapProps) {
             strokeWeight: 3,
           },
         })
+
         currentMarker.current = newMarker
         myGuess.current = {
           lat: e.latLng?.lat() as number,
           lng: e.latLng?.lng() as number,
         }
-        console.log(myGuess.current)
+      })
+
+      map.addListener('mousemove', function (e: google.maps.MapMouseEvent) {
+        const lat = e.latLng?.lat() // 위도
+        const lng = e.latLng?.lng() // 경도
+        console.log(`위도: ${lat}, 경도: ${lng}`)
       })
     })
   }, [])
 
+  function handleSubmitGuess() {
+    if (myGuess.current) {
+      alert(`위도: ${myGuess.current?.lat} 경도: ${myGuess.current?.lng} `)
+    }
+  }
   return (
     <>
       <div className={styles.map} ref={mapRef} />
-      <button className={`${styles.guess}  ${themeStyles[theme + '-inverse']}`}>
+      <button
+        onClick={handleSubmitGuess}
+        className={`${styles.guess}  ${themeStyles[theme + '-inverse']}`}
+      >
         제출
       </button>
     </>
