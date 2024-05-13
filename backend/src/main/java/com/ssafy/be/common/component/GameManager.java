@@ -21,7 +21,9 @@ import com.ssafy.be.lobby.model.vo.ExitRoomVO;
 import com.ssafy.be.room.model.vo.MoveTeamVO;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map.Entry;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
@@ -206,14 +208,53 @@ public class GameManager {
     }
 
     public ReadyGame getGame(Integer gameId) {
-        GameComponent game = games.getOrDefault(gameId, null);
-        if (game == null){
+        GameComponent gameComponent = games.getOrDefault(gameId, null);
+        if (gameComponent == null){
             throw new BaseException(NOT_EXIST_GAME);
         }
-        return ReadyGame.builder().build();
+
+        List<SearchTeam> teams = getTeams(gameComponent);
+        boolean isPassword = true;
+        if(gameComponent.getPassword() == null || gameComponent.getPassword().isEmpty()){
+            isPassword = false;
+        }
+
+        return ReadyGame.builder()
+                .teams(teams)
+                .gameId(gameComponent.getGameId())
+                .themeId(gameComponent.getThemeId())
+                .leaderId(gameComponent.getLeaderId())
+                .roundCount(gameComponent.getRoundCount())
+                .stage1Time(gameComponent.getStage1Time())
+                .stage2Time(gameComponent.getStage2Time())
+                .password(isPassword)
+                .status(gameComponent.getStatus())
+                .build();
     }
 
-//    public List<SearchTeam>
+    public List<SearchTeam> getTeams(GameComponent gameComponent){
+        List<SearchTeam> teams = new ArrayList<>();
+        for (TeamComponent teamComponent: gameComponent.getTeams().values()){
+            SearchTeam searchTeam = SearchTeam.builder()
+                    .teamGamers(new ArrayList<>())
+                    .teamId(teamComponent.getTeamId())
+                    .gameId(teamComponent.getGameId())
+                    .colorCode(teamComponent.getColorCode())
+                    .teamNumber(teamComponent.getTeamNumber())
+                    .isReady(teamComponent.isReady())
+                    .lastReadyTime(teamComponent.getLastReadyTime())
+                    .build();
+
+            ConcurrentHashMap<Integer, TeamGamerComponent> teamGamers = teamComponent.getTeamGamers();
+            if (teamGamers != null){
+                searchTeam.getTeamGamers().addAll(teamComponent.getTeamGamers().values());
+            }
+
+            teams.add(searchTeam);
+        }
+
+        return teams;
+    }
 
     public boolean removeGame(Integer gameId){
         if (games.get(gameId) == null) {
