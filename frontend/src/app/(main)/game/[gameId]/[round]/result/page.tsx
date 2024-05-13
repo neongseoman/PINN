@@ -81,7 +81,7 @@ export default function LoadingPage({ params }: { params: { id: number } }) {
         <div className={styles.round}>라운드 {1}</div>
         <div className={styles.result}>Result</div>
         <div className={styles.mapWrapper}>
-          <RoundResultMap loader={loader} />
+          <RoundResultMap loader={loader} roundResult={roundResult} />
         </div>
         <div className={styles['rank-container']}>
           <div className={styles.trophy}>
