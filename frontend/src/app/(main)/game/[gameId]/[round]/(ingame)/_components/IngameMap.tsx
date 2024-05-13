@@ -189,7 +189,7 @@ export default function IngameMap({
             break
           case 1116:
             // 핀 제출
-            // router.push(`/game/${gameId}/${round}/waiting`)
+            router.push(`/game/${gameId}/${round}/waiting`)
             break
           case 1120:
             // 실시간 커서

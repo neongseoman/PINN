@@ -117,7 +117,7 @@ export default function GamePage({
             break
           case 1204:
             // 스테이지 2 끝
-            // router.push(`/game/${params.gameId}/${params.round}/result`)
+            router.push(`/game/${params.gameId}/${params.round}/result`)
             break
         }
       })
