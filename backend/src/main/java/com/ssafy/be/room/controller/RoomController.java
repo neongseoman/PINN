@@ -3,15 +3,13 @@ package com.ssafy.be.room.controller;
 import com.ssafy.be.auth.jwt.JwtProvider;
 import com.ssafy.be.common.component.GameComponent;
 import com.ssafy.be.common.component.GameManager;
-import com.ssafy.be.common.model.domain.Game;
 import com.ssafy.be.common.model.dto.ChatDTO;
-import com.ssafy.be.common.model.dto.SocketDTO;
 import com.ssafy.be.common.response.BaseResponse;
 import com.ssafy.be.gamer.model.GamerPrincipalVO;
+import com.ssafy.be.lobby.model.ReadyGame;
 import com.ssafy.be.room.model.dto.MoveTeamDTO;
 import com.ssafy.be.room.model.vo.MoveTeamVO;
 import java.util.concurrent.ConcurrentHashMap;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +36,7 @@ public class RoomController {
 
     @GetMapping("{gameId}")
     public BaseResponse<?> getGame(@PathVariable Integer gameId){
-        GameComponent game = gameManager.getGame(gameId);
+        ReadyGame game = gameManager.getGame(gameId);
 
         return new BaseResponse<>(game);
     }
