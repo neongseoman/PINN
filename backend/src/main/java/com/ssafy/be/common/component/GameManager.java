@@ -272,7 +272,7 @@ public class GameManager {
         int maxGamers = -1;
 
         for (GameComponent game : games.values()){
-            if (game.getPassword() != null || !game.getPassword().isEmpty()) continue;
+            if (game.getPassword() != null && !game.getPassword().isEmpty()) continue;
             if( game.getStatus() == GameStatus.READY){ // 시작 안한 게임
                 boolean possibleTeam = false;
                 boolean isPossibleGame = false;
