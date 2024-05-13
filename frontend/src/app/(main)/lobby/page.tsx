@@ -3,6 +3,7 @@
 import CreateRoomModal from '@/app/(main)/lobby/_components/CreateRoomModal'
 import RoomCard from '@/app/(main)/lobby/_components/RoomCard'
 import useUserStore from '@/stores/userStore'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { GiSoundOff, GiSoundOn } from 'react-icons/gi'
 import RuleModal from './_components/RuleModal'
@@ -26,14 +27,46 @@ export default function LobbyPage() {
   const { nickname } = useUserStore()
   const [gameList, setGameList] = useState<GameInfo[]>([])
   const [soundOn, setSoundOn] = useState<boolean>(false)
-  const [nicknameEdit, setNicknameEdit] = useState<boolean>(false)
+  const router = useRouter()
 
   const profileEdit = () => {
-    setNicknameEdit(true)
+    //
   }
 
-  const fastStart = () => {
-    // 빠른 시작
+  const fastStart = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/lobby/quickEnter`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${
+              localStorage.getItem('accessToken') as string
+            }`,
+          },
+        },
+      )
+
+      if (response.ok) {
+        console.log('빠른 시작 요청 통신 성공')
+        const responseData = await response.json()
+        if (responseData.code === 1000) {
+          console.log('빠른 시작 요청 성공!', responseData)
+          const gameId = responseData.result.senderGameId
+          console.log(`${gameId}번 방으로 입장합니다`)
+          router.push(`/room/${gameId}`)
+        } else {
+          console.log('빠른 시작 요청 실패!', responseData.code)
+          alert(responseData.message)
+        }
+      } else {
+        console.error('빠른 시작 요청 통신 실패', response)
+      }
+    } catch (error) {
+      console.error('에러 발생: ', error)
+    }
+    // clickSound()
   }
 
   const lobbySound = () => {
