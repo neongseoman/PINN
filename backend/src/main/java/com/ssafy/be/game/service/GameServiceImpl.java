@@ -43,7 +43,7 @@ public class GameServiceImpl implements GameService {
 
     private final static int NOT_GUESSED_STAGE = 0;
     private final static int DEVELOPER_GAMER_ID = 0;
-    private final static int NOT_SUBMITTED_CORD = -1;
+    private final static int NOT_SUBMITTED_CORD = 1000;
 
     /////
     // TODO: BaseException에 임시로 null 넣어둔 거 exception 종류에 맞게 수정
@@ -592,7 +592,6 @@ public class GameServiceImpl implements GameService {
                 throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
             }
 
-
             // TODO: gamerId가 속한 team이 해당 라운드에 guessed 상태인지 확인
 
             RoundGuessedVO roundGuessedVO = new RoundGuessedVO();
@@ -606,7 +605,7 @@ public class GameServiceImpl implements GameService {
                 // 유효한 팀인 경우 teamRound 접근해서 RG VO 채우기
                 TeamRoundComponent teamRound = team.getTeamRounds().get(roundGuessedRequestDTO.getRound());
                 // 핀 찍은 적 없는 팀인 경우: submitLat, submitLng가 NOT_SUBMITTED_CORD 값으로 들어감
-                teamPins.add(new TeamPinDTO(team.getTeamId(), teamRound.isGuessed(), teamRound.getSubmitLat(), teamRound.getSubmitLng()));
+                teamPins.add(new TeamPinDTO(team.getTeamId(), team.getColorCode(), teamRound.isGuessed(), teamRound.getSubmitLat(), teamRound.getSubmitLng()));
             }
 
             roundGuessedVO.setGameId(roundGuessedRequestDTO.getGameId());
