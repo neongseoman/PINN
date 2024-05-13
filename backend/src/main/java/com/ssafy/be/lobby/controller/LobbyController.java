@@ -149,7 +149,7 @@ public class LobbyController {
         }
 
         // 오름차순으로 비어있는 팀에 할당
-        TeamGamerComponent teamGamerComponent = gameManager.enterTeam(games.get(gameId), gamerPrincipalVO.getGamerId());
+        TeamGamerComponent teamGamerComponent = gameManager.enterTeam(games.get(gameId), gamerPrincipalVO);
 
         EnterRoomVO enterRoomVO = EnterRoomVO.builder()
                 .senderDateTime(socketDTO.getSenderDateTime())

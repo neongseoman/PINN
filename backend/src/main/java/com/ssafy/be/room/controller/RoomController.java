@@ -73,11 +73,11 @@ public class RoomController {
      * */
     @MessageMapping("/game/chat/{gameId}")
     @SendTo("/game/{gameId}")
-    public ChatDTO createRoom(ChatDTO chatDTO, @DestinationVariable String gameId){
+    public ChatDTO chatRoom(ChatDTO chatDTO, @DestinationVariable String gameId){
         ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
         // nickname 검증
 
-        System.out.println(chatDTO);
+//        System.out.println(chatDTO);
 
         // 방 채팅, 팀 채팅
         // code & msg 삽입

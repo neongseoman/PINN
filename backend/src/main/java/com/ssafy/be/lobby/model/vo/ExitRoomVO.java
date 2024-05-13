@@ -12,6 +12,7 @@ public class ExitRoomVO{
     private int senderGameId;
     private int senderTeamId;
     private int senderTeamNumber;
+    private int newLeader;
     private int code;
     private String msg;
 }
