@@ -76,7 +76,6 @@ export default function GamePage({
       params.gameId,
       params.round,
     )) as RoundInit
-
     setHints(roundInfo.result.hints)
     setLat(roundInfo.result.lat)
     setLng(roundInfo.result.lng)
