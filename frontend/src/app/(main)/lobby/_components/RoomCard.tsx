@@ -5,7 +5,6 @@ import PublicRoomModal from '@/app/(main)/lobby/_components/PublicRoomModal'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { IoIosLock } from 'react-icons/io'
-
 import styles from '../lobby.module.css'
 
 interface RoomCardProps {
@@ -17,6 +16,8 @@ interface RoomCardProps {
   stage2Time: number
   password: boolean
   countPerson: number
+  hoverSound: () => void
+  clickSound: () => void
 }
 
 export default function RoomCard({
@@ -26,6 +27,8 @@ export default function RoomCard({
   roundCount,
   password,
   countPerson,
+  hoverSound,
+  clickSound,
 }: RoomCardProps) {
   const [showModal, setShowModal] = useState<boolean>(false)
   const [themeName, setThemeName] = useState<string>('')
@@ -68,11 +71,12 @@ export default function RoomCard({
 
   const joinRoom = () => {
     setShowModal(true)
+    clickSound()
   }
 
   return (
     <>
-      <div className={styles.card} onClick={joinRoom}>
+      <div className={styles.card} onClick={joinRoom} onMouseEnter={hoverSound}>
         <p className={styles.privateIcon}>{password ? <IoIosLock /> : null}</p>
         <Image
           width={110}
@@ -95,6 +99,7 @@ export default function RoomCard({
           gameId={gameId}
           roomName={roomName}
           setShowModal={setShowModal}
+          clickSound={clickSound}
         />
       ) : null}
       {showModal && !password ? (
@@ -102,6 +107,7 @@ export default function RoomCard({
           gameId={gameId}
           roomName={roomName}
           setShowModal={setShowModal}
+          clickSound={clickSound}
         />
       ) : null}
     </>

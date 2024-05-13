@@ -3,6 +3,7 @@
 import useUserStore from '@/stores/userStore'
 import { useRouter } from 'next/navigation'
 import { Suspense, useEffect, useState } from 'react'
+import styles from './login.module.css'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -51,11 +52,14 @@ export default function LoginPage() {
     }
   }
 
+  const loginSound = () => {
+    const audio = new Audio('/assets/sounds/login.wav')
+    audio.play()
+  }
+
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <main>
-        <h1>로그인 성공 페이지</h1>
-      </main>
+      <main className={styles.login} onMouseEnter={loginSound}></main>
     </Suspense>
   )
 }

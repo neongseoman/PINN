@@ -9,12 +9,14 @@ interface PrivateRoomModalProps {
   gameId: number
   roomName: string
   setShowModal: Dispatch<SetStateAction<boolean>>
+  clickSound: () => void
 }
 
 export default function PrivateRoomModal({
   gameId,
   roomName,
   setShowModal,
+  clickSound,
 }: PrivateRoomModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const [password, setPassword] = useState<string>('')
@@ -99,6 +101,7 @@ export default function PrivateRoomModal({
     } catch (error) {
       console.error('에러 발생: ', error)
     }
+    clickSound()
   }
 
   return (
