@@ -10,13 +10,7 @@ interface StreetViewProps {
 }
 
 export default function StreetView({ lat, lng, loader }: StreetViewProps) {
-  const streetViewRef = useRef<any>()
-
-  // const loader = new Loader({
-  //   apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY as string,
-  //   version: 'weekly',
-  //   libraries: ['places'],
-  // })
+  const streetViewRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     loader.importLibrary('maps').then(() => {
