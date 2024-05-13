@@ -125,7 +125,7 @@ public class GameController {
         // TODO: service layer에서 gamerId 기반 권한 체크
         cursorDTO.setCodeAndMsg(1120, "팀 내에 커서 위치가 성공적으로 전송됐습니다.");
 
-        log.info(cursorDTO);
+//        log.info(cursorDTO);
 
         // `/team/{gameId}/{teamId}`를 구독 중인 모든 사용자에게 publish
         sendingOperations.convertAndSend("/team/" + cursorDTO.getSenderGameId() + "/" + cursorDTO.getSenderTeamId(), cursorDTO);
