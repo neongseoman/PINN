@@ -14,12 +14,14 @@
   width: 320px;
   z-index: 2;
   transition: transform 0.3s ease, height 0.3s ease;
+  border-radius: 8px;
+  padding: 12px;
 }
 
 .pin {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 12px;
+  right: 12px;
   font-size: larger;
   padding: 6px;
   z-index: 10;
@@ -59,6 +61,7 @@
   top: 4vh;
   right: 2vw;
   z-index: 2;
+  border-radius: 8px;
 }
 
 .infos {
