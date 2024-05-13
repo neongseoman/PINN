@@ -1,15 +1,21 @@
 'use client'
 
-import useUserStore from '@/stores/userStore'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import React, { useRef, useState } from 'react'
 import { TiArrowSortedDown } from 'react-icons/ti'
 import styles from '../lobby.module.css'
 
-export default function CreateRoomModal() {
+interface CreateRoomModalProps {
+  hoverSound: () => void
+  clickSound: () => void
+}
+
+export default function CreateRoomModal({
+  hoverSound,
+  clickSound,
+}: CreateRoomModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null)
-  const { nickname } = useUserStore()
   const [roomName, setRoomName] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [roundCount, setRoundCount] = useState<number>(3)
@@ -61,6 +67,7 @@ export default function CreateRoomModal() {
   }
 
   const showModal = () => {
+    clickSound()
     dialogRef.current?.showModal()
     // clientRef.current.activate()
     // clientRef.current.onConnect = function (_frame: IFrame) {
@@ -74,6 +81,13 @@ export default function CreateRoomModal() {
 
   // 생성 요청 함수
   const handleSubmit = async () => {
+    if (!roomName || roomName.length > 20 || roomName.length < 1) {
+      alert('방 제목은 1글자 이상, 20글자 이하여야 합니다.')
+      return
+    } else if (password.length > 8) {
+      alert('비밀번호는 8글자 이하여야 합니다.')
+      return
+    }
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/lobby/create`,
@@ -97,10 +111,10 @@ export default function CreateRoomModal() {
       )
 
       if (response.ok) {
-        console.log('게임 생성 요청 통신 성공')
+        // console.log('게임 생성 요청 통신 성공')
         const responseData = await response.json()
         if (responseData.code === 1000) {
-          console.log('게임 생성 성공!', responseData)
+          // console.log('게임 생성 성공!', responseData)
           const gameId = responseData.result.gameId
           // clientRef.current.publish({
           //   headers: {
@@ -112,30 +126,29 @@ export default function CreateRoomModal() {
           //     senderGameId: gameId,
           //   }),
           // })
-          if (!roomName || roomName.length > 20 || roomName.length < 1) {
-            alert('방 제목은 1글자 이상, 20글자 이하여야 합니다.')
-            return
-          } else if (password.length > 8) {
-            alert('비밀번호는 8글자 이하여야 합니다.')
-            return
-          }
-          console.log(`${gameId}번 방으로 입장합니다`)
+
+          // console.log(`${gameId}번 방으로 입장합니다`)
           router.push(`/room/${gameId}`)
         } else {
-          console.log('게임 생성 실패!', responseData.code)
+          // console.log('게임 생성 실패!', responseData.code)
           alert(responseData.message)
         }
       } else {
-        console.error('게임 생성 요청 통신 실패', response)
+        // console.error('게임 생성 요청 통신 실패', response)
       }
     } catch (error) {
-      console.error('에러 발생: ', error)
+      // console.error('에러 발생: ', error)
     }
+    clickSound()
   }
 
   return (
     <div>
-      <p className={styles.buttons} onClick={showModal}>
+      <p
+        className={styles.buttons}
+        onClick={showModal}
+        onMouseEnter={hoverSound}
+      >
         게임 생성
       </p>
 
@@ -170,33 +183,36 @@ export default function CreateRoomModal() {
             <p className={styles.radio}>
               <label>
                 <input
+                  className={styles.radioButton}
                   type="radio"
                   name="options"
                   value="1"
                   checked={roundCount === 1}
                   onChange={handleRoundChange}
                 />
-                1
+                <span className={styles.radioText}>1</span>
               </label>
               <label>
                 <input
+                  className={styles.radioButton}
                   type="radio"
                   name="options"
                   value="2"
                   checked={roundCount === 2}
                   onChange={handleRoundChange}
                 />
-                2
+                <span className={styles.radioText}>2</span>
               </label>
               <label>
                 <input
+                  className={styles.radioButton}
                   type="radio"
                   name="options"
                   value="3"
                   checked={roundCount === 3}
                   onChange={handleRoundChange}
                 />
-                3
+                <span className={styles.radioText}>3</span>
               </label>
             </p>
           </div>
