@@ -6,7 +6,10 @@ export interface GameProgressInfo {
   round: number
 }
 
-export type PinRespoonse = PinPickResponse | PinGuessResponse
+export type IngameMapRespoonse =
+  | PinPickResponse
+  | PinGuessResponse
+  | CursorResponse
 
 interface PinPickResponse {
   senderDateTime: string
@@ -29,4 +32,15 @@ interface PinGuessResponse {
   senderTeamId: number
   code: 1116
   msg: string
+}
+
+interface CursorResponse {
+  senderDateTime: string
+  senderNickname: string
+  senderGameId: number
+  senderTeamId: number
+  code: 1120
+  msg: string
+  lat: number
+  lng: number
 }

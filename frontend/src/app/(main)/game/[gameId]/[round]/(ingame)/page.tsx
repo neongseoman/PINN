@@ -120,11 +120,6 @@ export default function GamePage({
             // 스테이지 2 끝
             // router.push(`/game/${params.gameId}/${params.round}/result`)
             break
-
-          // 라운드 종료
-          // case 1206:
-          //   router.push(`/game/${params.gameId}/${Number(params.round) + 1}`)
-          //   break
         }
       })
     }
