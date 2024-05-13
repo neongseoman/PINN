@@ -4,7 +4,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  border-bottom: solid;
+  border: solid;
+  border-width: 0px 0px 1px 0px;
 }
 
 .chatList {
@@ -13,7 +14,23 @@
   overflow-y: scroll;
   height: 80%;
   color: black;
-  padding: 0 8px 0 8px;
+  padding: 8px 8px 0 8px;
+  box-sizing: border-box;
+}
+
+.chatList::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chatList::-webkit-scrollbar-track {
+  background: rgba(119, 107, 93, 0.1);
+}
+.chatList::-webkit-scrollbar-thumb {
+  background: rgba(119, 107, 93, 0.7);
+  border-radius: 4px;
+}
+.chatList::-webkit-scrollbar-thumb:hover {
+  background: rgba(119, 107, 93, 0.7);
 }
 
 .chatContainer {
@@ -59,7 +76,7 @@
   bottom: 0;
   display: flex;
   font-size: 24px;
-  border-top: solid;
+  border-top: solid white 1px;
 }
 
 .send input {
@@ -67,7 +84,8 @@
   background-color: rgb(255, 255, 255, 0);
   border: 0;
   padding-left: 8px;
-  color: white;
+  color: inherit;
+  outline: none;
 }
 
 .send div {
@@ -75,4 +93,5 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
 }

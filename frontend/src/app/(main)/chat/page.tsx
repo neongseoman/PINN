@@ -2,7 +2,7 @@ import Chatting from '@/components/Chatting'
 
 export default function ChatPage() {
   // 임시 게임 아이디
-  const gameId = 111
+  const gameId = `111`
 
   // 채팅방 prop
   const chatTitle = '척추 채팅'
@@ -20,8 +20,9 @@ export default function ChatPage() {
     >
       <Chatting
         chatTitle={chatTitle}
-        subsrcibeUrl={subscribeUrl}
+        subscribeUrl={subscribeUrl}
         publishUrl={publishUrl}
+        gameId={gameId}
       />
     </div>
   )
