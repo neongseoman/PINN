@@ -126,6 +126,7 @@ public class GameServiceImpl implements GameService {
                     for (int j = 1; j <= existGame.getRoundCount(); ++j) {
                         TeamRoundComponent teamRound = new TeamRoundComponent();
                         teamRound.setTeamId(team.getTeamId());
+                        teamRound.setColorCode(team.getColorCode());
                         teamRound.setRoundNumber(j); // roundNumber 설정
                         teamRound.setSubmitLat(NOT_SUBMITTED_CORD);
                         teamRound.setSubmitLng(NOT_SUBMITTED_CORD); // 최초 핀찍기 이전 위, 경도 초기값 기본값으로 설정
