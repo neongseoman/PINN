@@ -1,8 +1,8 @@
 'use client'
 
 import KakaoScript from '@/utils/KakaoScript'
-import styles from './landing.module.css'
 import { FaAnglesDown } from 'react-icons/fa6'
+import styles from './landing.module.css'
 
 declare global {
   interface Window {
@@ -18,10 +18,17 @@ export default function LandingPage() {
   }
 
   const scrollDown = () => {
+    landingSound()
     window.scrollTo({
       top: document.documentElement.scrollHeight,
       behavior: 'smooth',
     })
+  }
+
+  const landingSound = () => {
+    const audio = new Audio('/assets/sounds/landing.wav')
+    audio.play()
+    audio.loop = true
   }
 
   return (
