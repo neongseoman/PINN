@@ -1,6 +1,5 @@
 'use client'
 
-import useUserStore from '@/stores/userStore'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import React, { useRef, useState } from 'react'
@@ -17,7 +16,6 @@ export default function CreateRoomModal({
   clickSound,
 }: CreateRoomModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null)
-  const { nickname } = useUserStore()
   const [roomName, setRoomName] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [roundCount, setRoundCount] = useState<number>(3)
@@ -113,10 +111,10 @@ export default function CreateRoomModal({
       )
 
       if (response.ok) {
-        console.log('게임 생성 요청 통신 성공')
+        // console.log('게임 생성 요청 통신 성공')
         const responseData = await response.json()
         if (responseData.code === 1000) {
-          console.log('게임 생성 성공!', responseData)
+          // console.log('게임 생성 성공!', responseData)
           const gameId = responseData.result.gameId
           // clientRef.current.publish({
           //   headers: {
@@ -129,17 +127,17 @@ export default function CreateRoomModal({
           //   }),
           // })
 
-          console.log(`${gameId}번 방으로 입장합니다`)
+          // console.log(`${gameId}번 방으로 입장합니다`)
           router.push(`/room/${gameId}`)
         } else {
-          console.log('게임 생성 실패!', responseData.code)
+          // console.log('게임 생성 실패!', responseData.code)
           alert(responseData.message)
         }
       } else {
-        console.error('게임 생성 요청 통신 실패', response)
+        // console.error('게임 생성 요청 통신 실패', response)
       }
     } catch (error) {
-      console.error('에러 발생: ', error)
+      // console.error('에러 발생: ', error)
     }
     clickSound()
   }
