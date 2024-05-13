@@ -38,6 +38,7 @@ public enum BaseResponseStatus {
 
     //ROOM
     FULL_TEAM_ERROR(false, 3150, "팀 수용 인원을 초과합니다."),
+    NOT_EXIST_GAMER(false, 3151, "해당 게임에 존재하지 않는 사용자입니다."),
 
 
     // GAME
