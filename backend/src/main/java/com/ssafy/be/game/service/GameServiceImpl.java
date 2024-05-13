@@ -43,7 +43,7 @@ public class GameServiceImpl implements GameService {
 
     private final static int NOT_GUESSED_STAGE = 0;
     private final static int DEVELOPER_GAMER_ID = 0;
-    private final static int NOT_SUBMITTED_CORD = -1;
+    private final static int NOT_SUBMITTED_CORD = 1000;
 
     /////
     // TODO: BaseException에 임시로 null 넣어둔 거 exception 종류에 맞게 수정
