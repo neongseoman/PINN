@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 @Setter
 public class TeamRoundComponent implements Comparable<TeamRoundComponent> {
     private int teamId;
+    private String colorCode; // 팀 색상
+
     private int roundNumber; // 라운드 번호
 
     private int roundRank; // 현 라운드 점수 기준 등수
