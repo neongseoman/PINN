@@ -240,7 +240,7 @@ public class GameManager {
                     }
                     if (possibleTeam) isPossibleGame = true; // 참여가능한 팀이 하나라도 있다면 참여 가능한 게임임.
                 }
-                if (totalGamers == 30) break; // 30명이라면 의미 없음.
+                if (totalGamers == 30) continue; // 30명이라면 의미 없음.
                 if (!isPossibleGame) continue; // 참여 가능한 게임이 아니라면 유효한 게임 컴포넌트로 보지 않겠음.
 
                 if(totalGamers > maxGamers) {
