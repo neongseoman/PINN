@@ -8,11 +8,12 @@ import static com.ssafy.be.common.response.BaseResponseStatus.NOT_EXIST_UNREADY_
 import static com.ssafy.be.common.response.BaseResponseStatus.NOT_MATCH_PASSWORD;
 
 import com.ssafy.be.common.exception.BaseException;
-import com.ssafy.be.common.model.domain.Game;
 import com.ssafy.be.common.model.dto.SocketDTO;
 import com.ssafy.be.common.response.BaseResponse;
 import com.ssafy.be.common.response.BaseResponseStatus;
 import com.ssafy.be.gamer.model.GamerPrincipalVO;
+import com.ssafy.be.lobby.model.ReadyGame;
+import com.ssafy.be.lobby.model.SearchTeam;
 import com.ssafy.be.room.model.dto.MoveTeamDTO;
 import com.ssafy.be.lobby.model.vo.ExitRoomVO;
 import com.ssafy.be.room.model.vo.MoveTeamVO;
@@ -198,10 +199,15 @@ public class GameManager {
         return moveTeamVO;
     }
 
-    public GameComponent getGame(Integer gameId) {
+    public ReadyGame getGame(Integer gameId) {
         GameComponent game = games.getOrDefault(gameId, null);
-        return game;
+        if (game == null){
+            throw new BaseException(NOT_EXIST_GAME);
+        }
+        return ReadyGame.builder().build();
     }
+
+//    public List<SearchTeam>
 
     public boolean removeGame(Integer gameId){
         if (games.get(gameId) == null) {

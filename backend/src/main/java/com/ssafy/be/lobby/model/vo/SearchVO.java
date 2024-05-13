@@ -18,6 +18,11 @@ public class SearchVO {
     private int countPerson;
 
     public SearchVO(GameComponent gameComponent) {
+        boolean isPassword = true;
+        if (gameComponent.getPassword() == null || gameComponent.getPassword().isEmpty()){
+            isPassword = false;
+        }
+
         readyGame = ReadyGame.builder()
                 .teams(new ArrayList<>())
                 .gameId(gameComponent.getGameId())
@@ -28,6 +33,7 @@ public class SearchVO {
                 .stage1Time(gameComponent.getStage1Time())
                 .stage2Time(gameComponent.getStage2Time())
                 .roomCreateTime(gameComponent.getRoomCreateTime())
+                .password(isPassword)  // 비밀방 여부
                 .status(gameComponent.getStatus())
                 .build();
         setTeams(gameComponent);

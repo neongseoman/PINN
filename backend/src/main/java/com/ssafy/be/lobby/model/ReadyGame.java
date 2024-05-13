@@ -26,7 +26,7 @@ public class ReadyGame {
     private LocalDateTime roomCreateTime;
 //    private LocalDateTime startedTime;
 //    private LocalDateTime finishedTime;
-//    private String password;
+    private boolean password;
     private GameStatus status;
     private final int TeamCount = 10;
 }
