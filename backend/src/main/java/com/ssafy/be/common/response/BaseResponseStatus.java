@@ -34,6 +34,7 @@ public enum BaseResponseStatus {
     NOT_MATCH_PASSWORD(false, 3103, "방 비밀번호를 다시 확인해주세요"),
     NOT_EXIST_UNREADY_TEAM(false, 3104, "모든 팀이 준비 중이라서 방에 들어갈 수 없습니다."),
     FULL_ROOM_ERROR(false, 3105, "방 수용 인원을 초과합니다."),
+    NOT_EXIST_VALIE_TEAM(false,3106, "참여할 수 있는 팀이 없습니다."),
 
     //ROOM
     FULL_TEAM_ERROR(false, 3150, "팀 수용 인원을 초과합니다."),
