@@ -82,13 +82,13 @@
     width: 10px;
   }
   &::-webkit-scrollbar-track {
-    background:  rgba(119, 107,93, 0.1);
+    background: rgba(119, 107, 93, 0.1);
   }
   &::-webkit-scrollbar-thumb {
-    background: rgba(119, 107,93, 0.5);
+    background: rgba(119, 107, 93, 0.5);
   }
   &::-webkit-scrollbar-thumb:hover {
-    background: rgba(119, 107,93, 0.7);
+    background: rgba(119, 107, 93, 0.7);
   }
 }
 
@@ -101,11 +101,20 @@
   justify-content: space-evenly;
   padding-top: 15px;
   box-shadow: 0px 15px 15px 0px rgba(0, 0, 0, 0.5);
+  position: relative;
   &:hover {
     cursor: pointer;
     transform: scale(1.03);
     transition: transform 0.3s ease;
   }
+}
+
+.privateIcon {
+  font-size: 30px;
+  color: var(--Main-Red);
+  position: absolute;
+  bottom: -20px;
+  right: 18px;
 }
 
 .roomInfo {
@@ -134,25 +143,22 @@
 
 .bottomInfo {
   display: flex;
-  width: 285px;
   margin-top: 5px;
   color: white;
   font-size: 10px;
-  font-weight: bold;
 }
 
 .round {
-  margin: 0px 10px 0px 0px;
-  background-color: var(--Main-Green);
-  padding: 5px;
-}
-
-.count {
   margin: 0px 10px 0px 0px;
   background-color: var(--Main-Light-Green);
   padding: 5px;
 }
 
+.count {
+  margin: 0px 10px 0px 0px;
+  background-color: var(--Main-Green);
+  padding: 5px;
+}
 
 /* CreateRoomModal.tsx */
 .createRoomWrapper {
@@ -316,7 +322,7 @@
   align-items: center;
   gap: 12px;
   margin: 20px 0px;
-  
+
   &:hover {
     cursor: pointer;
     box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
@@ -399,9 +405,6 @@
 .publicRoomModalWrapper {
   display: flex;
   flex-direction: column;
-  /* justify-content: center; 수직 가운데 정렬 */
-  /* align-items: center; 수평 가운데 정렬 */
-  width: 400px;
   padding: 25px;
   border: none;
   background-color: var(--Main-Navy);
@@ -425,4 +428,101 @@
   font-size: 70px;
   margin: 0px;
   padding-bottom: 20px;
+}
+
+/* RuleModal.tsx */
+.ruleWrapper {
+  width: 800px;
+  height: 500px;
+  padding: 25px;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.8);
+  color: var(--Main-Navy);
+  overflow-x: auto;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+  &::backdrop {
+    background-color: rgba(0, 0, 0, 0.9);
+  }
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+  &::-webkit-scrollbar-track {
+    background: rgba(149, 149, 149, 0.1);
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(170, 170, 170, 0.5);
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(136, 136, 136, 0.5);
+  }
+}
+
+.exitIcon {
+  font-size: 30px;
+  color: var(--Main-Navy);
+  position: fixed;
+  top: 75px;
+  right: 360px;
+  &:hover {
+    cursor: pointer;
+    transform: scale(1.1);
+    transition: transform 0.3s ease;
+  }
+}
+
+.ruleContents {
+  display: flex;
+  flex-direction: column;
+  height: 500px;
+}
+
+.ruleTitle {
+  font-size: 40px;
+  font-weight: bold;
+  margin: 25px;
+  align-self: center;
+}
+
+.ruleBox {
+  display: flex;
+  flex-direction: column;
+  margin-top: 30px;
+  margin-left: 60px;
+}
+
+.ruleBoxRow {
+  display: flex;
+  margin-left: 50px;
+}
+
+.ruleName {
+  font-size: 28px;
+  font-weight: bold;
+  margin: 0px;
+}
+
+.rule {
+  font-size: 20px;
+}
+
+.warningIcon {
+  font-size: 100px;
+  margin-top: 20px;
+}
+
+.ruleTextBox {
+  display: flex;
+  flex-direction: column;
+  margin-top: 30px;
+}
+
+.ruleText {
+  font-size: 25px;
+  margin: 5px 5px;
+}
+
+.ruleBoxCenter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
