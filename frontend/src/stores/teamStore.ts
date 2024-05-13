@@ -23,13 +23,13 @@ const useTeamStore = (gameId: number) =>
           {
             teamNumber: 1,
             teamColor: 'rgba(255, 0, 61, 1)',
-            teamMember: ['test', 'test', 'test'],
+            teamMember: ['', '', ''],
             isReady: 0,
           },
           {
             teamNumber: 2,
             teamColor: 'rgba(182, 53, 53, 1)',
-            teamMember: ['', 'test', ''],
+            teamMember: ['', '', ''],
             isReady: 0,
           },
           {
@@ -59,7 +59,7 @@ const useTeamStore = (gameId: number) =>
           {
             teamNumber: 7,
             teamColor: 'rgba(251, 52, 159, 1)',
-            teamMember: ['', 'test', ''],
+            teamMember: ['', '', ''],
             isReady: 0,
           },
           {

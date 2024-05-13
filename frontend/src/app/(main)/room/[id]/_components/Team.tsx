@@ -3,10 +3,10 @@ import useUserStore from '@/stores/userStore'
 
 interface TeamProps {
     team: {
+        colorCode: string
         teamNumber: number
-        teamColor: string
-        teamMember: string[]
-        isReady: number
+        teamGamer: string[]
+        ready: boolean
     }
     handleTeamDoubleClick: (teamNumber: number) => void;
 }
@@ -19,22 +19,22 @@ export default function Team({ team, handleTeamDoubleClick }: TeamProps) {
         return color.replace('1)', '0.5)')
     }
     // team이 비어있는지
-    const IsEmptyTeam = team.teamMember.every(member => member === '')
+    const IsEmptyTeam = team.teamGamer.every(member => member === '')
 
     // team이 준비 중인지
-    const readyText = team.isReady === 1 ? '준비 완료' : ''
+    const readyText = team.ready === true ? '준비 완료' : ''
 
     // 나의 팀
-    const myTeam = nickname && team.teamMember.includes(nickname) ? styles.myTeam : styles.team;
+    const myTeam = nickname && team.teamGamer.includes(nickname) ? styles.myTeam : styles.team;
 
     return (
         <div className={IsEmptyTeam ? styles.noMember : myTeam} onDoubleClick={() => handleTeamDoubleClick(team.teamNumber)}>
             <div className={styles.teamName}>Team {team.teamNumber}</div>
             <div className={styles.users}>
-                {team.teamMember.map((member, index) => (
+                {team.teamGamer.map((member, index) => (
                     <div className={styles.nickname}
                         key={index}
-                        style={{ backgroundColor: member === '' ? transparentColor(team.teamColor) : team.teamColor }}
+                        style={{ backgroundColor: member === '' ? transparentColor(team.colorCode) : team.colorCode }}
                     >
                         {member}
                     </div>
@@ -48,13 +48,13 @@ export default function Team({ team, handleTeamDoubleClick }: TeamProps) {
             }
             {/* 준비완료 팀 */}
             {
-                !IsEmptyTeam && team.isReady === 1 && (
+                !IsEmptyTeam && team.ready === true && (
                     <div className={styles['ready-complete']}>준비 완료</div>
                 )
             }
             {/* 준비중 팀 */}
             {
-                !IsEmptyTeam && team.isReady === 0 && (
+                !IsEmptyTeam && team.ready === false && (
                     <div className={styles.ready}>준비중</div>
                 )
             }

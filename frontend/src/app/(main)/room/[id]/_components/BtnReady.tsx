@@ -1,10 +1,10 @@
 import styles from './btn.module.css'
 
 interface Team {
+    colorCode: string
     teamNumber: number
-    teamColor: string
-    teamMember: string[]
-    isReady: number
+    teamGamer: string[]
+    ready: boolean
 }
 
 

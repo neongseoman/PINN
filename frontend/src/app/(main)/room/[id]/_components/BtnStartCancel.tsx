@@ -2,10 +2,10 @@ import styles from './btn.module.css'
 
 interface TeamsProp {
     teams: {
+        colorCode: string
         teamNumber: number
-        teamColor: string
-        teamMember: string[]
-        isReady: number
+        teamGamer: string[]
+        ready: boolean
     }[]
     setTeams: React.Dispatch<React.SetStateAction<TeamsProp[]>>;
 }

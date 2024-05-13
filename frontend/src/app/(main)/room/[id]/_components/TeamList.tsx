@@ -7,10 +7,10 @@ import { Stomp, Client, IFrame, IMessage } from '@stomp/stompjs'
 
 interface TeamsProp {
     teams: {
+        colorCode: string
         teamNumber: number
-        teamColor: string
-        teamMember: string[]
-        isReady: number
+        teamGamer: string[]
+        ready: boolean
     }[]
     handleTeamDoubleClick: (teamNumber: number) => void
 }

@@ -49,7 +49,6 @@ export default function Chatting({
     clientRef.current.onConnect = function (_frame: IFrame) {
       clientRef.current.subscribe(subsrcibeUrl, (message: any) => {
         const messageResponse = JSON.parse(message.body) as MessageFormat
-        // console.log(messageResponse)
         setMessages((prevMessages) => [...prevMessages, messageResponse])
       })
     }
