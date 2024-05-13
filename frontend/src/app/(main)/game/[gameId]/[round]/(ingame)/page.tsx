@@ -142,7 +142,11 @@ export default function GamePage({
   return (
     <main>
       <div className={styles.infos}>
-        <GameInfo theme={theme} round={Number(params.round)} stage={1} />
+        <GameInfo
+          theme={theme}
+          round={Number(params.round)}
+          stage={currentStage}
+        />
         <ThemeInfo theme={theme} />
       </div>
       <div
