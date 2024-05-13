@@ -586,10 +586,38 @@ public class GameServiceImpl implements GameService {
     @Override
     public RoundGuessedVO getCurPinsInfo(int gamerId, RoundRequestDTO roundGuessedRequestDTO) throws BaseException {
         try {
-            return null;
+            int gameId = roundGuessedRequestDTO.getGameId();
+            GameComponent existGame = gameManager.getGames().get(gameId);
+            if (existGame == null) {
+                throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
+            }
+
+
+            // TODO: gamerId가 속한 team이 해당 라운드에 guessed 상태인지 확인
+
+            RoundGuessedVO roundGuessedVO = new RoundGuessedVO();
+            List<TeamPinDTO> teamPins = new ArrayList<>();
+
+            // 모든 팀의 teamRound 돌면서 RoundGuessedVO의 TeamPinDTO 채우기
+            for (TeamComponent team : existGame.getTeams().values()) {
+                if (team.getTeamGamers() == null || team.getTeamGamers().isEmpty()) { // teamGamers가 없거나 0명인 경우, 유효하지 않은 팀으로 간주
+                    continue; // 패스
+                }
+                // 유효한 팀인 경우 teamRound 접근해서 RG VO 채우기
+                TeamRoundComponent teamRound = team.getTeamRounds().get(roundGuessedRequestDTO.getRound());
+                // 핀 찍은 적 없는 팀인 경우: submitLat, submitLng가 NOT_SUBMITTED_CORD 값으로 들어감
+                teamPins.add(new TeamPinDTO(team.getTeamId(), teamRound.isGuessed(), teamRound.getSubmitLat(), teamRound.getSubmitLng()));
+            }
+
+            roundGuessedVO.setGameId(roundGuessedRequestDTO.getGameId());
+            roundGuessedVO.setTeamPins(teamPins);
+
+            log.info(roundGuessedVO);
+            return roundGuessedVO;
+
         } catch (BaseException e) {
             e.printStackTrace();
-            throw new BaseException(e.getStatus()); // Socket에도 던지고 싶다면 GamerID를 주세요.
+            throw new BaseException(e.getStatus());
         } catch (Exception e) {
             e.printStackTrace();
             throw new BaseException(BaseResponseStatus.OOPS);
