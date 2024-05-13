@@ -9,6 +9,7 @@ import lombok.*;
 @ToString
 public class TeamPinDTO {
     private int teamId;
+    private String colorCode;
     private boolean guessed;
     private double submitLat;
     private double submitLng;
