@@ -35,6 +35,8 @@
   color: white;
   &:hover {
     color: var(--Main-Yellow);
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
   }
 }
 
@@ -233,19 +235,33 @@
 .radio {
   display: flex;
   justify-content: space-around;
+  align-items: center;
   width: 70%;
   margin: 0px;
 }
 
-/* .radioButtons {
+.radioButton {
   appearance: none;
-  border-color: var(--Main-Yellow);
+  border: max(2px, 0.1em) solid var(--Main-Yellow);
+  border-radius: 50%;
+  width: 1.25em;
+  height: 1.25em;
+  margin-top: 7px;
+  &:hover {
+    cursor: pointer;
+  }
 }
 
-.radioButtons:checked {
-  appearance: none;
+.radioButton:checked {
   background-color: var(--Main-Yellow);
-} */
+}
+
+.radioText {
+  margin-left: 5px;
+  &:hover {
+    cursor: pointer;
+  }
+}
 
 .stageInputBox {
   width: 30%;

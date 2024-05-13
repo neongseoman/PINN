@@ -83,6 +83,13 @@ export default function CreateRoomModal({
 
   // 생성 요청 함수
   const handleSubmit = async () => {
+    if (!roomName || roomName.length > 20 || roomName.length < 1) {
+      alert('방 제목은 1글자 이상, 20글자 이하여야 합니다.')
+      return
+    } else if (password.length > 8) {
+      alert('비밀번호는 8글자 이하여야 합니다.')
+      return
+    }
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/lobby/create`,
@@ -121,13 +128,7 @@ export default function CreateRoomModal({
           //     senderGameId: gameId,
           //   }),
           // })
-          if (!roomName || roomName.length > 20 || roomName.length < 1) {
-            alert('방 제목은 1글자 이상, 20글자 이하여야 합니다.')
-            return
-          } else if (password.length > 8) {
-            alert('비밀번호는 8글자 이하여야 합니다.')
-            return
-          }
+
           console.log(`${gameId}번 방으로 입장합니다`)
           router.push(`/room/${gameId}`)
         } else {
@@ -184,33 +185,36 @@ export default function CreateRoomModal({
             <p className={styles.radio}>
               <label>
                 <input
+                  className={styles.radioButton}
                   type="radio"
                   name="options"
                   value="1"
                   checked={roundCount === 1}
                   onChange={handleRoundChange}
                 />
-                1
+                <span className={styles.radioText}>1</span>
               </label>
               <label>
                 <input
+                  className={styles.radioButton}
                   type="radio"
                   name="options"
                   value="2"
                   checked={roundCount === 2}
                   onChange={handleRoundChange}
                 />
-                2
+                <span className={styles.radioText}>2</span>
               </label>
               <label>
                 <input
+                  className={styles.radioButton}
                   type="radio"
                   name="options"
                   value="3"
                   checked={roundCount === 3}
                   onChange={handleRoundChange}
                 />
-                3
+                <span className={styles.radioText}>3</span>
               </label>
             </p>
           </div>
