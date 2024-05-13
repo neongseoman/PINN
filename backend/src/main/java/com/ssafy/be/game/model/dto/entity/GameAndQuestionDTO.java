@@ -1,4 +1,4 @@
-package com.ssafy.be.game.model.dto;
+package com.ssafy.be.game.model.dto.entity;
 
 import com.ssafy.be.game.model.domain.GameAndQuestion;
 import lombok.*;
