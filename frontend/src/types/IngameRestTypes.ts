@@ -1,4 +1,4 @@
-export interface GameInitInfo {
+export interface GameInit {
   message: string
   code: number
   result: {
@@ -17,31 +17,27 @@ export interface GameInitInfo {
 export interface RoundInit {
   message: string
   code: number
-  result: RoundResult
+  result: {
+    gameId: number
+    round: number
+    questionId: number
+    questionName: string
+    lat: number
+    lng: number
+    hints: Hint[]
+  }
   success: boolean
-}
-
-interface RoundResult {
-  gameId: number
-  round: number
-  questionId: number
-  questionName: string
-  lat: number
-  lng: number
-  hints: Hint[]
-}
-
-interface StageTwoResult {
-  gameId: number
-  round: number
-  stage: number
-  hints: Hint[]
 }
 
 export interface StageTwoInit {
   message: string
   code: number
-  result: StageTwoResult
+  result: {
+    gameId: number
+    round: number
+    stage: number
+    hints: Hint[]
+  }
   success: boolean
 }
 

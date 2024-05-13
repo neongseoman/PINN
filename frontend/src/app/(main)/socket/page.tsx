@@ -70,10 +70,6 @@ export default function SocketPage() {
     publishInputRef.current!.value = `/app/game/start`
   }
 
-  function moveRoom() {
-    router.push(`/game/${roomNumber}/1`)
-  }
-
   return (
     <main>
       <div style={{ display: 'flex' }}>
@@ -106,7 +102,6 @@ export default function SocketPage() {
       )}
 
       <button onClick={createRoom}>방만들기</button>
-      <button onClick={moveRoom}>방 이동</button>
       <p>당신이 만든 방 번호 {roomNumber}</p>
     </main>
   )

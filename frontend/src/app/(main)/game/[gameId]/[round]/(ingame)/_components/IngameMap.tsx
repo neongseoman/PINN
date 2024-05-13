@@ -1,6 +1,7 @@
 'use client'
 
 import themeStyles from '@/components/theme.module.css'
+import useIngameStore from '@/stores/ingameStore'
 import useUserStore from '@/stores/userStore'
 import { PinRespoonse } from '@/types/IngameSocketTypes'
 import { Loader } from '@googlemaps/js-api-loader'
@@ -48,17 +49,19 @@ export default function IngameMap({
   )
 
   const { nickname } = useUserStore()
+  const { teamId } = useIngameStore()
 
-  const subUrl = `/team/${gameId}/1`
-  // const subUrl = `/guess/${gameId}`
+  const subUrl = `/team/${gameId}/${teamId}`
   const guessUrl = `/app/team/guess`
   const pinUrl = '/app/team/pin'
 
   // 지도 핀 변경
   function changePin(lat: number, lng: number) {
+    // 기존에 핀이 있다면 제거
     if (currentMarker.current) {
       currentMarker.current.setMap(null)
     }
+    // 핀 추가
     const newMarker = new google.maps.Marker({
       position: { lat, lng },
       map: mapObjectRef.current,
@@ -72,7 +75,10 @@ export default function IngameMap({
       },
     })
 
+    // 핀은 하나만 있으니 거기에다가 새 마커 배정
     currentMarker.current = newMarker
+
+    // 내 추측 저장
     myGuess.current = {
       lat,
       lng,
@@ -82,6 +88,7 @@ export default function IngameMap({
   // 지도 init
   useEffect(() => {
     loader.importLibrary('maps').then(async () => {
+      // 서울 중심
       const position = { lat: 37.5642135, lng: 127.0016985 }
       const { Map } = (await google.maps.importLibrary(
         'maps',
@@ -103,7 +110,7 @@ export default function IngameMap({
           body: JSON.stringify({
             senderNickname: nickname,
             senderGameId: gameId,
-            senderTeamId: 1,
+            senderTeamId: teamId,
             submitLat: e.latLng?.lat() as number,
             submitLng: e.latLng?.lng() as number,
             roundNumber: round,

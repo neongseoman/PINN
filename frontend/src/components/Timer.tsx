@@ -4,12 +4,13 @@ import { useEffect, useState } from 'react'
 import styles from './timer.module.css'
 
 interface TimerProp {
-  initialTime: number
+  stageTime: number
 }
 
-export default function Timer({ initialTime }: TimerProp) {
-  const [remainSeconds, setRemainSeconds] = useState<number>(initialTime)
+export default function Timer({ stageTime }: TimerProp) {
+  const [remainSeconds, setRemainSeconds] = useState<number>(stageTime)
 
+  //init 타임으로 하기
   useEffect(() => {
     const myInterval = setInterval(() => {
       if (remainSeconds > 0) {
@@ -21,7 +22,10 @@ export default function Timer({ initialTime }: TimerProp) {
     return () => {
       clearInterval(myInterval)
     }
-  }, [remainSeconds])
+  }, [stageTime, remainSeconds])
+
+  //서버에서 시간 받아오기
+  useEffect(() => {}, [])
 
   return (
     <>

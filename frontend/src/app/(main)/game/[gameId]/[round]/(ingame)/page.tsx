@@ -6,7 +6,7 @@ import Timer from '@/components/Timer'
 import themeStyles from '@/components/theme.module.css'
 import useIngameStore from '@/stores/ingameStore'
 import {
-  GameInitInfo,
+  GameInit,
   Hint,
   RoundInit,
   StageTwoInit,
@@ -51,17 +51,9 @@ export default function GamePage({
   const theme = 'random'
 
   // 스테이지 시간
-  const initialTime = 100
-  const {
-    teamId,
-    currentStage,
-    setCurrentStage,
-    stage1Time,
-    setStage1Time,
-    stage2Time,
-    setStage2Time,
-    ingameReset,
-  } = useIngameStore()
+
+  const stageTime = 100
+  const { teamId, currentStage, setCurrentStage } = useIngameStore()
 
   // 정답 좌표
   const [lat, setLat] = useState<number>()
@@ -74,9 +66,9 @@ export default function GamePage({
   })
 
   // 채팅방 prop
-  const chatTitle = '방 채팅 url로 임시구현'
-  const subscribeUrl = `/game/${params.gameId}`
-  const publishUrl = `/app/game/chat/${params.gameId}`
+  const chatTitle = '팀 채팅'
+  const subscribeUrl = `/team/${params.gameId}/${teamId}`
+  const publishUrl = `/app/team/chat`
 
   // 소켓 연결
   const clientRef = useRef<Client>(
@@ -93,14 +85,7 @@ export default function GamePage({
 
   // 게임 시작 정보 받아오기
   async function gameStartRender() {
-    const gameInfo = (await getGameInfo(params.gameId)) as GameInitInfo
-    ingameReset()
-
-    // 시간 설정 후 멈춤
-
-    // 스테이지 시간 저장
-    setStage1Time(gameInfo.result.stage1Time)
-    setStage2Time(gameInfo.result.stage2Time)
+    const gameInfo = (await getGameInfo(params.gameId)) as GameInit
   }
 
   // 라운드 시작 정보 받아오기
@@ -198,11 +183,7 @@ export default function GamePage({
     <main>
       {showStageTwoStart && <StageTwo />}
       <div className={styles.infos}>
-        <GameInfo
-          theme={theme}
-          round={Number(params.round)}
-          stage={currentStage}
-        />
+        <GameInfo theme={theme} round={Number(params.round)} stage={1} />
         <ThemeInfo theme={theme} />
       </div>
       <div
@@ -216,7 +197,7 @@ export default function GamePage({
         <Hints hints={hints} />
       </div>
       <div className={`${styles.timer} ${themeStyles[theme]}`}>
-        <Timer initialTime={initialTime} />
+        <Timer stageTime={stageTime} />
       </div>
       <div
         className={`${styles.chat} ${
@@ -232,6 +213,7 @@ export default function GamePage({
           chatTitle={chatTitle}
           subscribeUrl={subscribeUrl}
           publishUrl={publishUrl}
+          gameId={params.gameId}
         />
       </div>
       <div className={`${styles.map} ${mapPin ? '' : styles.opacity}`}>

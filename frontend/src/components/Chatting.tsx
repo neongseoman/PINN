@@ -1,5 +1,6 @@
 'use client'
 
+import useIngameStore from '@/stores/ingameStore'
 import useUserStore from '@/stores/userStore'
 import { Client, IFrame, IMessage } from '@stomp/stompjs'
 import { useEffect, useRef, useState } from 'react'
@@ -20,12 +21,14 @@ interface ChattingProps {
   chatTitle: string
   subscribeUrl: string
   publishUrl: string
+  gameId: string
 }
 
 export default function Chatting({
   chatTitle,
   subscribeUrl,
   publishUrl,
+  gameId,
 }: ChattingProps) {
   const [messages, setMessages] = useState<MessageRespnose[]>([])
   const [newMessage, setNewMessage] = useState<string>('')
@@ -44,12 +47,14 @@ export default function Chatting({
   )
 
   const { nickname } = useUserStore()
+  const { teamId } = useIngameStore()
 
   useEffect(() => {
     clientRef.current.onConnect = function (_frame: IFrame) {
       clientRef.current.subscribe(subscribeUrl, (message: IMessage) => {
         const messageResponse = JSON.parse(message.body) as MessageRespnose
-        setMessages((prevMessages) => [...prevMessages, messageResponse])
+        if (messageResponse.code == 1001 || messageResponse.code == 1119)
+          setMessages((prevMessages) => [...prevMessages, messageResponse])
       })
     }
 
@@ -85,8 +90,8 @@ export default function Chatting({
         destination: publishUrl,
         body: JSON.stringify({
           senderNickname: nickname,
-          senderGameId: 1,
-          senderTeamId: 1,
+          senderGameId: gameId,
+          senderTeamId: teamId,
           content: trimmedMessage,
         }),
       })
