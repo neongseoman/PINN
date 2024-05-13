@@ -8,15 +8,20 @@ import static com.ssafy.be.common.response.BaseResponseStatus.NOT_EXIST_UNREADY_
 import static com.ssafy.be.common.response.BaseResponseStatus.NOT_MATCH_PASSWORD;
 
 import com.ssafy.be.common.exception.BaseException;
+import com.ssafy.be.common.model.domain.Game;
 import com.ssafy.be.common.model.dto.SocketDTO;
 import com.ssafy.be.common.response.BaseResponse;
 import com.ssafy.be.common.response.BaseResponseStatus;
 import com.ssafy.be.gamer.model.GamerPrincipalVO;
 import com.ssafy.be.lobby.model.ReadyGame;
 import com.ssafy.be.lobby.model.SearchTeam;
+import com.ssafy.be.lobby.model.vo.EnterRoomVO;
 import com.ssafy.be.room.model.dto.MoveTeamDTO;
 import com.ssafy.be.lobby.model.vo.ExitRoomVO;
 import com.ssafy.be.room.model.vo.MoveTeamVO;
+
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.Map.Entry;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
@@ -216,5 +221,37 @@ public class GameManager {
         games.remove(gameId);
         return true;
 
+    }
+
+    public EnterRoomVO findFastestStartRoom(GamerPrincipalVO gamerPrincipalVO) {
+        log.info("{} 빠른 입장 GameManager", gamerPrincipalVO.getGamerId());
+        GameComponent gameComponent = games.values().stream()
+                .filter(game-> game.getStatus() == GameStatus.READY)
+                .filter(game -> game.getTeams().values().stream().
+                        anyMatch(team->!team.isReady()))
+                .max(Comparator.comparingInt(game -> game.getTeams().values().stream()
+                        .mapToInt(team -> team.getTeamGamers().values().size())
+                        .sum()))
+                .orElse(null);
+        if (gameComponent == null) {
+            log.error("에러 발생 Game Component가 없음.");
+            throw new BaseException(BaseResponseStatus.NOT_EXIST_READY_GAME);
+        };
+
+        TeamComponent teamComponent = gameComponent.getTeams().values().stream()
+                .filter(team -> !team.isReady()).findFirst().get();
+
+        enterTeam(gameComponent, gamerPrincipalVO.getGamerId());
+
+        EnterRoomVO enterRoomVO = EnterRoomVO.builder()
+                .senderTeamId(teamComponent.getTeamId())
+                .senderGameId(teamComponent.getGameId())
+                .senderDateTime(LocalDateTime.now())
+                .senderNickname(gamerPrincipalVO.getNickname())
+                .senderTeamNumber(teamComponent.getTeamNumber())
+                .code(1015)
+                .msg("당신은 "+teamComponent.getTeamId() + "Team에 던져졌습니다.")
+                .build();
+        return enterRoomVO;
     }
 }

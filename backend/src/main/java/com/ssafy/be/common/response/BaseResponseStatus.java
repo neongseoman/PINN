@@ -42,7 +42,7 @@ public enum BaseResponseStatus {
     // GAME
     NOT_STARTED_GAME(false, 3201, "게임이 시작되지 않은 방이므로 초기화 작업을 수행할 수 없습니다."),
     ALREADY_GUESSED_TEAM(false, 3202, "이미 해당 라운드에 guess를 완료한 팀입니다."),
-
+    NOT_EXIST_READY_GAME(false,3202,"빨리 시작할 수 있는 게임이 없습니다."),
     /**
      * 4000 : Database, Server 오류
      */
