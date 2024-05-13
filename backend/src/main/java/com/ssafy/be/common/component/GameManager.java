@@ -225,25 +225,31 @@ public class GameManager {
 
         for (GameComponent game : games.values()){
             if( game.getStatus() == GameStatus.READY){ // 시작 안한 게임
-                boolean hasNotReadyTeam = false;
+                boolean possibleTeam = false;
+                boolean isPossibleGame = false;
                 int totalGamers = 0;
 
                 for (TeamComponent team : game.getTeams().values()) {
-                    if (!team.isReady()) { // 하나라도 Ready가 아니라면 true.-> totalGamer 검색
-                        hasNotReadyTeam = true;
+                    if (!team.isReady()) { // 팀이 준비가 아니라면 입장 가능.
+                        possibleTeam = true;
                     }
 
                     if (team.getTeamGamers() != null) { // -> TeamGamer가 있다면
                         totalGamers += team.getTeamGamers().size();
+                        if (team.getTeamGamers().size() == 3) possibleTeam = false; // 팀 정원을 채웠다면 팀에 참여 불가능.
                     }
+                    if (possibleTeam) isPossibleGame = true; // 참여가능한 팀이 하나라도 있다면 참여 가능한 게임임.
                 }
+                if (totalGamers == 30) break; // 30명이라면 의미 없음.
+                if (!isPossibleGame) continue; // 참여 가능한 게임이 아니라면 유효한 게임 컴포넌트로 보지 않겠음.
 
-                if (hasNotReadyTeam && totalGamers > maxGamers) {
+                if(totalGamers > maxGamers) {
                     maxGamers = totalGamers;
                     gameComponent = game;
                 }
             }
         }
+
         if (gameComponent == null) {
             log.error("에러 발생: Game Component가 없음.");
             throw new BaseException(BaseResponseStatus.NOT_EXIST_READY_GAME);
