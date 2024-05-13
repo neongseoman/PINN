@@ -18,6 +18,7 @@ import com.ssafy.be.room.model.dto.MoveTeamDTO;
 import com.ssafy.be.lobby.model.vo.ExitRoomVO;
 import com.ssafy.be.room.model.vo.MoveTeamVO;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.Map.Entry;
 import lombok.extern.log4j.Log4j2;
@@ -216,8 +217,30 @@ public class GameManager {
     }
 
     public EnterRoomVO findFastestStartRoom(GamerPrincipalVO gamerPrincipalVO) {
-        TeamGamerComponent teamGamerComponent = games.values().stream()
+        GameComponent gameComponent = games.values().stream()
                 .filter(game-> game.getStatus() == GameStatus.READY)
-                .max(Comparator.comparingInt())
+                .filter(game -> game.getTeams().values().stream().
+                        anyMatch(team->!team.isReady()))
+                .max(Comparator.comparingInt(game -> game.getTeams().values().stream()
+                        .mapToInt(team -> team.getTeamGamers().values().size())
+                        .sum()))
+                .orElse(null);
+        if (gameComponent == null) throw new BaseException(BaseResponseStatus.NOT_EXIST_READY_GAME);
+
+        TeamComponent teamComponent = gameComponent.getTeams().values().stream()
+                .filter(team -> !team.isReady()).findFirst().get();
+
+        enterTeam(gameComponent, gamerPrincipalVO.getGamerId());
+
+        EnterRoomVO enterRoomVO = EnterRoomVO.builder()
+                .senderTeamId(teamComponent.getTeamId())
+                .senderGameId(teamComponent.getGameId())
+                .senderDateTime(LocalDateTime.now())
+                .senderNickname(gamerPrincipalVO.getNickname())
+                .senderTeamNumber(teamComponent.getTeamNumber())
+                .code(1015)
+                .msg("당신은 "+teamComponent.getTeamId() + "Team에 던져졌습니다.")
+                .build();
+        return enterRoomVO;
     }
 }
