@@ -21,17 +21,6 @@ export default function PrivateRoomModal({
   const dialogRef = useRef<HTMLDialogElement>(null)
   const [password, setPassword] = useState<string>('')
   const router = useRouter()
-  // const clientRef = useRef<Client>(
-  //   new Client({
-  //     brokerURL: process.env.NEXT_PUBLIC_SERVER_SOCKET_URL,
-  //     debug: function (str: string) {
-  //       // console.log(str)
-  //     },
-  //     reconnectDelay: 5000,
-  //     heartbeatIncoming: 4000,
-  //     heartbeatOutgoing: 4000,
-  //   }),
-  // )
 
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(event.target.value)
@@ -43,10 +32,6 @@ export default function PrivateRoomModal({
 
   const showModal = () => {
     dialogRef.current?.showModal()
-    // clientRef.current.activate()
-    // clientRef.current.onConnect = function (_frame: IFrame) {
-    //   clientRef.current.subscribe(`/game/${gameId}`, () => {})
-    // }
   }
 
   const closeModal = () => {
@@ -73,33 +58,22 @@ export default function PrivateRoomModal({
       )
 
       if (response.ok) {
-        console.log('비밀방 입장 요청 통신 성공')
+        // console.log('비밀방 입장 요청 통신 성공')
         const responseData = await response.json()
         if (responseData.code === 1000) {
-          console.log('비밀방 입장 요청 성공!', responseData)
+          // console.log('비밀방 입장 요청 성공!', responseData)
 
-          // clientRef.current.publish({
-          //   headers: {
-          //     Auth: localStorage.getItem('accessToken') as string,
-          //   },
-          //   destination: `/app/game/enter/${gameId}`,
-          //   body: JSON.stringify({
-          //     senderNickname: nickname,
-          //     senderGameId: gameId,
-          //   }),
-          // })
-
-          console.log(`${gameId}번 방으로 입장합니다`)
+          // console.log(`${gameId}번 방으로 입장합니다`)
           router.push(`/room/${gameId}`)
         } else {
-          console.log('비밀방 입장 요청 실패!', responseData.code)
+          // console.log('비밀방 입장 요청 실패!', responseData.code)
           alert(responseData.message)
         }
       } else {
-        console.error('비밀방 입장 요청 통신 실패', response)
+        // console.error('비밀방 입장 요청 통신 실패', response)
       }
     } catch (error) {
-      console.error('에러 발생: ', error)
+      // console.error('에러 발생: ', error)
     }
     clickSound()
   }

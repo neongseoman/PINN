@@ -112,17 +112,17 @@ export default function LobbyPage() {
       )
 
       if (response.ok) {
-        console.log('게임 목록 요청 통신 성공')
+        // console.log('게임 목록 요청 통신 성공')
         const responseData = await response.json()
         if (responseData.code === 1000) {
-          console.log('게임 목록 출력 성공!', responseData)
+          // console.log('게임 목록 출력 성공!', responseData)
           setGameList(responseData.result)
         } else {
-          console.log('게임 목록 출력 실패!', responseData.code)
+          // console.log('게임 목록 출력 실패!', responseData.code)
           alert(responseData.message)
         }
       } else {
-        console.error('게임 목록 요청 통신 실패', response)
+        // console.error('게임 목록 요청 통신 실패', response)
       }
     }
 
