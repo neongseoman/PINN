@@ -29,6 +29,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
@@ -267,40 +268,52 @@ public class GameManager {
 
     public EnterRoomVO findFastestStartRoom(GamerPrincipalVO gamerPrincipalVO) {
         log.info("{} 빠른 입장 GameManager", gamerPrincipalVO.getGamerId());
-        GameComponent gameComponent = games.values().stream()
-                .filter(game -> game.getStatus() == GameStatus.READY)
-                .filter(game -> game.getTeams().values().stream().
-                        anyMatch(team -> !team.isReady()))
-                .max(Comparator.comparingInt(game -> game.getTeams().values().stream()
-                        .mapToInt(team -> team.getTeamGamers().values().size())
-                        .sum()))
-                .orElse(null);
+        GameComponent gameComponent = null;
+        int maxGamers = -1;
+
+        for (GameComponent game : games.values()){
+            if( game.getStatus() == GameStatus.READY){ // 시작 안한 게임
+                boolean possibleTeam = false;
+                boolean isPossibleGame = false;
+                int totalGamers = 0;
+
+                for (TeamComponent team : game.getTeams().values()) {
+                    if (!team.isReady()) { // 팀이 준비가 아니라면 입장 가능.
+                        possibleTeam = true;
+                    }
+
+                    if (team.getTeamGamers() != null) { // -> TeamGamer가 있다면
+                        totalGamers += team.getTeamGamers().size();
+                        if (team.getTeamGamers().size() == 3) possibleTeam = false; // 팀 정원을 채웠다면 팀에 참여 불가능.
+                    }
+                    if (possibleTeam) isPossibleGame = true; // 참여가능한 팀이 하나라도 있다면 참여 가능한 게임임.
+                }
+                if (totalGamers == 30) continue; // 30명이라면 의미 없음.
+                if (!isPossibleGame) continue; // 참여 가능한 게임이 아니라면 유효한 게임 컴포넌트로 보지 않겠음.
+
+                if(totalGamers > maxGamers) {
+                    maxGamers = totalGamers;
+                    gameComponent = game;
+                }
+            }
+        }
+
         if (gameComponent == null) {
-            log.error("에러 발생 Game Component가 없음.");
+            log.error("에러 발생: Game Component가 없음.");
             throw new BaseException(BaseResponseStatus.NOT_EXIST_READY_GAME);
         }
-        ;
-        log.info("빠른 시작 Game Id : {}", gameComponent.getGameId());
 
-        TeamComponent teamComponent;
-        try {
 
-            teamComponent = gameComponent.getTeams().values().stream()
-                    .filter(team -> !team.isReady()).findFirst().orElseThrow();
-
-        } catch (NoSuchElementException e) {
-            throw new BaseException(BaseResponseStatus.NOT_EXIST_VALIE_TEAM);
-        }
-        enterTeam(gameComponent, gamerPrincipalVO.getGamerId());
+        TeamGamerComponent gamer = enterTeam(gameComponent, gamerPrincipalVO.getGamerId());
 
         return EnterRoomVO.builder()
-                .senderTeamId(teamComponent.getTeamId())
-                .senderGameId(teamComponent.getGameId())
+                .senderTeamId(gamer.getTeamId())
+                .senderGameId(gameComponent.getGameId())
                 .senderDateTime(LocalDateTime.now())
                 .senderNickname(gamerPrincipalVO.getNickname())
-                .senderTeamNumber(teamComponent.getTeamNumber())
+                .senderTeamNumber(gamer.getTeamGamerNumber())
                 .code(1015)
-                .msg("당신은 " + teamComponent.getTeamId() + "Team에 던져졌습니다.")
+                .msg("당신은 " + gamer.getTeamId() + "Team에 던져졌습니다.")
                 .build();
     }
 }
