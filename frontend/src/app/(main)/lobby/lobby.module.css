@@ -461,6 +461,7 @@
 
 /* RuleModal.tsx */
 .ruleWrapper {
+  /* position: relative; */
   width: 800px;
   height: 500px;
   padding: 25px;
@@ -487,11 +488,11 @@
 }
 
 .exitIcon {
-  font-size: 30px;
+  font-size: 40px;
   color: var(--Main-Navy);
-  position: fixed;
-  top: 75px;
-  right: 360px;
+  position: absolute;
+  top: 20px;
+  right: 10px;
   &:hover {
     cursor: pointer;
     transform: scale(1.1);

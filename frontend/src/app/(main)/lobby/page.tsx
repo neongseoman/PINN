@@ -34,39 +34,36 @@ export default function LobbyPage() {
   }
 
   const fastStart = async () => {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/lobby/quickEnter`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${
-              localStorage.getItem('accessToken') as string
-            }`,
-          },
-        },
-      )
+    clickSound()
 
-      if (response.ok) {
-        console.log('빠른 시작 요청 통신 성공')
-        const responseData = await response.json()
-        if (responseData.code === 1000) {
-          console.log('빠른 시작 요청 성공!', responseData)
-          const gameId = responseData.result.senderGameId
-          console.log(`${gameId}번 방으로 입장합니다`)
-          router.push(`/room/${gameId}`)
-        } else {
-          console.log('빠른 시작 요청 실패!', responseData.code)
-          alert(responseData.message)
-        }
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/lobby/quickEnter`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${
+            localStorage.getItem('accessToken') as string
+          }`,
+        },
+      },
+    )
+
+    if (response.ok) {
+      console.log('빠른 시작 통신 성공')
+      const responseData = await response.json()
+      if (responseData.code === 1000) {
+        console.log('빠른 시작 성공!', responseData)
+        const gameId = responseData.result.senderGameId
+        console.log(`${gameId}번 방으로 입장합니다`)
+        router.push(`/room/${gameId}`)
       } else {
-        console.error('빠른 시작 요청 통신 실패', response)
+        console.log('빠른 시작 실패!', responseData.code)
+        alert(responseData.message)
       }
-    } catch (error) {
-      console.error('에러 발생: ', error)
+    } else {
+      console.error('빠른 시작 통신 실패', response)
     }
-    // clickSound()
   }
 
   const lobbySound = () => {
