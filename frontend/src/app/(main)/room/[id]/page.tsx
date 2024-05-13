@@ -33,7 +33,7 @@ interface Team {
   ready: boolean
 }
 
-export default function RoomPage({ params }: { params: { id: number } }) {
+export default function RoomPage({ params }: { params: { id: string } }) {
 
   // const teamStore = useTeamStore(params.id)
   // const { teams, setMove } = teamStore()
@@ -168,33 +168,33 @@ export default function RoomPage({ params }: { params: { id: number } }) {
     //   setMove(teamNumber, nickname)
   };
 
-  // useEffect(() => {
-  //   const teamList = async () => {
-  //     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/room/${params.id}`, {
-  //       method: 'GET',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         Authorization: `Bearer ${localStorage.getItem('accessToken') as string}`
-  //       },
-  //     });
+  useEffect(() => {
+    const teamList = async () => {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/room/${params.id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('accessToken') as string}`
+        },
+      });
 
-  //     if (response.ok) {
-  //       console.log('팀 목록 요청 통신 성공');
-  //       const responseData = await response.json();
-  //       if (responseData.code === 1000) {
-  //         console.log('팀 목록 출력 성공!', responseData);
-  //         const teamsArray = Object.keys(responseData.result.teams).map(key => responseData.result.teams[key]);
-  //         setTeams(teamsArray)
+      if (response.ok) {
+        console.log('팀 목록 요청 통신 성공');
+        const responseData = await response.json();
+        if (responseData.code === 1000) {
+          console.log('팀 목록 출력 성공!', responseData);
+          const teamsArray = Object.keys(responseData.result.teams).map(key => responseData.result.teams[key]);
+          setTeams(teamsArray)
 
-  //       } else {
-  //         console.log('팀 목록 출력 실패!', responseData.code);
-  //       }
-  //     } else {
-  //       console.error('팀 목록 요청 통신 실패', response);
-  //     }
-  //   }
-  //   teamList()
-  // }, [params.id]);
+        } else {
+          console.log('팀 목록 출력 실패!', responseData.code);
+        }
+      } else {
+        console.error('팀 목록 요청 통신 실패', response);
+      }
+    }
+    teamList()
+  }, [params.id]);
 
   const handleOutClick = () => {
     clientRef.current.publish({
@@ -222,8 +222,9 @@ export default function RoomPage({ params }: { params: { id: number } }) {
           <div className={styles.chat}>
             <Chatting
               chatTitle={chatTitle}
-              subsrcibeUrl={subscribeUrl}
+              subscribeUrl={subscribeUrl}
               publishUrl={publishChatUrl}
+              gameId={params.id}
             />
           </div>
           <div className={styles['ready-out']}>
@@ -239,29 +240,3 @@ export default function RoomPage({ params }: { params: { id: number } }) {
     </main >
   )
 }
-
-
-// useEffect(() => {
-//   // nickname이 존재하고, 팀에 아직 배정되지 않았을 때에만 처리
-//   if (nickname && teams.every(team => team.teamMember.every(member => member !== nickname))) {
-//     // 빈 자리를 가진 팀을 찾아 nickname을 배정
-//     let updatedTeams = [...teams];
-//     for (let i = 0; i < updatedTeams.length; i++) {
-//       const team = updatedTeams[i];
-//       // 해당 팀에 nickname이 이미 배정된 경우 무시
-//       if (team.teamMember.includes(nickname)) {
-//         continue;
-//       }
-//       // 빈 자리를 찾으면 nickname을 배정하고 종료
-//       const emptyIndex = team.teamMember.findIndex(member => member === '');
-//       if (emptyIndex !== -1) {
-//         const updatedTeamMember = [...team.teamMember];
-//         updatedTeamMember[emptyIndex] = nickname;
-//         updatedTeams[i] = { ...team, teamMember: updatedTeamMember };
-//         break;
-//       }
-//     }
-
-//     setTeams(updatedTeams);
-//   }
-// }, [teams, nickname]);
