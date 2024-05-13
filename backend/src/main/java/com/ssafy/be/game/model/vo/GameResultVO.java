@@ -18,8 +18,5 @@ public class GameResultVO {
     private List<List<TeamRoundComponent>> roundResults;
 
     // 2. 게임 전체 결과
-    //
-
-    // 3. 사용자가 속한 팀의 해당 게임 통계
-    //
+//    private GameResultComponent gameResult;
 }

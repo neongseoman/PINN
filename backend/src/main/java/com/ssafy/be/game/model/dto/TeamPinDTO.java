@@ -7,7 +7,9 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class GameResultRequestDTO {
-    private int gameId;
+public class TeamPinDTO {
     private int teamId;
+    private int guessed;
+    private double submitLat;
+    private double submitLng;
 }
