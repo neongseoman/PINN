@@ -27,8 +27,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = JsonProcessingException.class)
     public BaseResponse<BaseResponseStatus> baseException(JsonProcessingException exception) {
-//        log.warn("Handle JsonProcessingException : {}", exception.getCause());
-//        exception.printStackTrace();
+        log.warn("Handle JsonProcessingException : {}", exception.getCause());
+        exception.printStackTrace();
         return new BaseResponse<>(BaseResponseStatus.JSON_PROCESSING_ERROR);
     }
 
@@ -41,15 +41,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(BaseException.class)
     public BaseResponse<BaseResponseStatus> baseException(BaseException e) {
-//        log.warn("Handle CommonException: {}", e.getStatus());
-//        e.printStackTrace();
+        log.warn("Handle CommonException: {}", e.getStatus());
+        e.printStackTrace();
         return new BaseResponse<>(e.getStatus());
     }
 
     @ExceptionHandler(value = RuntimeException.class)
     public BaseResponse<BaseResponseStatus> baseException(RuntimeException e) {
-//        log.error("Handle : {}", e.getCause());
-//        e.printStackTrace();
+        log.error("Handle : {}", e.getCause());
+        e.printStackTrace();
         return new BaseResponse<>(BaseResponseStatus.OOPS);
     }
 
