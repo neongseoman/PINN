@@ -12,7 +12,7 @@ export async function getGameInfo(gameId: string) {
   })
   const resJson = (await res.json()) as GameInit
   if (!resJson.success) {
-    alert('gameInfo 실패!')
+    alert(resJson.message)
   }
   return resJson
 }
@@ -32,7 +32,7 @@ export async function getRoundInfo(gameId: string, round: string) {
   )
   const resJson = (await res.json()) as RoundInit
   if (!resJson.success) {
-    alert('roundInfo 실패!')
+    alert(resJson.message)
   }
   return resJson
 }
@@ -52,7 +52,7 @@ export async function getStageTwoHint(gameId: string, round: string) {
   )
   const resJson = (await res.json()) as StageTwoInit
   if (!resJson.success) {
-    alert('stageTwo 실패!')
+    alert(resJson.message)
   }
   return resJson
 }
