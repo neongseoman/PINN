@@ -5,7 +5,12 @@ import { IoExitOutline } from 'react-icons/io5'
 import { PiSealWarningFill } from 'react-icons/pi'
 import styles from '../lobby.module.css'
 
-export default function RuleModal() {
+interface RuleModalProps {
+  hoverSound: () => void
+  clickSound: () => void
+}
+
+export default function RuleModal({ hoverSound }: RuleModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null)
 
   const showModal = () => {
@@ -18,7 +23,12 @@ export default function RuleModal() {
 
   return (
     <div>
-      <p className={styles.buttons} onClick={showModal}>
+      <p
+        className={styles.buttons}
+        onClick={showModal}
+        onMouseEnter={hoverSound}
+      >
+        {' '}
         게임 설명
       </p>
 

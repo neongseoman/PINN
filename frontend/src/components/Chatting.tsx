@@ -1,12 +1,13 @@
 'use client'
 
+import useIngameStore from '@/stores/ingameStore'
 import useUserStore from '@/stores/userStore'
-import { Client, IFrame } from '@stomp/stompjs'
+import { Client, IFrame, IMessage } from '@stomp/stompjs'
 import { useEffect, useRef, useState } from 'react'
 import { IoIosSend } from 'react-icons/io'
 import styles from './chatting.module.css'
 
-interface MessageFormat {
+interface MessageRespnose {
   senderDateTime: string
   senderNickname: string
   senderGameId: number
@@ -18,16 +19,18 @@ interface MessageFormat {
 
 interface ChattingProps {
   chatTitle: string
-  subsrcibeUrl: string
+  subscribeUrl: string
   publishUrl: string
+  gameId: string
 }
 
 export default function Chatting({
   chatTitle,
-  subsrcibeUrl,
+  subscribeUrl,
   publishUrl,
+  gameId,
 }: ChattingProps) {
-  const [messages, setMessages] = useState<MessageFormat[]>([])
+  const [messages, setMessages] = useState<MessageRespnose[]>([])
   const [newMessage, setNewMessage] = useState<string>('')
   const chatContainerRef = useRef<HTMLDivElement | null>(null)
 
@@ -35,7 +38,7 @@ export default function Chatting({
     new Client({
       brokerURL: process.env.NEXT_PUBLIC_SERVER_SOCKET_URL,
       debug: function (str: string) {
-        // console.log(str)
+        console.log(str)
       },
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
@@ -43,14 +46,15 @@ export default function Chatting({
     }),
   )
 
-  const { gamerId, nickname } = useUserStore()
+  const { nickname } = useUserStore()
+  const { teamId } = useIngameStore()
 
   useEffect(() => {
     clientRef.current.onConnect = function (_frame: IFrame) {
-      clientRef.current.subscribe(subsrcibeUrl, (message: any) => {
-        const messageResponse = JSON.parse(message.body) as MessageFormat
-        // console.log(messageResponse)
-        setMessages((prevMessages) => [...prevMessages, messageResponse])
+      clientRef.current.subscribe(subscribeUrl, (message: IMessage) => {
+        const messageResponse = JSON.parse(message.body) as MessageRespnose
+        if (messageResponse.code == 1001 || messageResponse.code == 1119)
+          setMessages((prevMessages) => [...prevMessages, messageResponse])
       })
     }
 
@@ -64,7 +68,7 @@ export default function Chatting({
     return () => {
       clientRef.current.deactivate()
     }
-  }, [subsrcibeUrl, publishUrl])
+  }, [subscribeUrl, publishUrl])
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -86,8 +90,8 @@ export default function Chatting({
         destination: publishUrl,
         body: JSON.stringify({
           senderNickname: nickname,
-          senderGameId: 1,
-          senderTeamId: 1,
+          senderGameId: gameId,
+          senderTeamId: teamId,
           content: trimmedMessage,
         }),
       })

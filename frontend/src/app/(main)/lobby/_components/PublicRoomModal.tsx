@@ -9,12 +9,14 @@ interface PublicRoomModalProps {
   gameId: number
   roomName: string
   setShowModal: Dispatch<SetStateAction<boolean>>
+  clickSound: () => void
 }
 
 export default function PublicRoomModal({
   gameId,
   roomName,
   setShowModal,
+  clickSound,
 }: PublicRoomModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const router = useRouter()
@@ -94,6 +96,7 @@ export default function PublicRoomModal({
     } catch (error) {
       console.error('에러 발생: ', error)
     }
+    clickSound()
   }
 
   return (
