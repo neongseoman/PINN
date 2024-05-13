@@ -1,4 +1,4 @@
-import { GameInitInfo, RoundInit, StageTwoInit } from '@/types/IngameRestTypes'
+import { GameInit, RoundInit, StageTwoInit } from '@/types/IngameRestTypes'
 
 export async function getGameInfo(gameId: string) {
   const res = await fetch(process.env.NEXT_PUBLIC_API_URL + '/game/init', {
@@ -10,7 +10,7 @@ export async function getGameInfo(gameId: string) {
     },
     body: JSON.stringify({ gameId }),
   })
-  const resJson = (await res.json()) as GameInitInfo
+  const resJson = (await res.json()) as GameInit
   if (!resJson.success) {
     alert('gameInfo 실패!')
   }

@@ -49,7 +49,7 @@ export default function IngameMap({
   )
 
   const { nickname } = useUserStore()
-  const { teamId } = useIngameStore()
+  const { teamId, teamColor } = useIngameStore()
 
   const subUrl = `/team/${gameId}/${teamId}`
   const guessUrl = `/app/team/guess`
@@ -68,7 +68,7 @@ export default function IngameMap({
       icon: {
         path: google.maps.SymbolPath.CIRCLE,
         scale: 10,
-        fillColor: 'red',
+        fillColor: teamColor,
         fillOpacity: 1,
         strokeColor: 'black',
         strokeWeight: 3,

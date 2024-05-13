@@ -12,7 +12,7 @@ export default function Hints({ hints }: HintProps) {
       {!!hints &&
         hints.map((hint, index) => (
           <div className={styles.content} key={index}>
-            {hint.hintValue}
+            {hint.hintTypeName} : {hint.hintValue}
           </div>
         ))}
     </div>
