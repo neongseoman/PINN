@@ -26,9 +26,10 @@ export default function LobbyPage() {
   const { nickname } = useUserStore()
   const [gameList, setGameList] = useState<GameInfo[]>([])
   const [soundOn, setSoundOn] = useState<boolean>(false)
+  const [nicknameEdit, setNicknameEdit] = useState<boolean>(false)
 
-  const profileModal = () => {
-    // 프로필 수정 모달 띄우기
+  const profileEdit = () => {
+    setNicknameEdit(true)
   }
 
   const fastStart = () => {
@@ -115,11 +116,10 @@ export default function LobbyPage() {
         </div>
         <div
           className={styles.userInfo}
-          onClick={profileModal}
+          onClick={profileEdit}
           onMouseEnter={hoverSound}
         >
           <p className={styles.username}>{nickname}</p>
-          {/* 닉네임 hover했을 때 연필 모양 보여주면서 수정할 수 있다는 것 보여 주기 */}
         </div>
       </div>
       <div className={styles.medium}>
