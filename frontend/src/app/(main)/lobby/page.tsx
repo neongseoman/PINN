@@ -2,11 +2,11 @@
 
 import CreateRoomModal from '@/app/(main)/lobby/_components/CreateRoomModal'
 import RoomCard from '@/app/(main)/lobby/_components/RoomCard'
+import RuleModal from '@/app/(main)/lobby/_components/RuleModal'
 import useUserStore from '@/stores/userStore'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { GiSoundOff, GiSoundOn } from 'react-icons/gi'
-import RuleModal from './_components/RuleModal'
 import styles from './lobby.module.css'
 
 interface GameInfo {
@@ -76,12 +76,12 @@ export default function LobbyPage() {
   }
 
   const clickSound = () => {
-    const audio = new Audio('/assets/sounds/click.wav')
+    const audio = new Audio('/assets/sounds/click.mp3')
     audio.play()
   }
 
   useEffect(() => {
-    const audio = new Audio('/assets/sounds/lobby.wav')
+    const audio = new Audio('/assets/sounds/lobby.mp3')
     audio.loop = true
     if (soundOn) {
       audio.play()
