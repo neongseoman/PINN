@@ -20,17 +20,6 @@ export default function PublicRoomModal({
 }: PublicRoomModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const router = useRouter()
-  // const clientRef = useRef<Client>(
-  //   new Client({
-  //     brokerURL: process.env.NEXT_PUBLIC_SERVER_SOCKET_URL,
-  //     debug: function (str: string) {
-  //       // console.log(str)
-  //     },
-  //     reconnectDelay: 5000,
-  //     heartbeatIncoming: 4000,
-  //     heartbeatOutgoing: 4000,
-  //   }),
-  // )
 
   useEffect(() => {
     showModal()
@@ -38,10 +27,6 @@ export default function PublicRoomModal({
 
   const showModal = () => {
     dialogRef.current?.showModal()
-    // clientRef.current.activate()
-    // clientRef.current.onConnect = function (_frame: IFrame) {
-    //   clientRef.current.subscribe(`/game/${gameId}`, () => {})
-    // }
   }
 
   const closeModal = () => {
@@ -57,9 +42,8 @@ export default function PublicRoomModal({
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${
-              localStorage.getItem('accessToken') as string
-            }`,
+            Authorization: `Bearer ${localStorage.getItem('accessToken') as string
+              }`,
           },
           body: JSON.stringify({
             password: '',
@@ -68,33 +52,21 @@ export default function PublicRoomModal({
       )
 
       if (response.ok) {
-        console.log('공개방 입장 요청 통신 성공')
+        // console.log('공개방 입장 요청 통신 성공')
         const responseData = await response.json()
         if (responseData.code === 1000) {
-          console.log('공개방 입장 요청 성공!', responseData)
-
-          // clientRef.current.publish({
-          //   headers: {
-          //     Auth: localStorage.getItem('accessToken') as string,
-          //   },
-          //   destination: `/app/game/enter/${gameId}`,
-          //   body: JSON.stringify({
-          //     senderNickname: nickname,
-          //     senderGameId: gameId,
-          //   }),
-          // })
-
-          console.log(`${gameId}번 방으로 입장합니다`)
+          // console.log('공개방 입장 요청 성공!', responseData)
+          // console.log(`${gameId}번 방으로 입장합니다`)
           router.push(`/room/${gameId}`)
         } else {
-          console.log('공개방 입장 요청 실패!', responseData.code)
+          // console.log('공개방 입장 요청 실패!', responseData.code)
           alert(responseData.message)
         }
       } else {
-        console.error('공개방 입장 요청 통신 실패', response)
+        // console.error('공개방 입장 요청 통신 실패', response)
       }
     } catch (error) {
-      console.error('에러 발생: ', error)
+      // console.error('에러 발생: ', error)
     }
     clickSound()
   }

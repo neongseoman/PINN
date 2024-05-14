@@ -76,8 +76,7 @@
   bottom: 0;
   display: flex;
   font-size: 24px;
-  border: solid;
-  border-width: 1px 0px 0px 0px;
+  border-top: solid white 1px;
 }
 
 .send input {
