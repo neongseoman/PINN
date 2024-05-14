@@ -1,6 +1,8 @@
 type IngameProgressCode = 1201 | 1202 | 1203 | 1204 | 1205 | 1206
 
-export interface GameProgressInfo {
+export type GameProgressInfo = GameProgress | RemainTime
+
+interface GameProgress {
   code: IngameProgressCode
   msg: string
   round: number
@@ -43,4 +45,12 @@ interface CursorResponse {
   msg: string
   lat: number
   lng: number
+}
+
+interface RemainTime {
+  leftTime: number
+  stageTime: number
+  stage: string
+  code: 1210
+  msg: string
 }
