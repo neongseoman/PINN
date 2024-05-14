@@ -3,11 +3,11 @@
 import Lottie from 'react-lottie-player'
 
 interface LottieProps {
-  animationData: any
-  play: boolean
-  loop: boolean
-  setPlay: (value: boolean) => void
+  animationData: object
   speed: number
+  loop: boolean
+  play: boolean
+  setPlay: (value: boolean) => void
 }
 
 export default function LottieAnimation({
