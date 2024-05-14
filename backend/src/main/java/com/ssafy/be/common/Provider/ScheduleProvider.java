@@ -35,6 +35,8 @@ public class ScheduleProvider {
     // 5초 지났고 게임 시작합시다.
     public CompletableFuture<Integer> startGame(int gameId, int round) throws BaseException {
         log.info("{} game start after 5 sec : {}", gameId, LocalDateTime.now());
+        notifyRemainingTime(gameId, 5, "before start", ServerEvent.NOTIFY_LEFT_TIME);
+
         sendingOperations.convertAndSend("/game/sse/" + gameId,
                 new ServerSendEvent(ServerEvent.START, round)); // #1201 game start
         CompletableFuture<Integer> future = new CompletableFuture<>();
