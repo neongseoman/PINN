@@ -28,12 +28,14 @@ export default function ProfileModal({
   }
 
   const closeModal = () => {
+    setNewNickname('')
     dialogRef.current?.close()
   }
 
   const editNickname = async () => {
     if (!newNickname.trim()) {
       alert('닉네임을 입력해 주세요')
+      setNewNickname('')
     } else {
       try {
         const response = await fetch(
