@@ -143,7 +143,6 @@ export default function GamePage({
           case 1210:
             // 현재 페이지와 라운드가 다를 경우
             if (gameProgressResponse.round != Number(params.round)) {
-              alert('현재 라운드가 아닙니다')
               router.push(
                 `/game/${params.gameId}/${gameProgressResponse.round}`,
               )
