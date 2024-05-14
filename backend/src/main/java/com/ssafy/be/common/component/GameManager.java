@@ -108,6 +108,7 @@ public class GameManager {
                 }
                 // 팀 내 멤버 수 + 1번째 (원래는 DB에 넣고 해당 key id를 넣어야 했음)
                 int teamGamerNumber = team.getValue().getTeamGamers().size() + 1;
+                // 색상 할당
                 ColorCode teamGamerColor = null;
                 if (teamGamerNumber == 1){
                     teamGamerColor = NEON_GREEN;
@@ -122,7 +123,7 @@ public class GameManager {
                         .gamerId(gamerPrincipalVO.getGamerId())
                         .teamId(team.getValue().getTeamId())
                         .nickname(gamerPrincipalVO.getNickname())
-                        .teamGamerColor(teamGamerColor.name())
+                        .teamGamerColor(teamGamerColor.getColorCode())
                         .build();
                 // 멤버를 팀에 삽입
                 log.info(team.getValue().getTeamId() + "팀에 들어간 " + teamGamerComponent);
