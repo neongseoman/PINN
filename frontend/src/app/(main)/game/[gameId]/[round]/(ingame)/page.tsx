@@ -82,6 +82,10 @@ export default function GamePage({
       params.gameId,
       params.round,
     )) as RoundInit
+    if (!roundInfo.success) {
+      alert(roundInfo.message)
+      return
+    }
     setHints(roundInfo.result.hints)
     setLat(roundInfo.result.lat)
     setLng(roundInfo.result.lng)
@@ -93,6 +97,10 @@ export default function GamePage({
       params.gameId,
       params.round,
     )) as StageTwoInit
+    if (!stageTwoInfo.success) {
+      alert(stageTwoInfo.message)
+      return
+    }
     setCurrentStage(2)
     setHints(stageTwoInfo.result.hints)
   }

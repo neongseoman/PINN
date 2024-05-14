@@ -11,9 +11,7 @@ export async function getGameInfo(gameId: string) {
     body: JSON.stringify({ gameId }),
   })
   const resJson = (await res.json()) as GameInit
-  if (!resJson.success) {
-    alert(resJson.message)
-  }
+
   return resJson
 }
 
@@ -31,9 +29,7 @@ export async function getRoundInfo(gameId: string, round: string) {
     },
   )
   const resJson = (await res.json()) as RoundInit
-  if (!resJson.success) {
-    alert(resJson.message)
-  }
+
   return resJson
 }
 
@@ -51,8 +47,6 @@ export async function getStageTwoHint(gameId: string, round: string) {
     },
   )
   const resJson = (await res.json()) as StageTwoInit
-  if (!resJson.success) {
-    alert(resJson.message)
-  }
+
   return resJson
 }
