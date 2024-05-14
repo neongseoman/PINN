@@ -20,7 +20,7 @@ import StreetView from './_components/StreetView'
 import ThemeInfo from './_components/ThemeInfo'
 import styles from './game.module.css'
 
-import StageTwoLottie from '@public/assets/images/lotties/StageTwo.json'
+import CountDown from '@public/assets/images/lotties/CountDown.json'
 
 export default function GamePage({
   params,
@@ -36,7 +36,7 @@ export default function GamePage({
   const [mapPin, setMapPin] = useState<boolean>(false)
 
   // 스테이지 넘김 애니메이션
-  const [stageTwoPlay, setStageTwoPlay] = useState<boolean>(false)
+  const [countDown, setCountDown] = useState<boolean>(false)
 
   // 힌트
   const [hints, setHints] = useState<Hint[] | null>(null)
@@ -84,7 +84,7 @@ export default function GamePage({
     )) as RoundInit
     // 라운드 받아오기 오류
     if (!roundInfo.success) {
-      alert(roundInfo.message)
+      // alert(roundInfo.message)
       // 존재하지 않는 게임인 경우
       if (roundInfo.code == 3101) {
         router.push('/lobby')
@@ -132,7 +132,6 @@ export default function GamePage({
             break
           case 1203:
             // 스테이지 2 스타트
-            setStageTwoPlay(true)
             // 스테이지 2 렌더링
             stageTwoRender()
             break
@@ -151,6 +150,9 @@ export default function GamePage({
             // 현재 스테이지가 다른 경우
             if (currentStage != gameProgressResponse.stage) {
               stageTwoRender()
+            }
+            if (gameProgressResponse.leftTime == 5) {
+              setCountDown(true)
             }
             setRemainSeconds(gameProgressResponse.leftTime)
             break
@@ -176,14 +178,14 @@ export default function GamePage({
 
   return (
     <main>
-      {stageTwoPlay && (
+      {countDown && (
         <div className={styles.lottieAnimation}>
           <LottieAnimation
-            animationData={StageTwoLottie}
-            play={stageTwoPlay}
+            animationData={CountDown}
+            play={countDown}
             loop={false}
-            speed={0.4}
-            setPlay={setStageTwoPlay}
+            speed={1}
+            setPlay={setCountDown}
           />
         </div>
       )}
