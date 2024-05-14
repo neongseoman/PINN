@@ -1,5 +1,3 @@
-'use client'
-
 import styles from './timer.module.css'
 
 interface TimerProp {
