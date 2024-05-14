@@ -8,6 +8,7 @@ import static com.ssafy.be.common.response.BaseResponseStatus.FULL_ROOM_ERROR;
 import static com.ssafy.be.common.response.BaseResponseStatus.FULL_TEAM_ERROR;
 import static com.ssafy.be.common.response.BaseResponseStatus.NOT_EXIST_GAME;
 import static com.ssafy.be.common.response.BaseResponseStatus.NOT_EXIST_GAMER;
+import static com.ssafy.be.common.response.BaseResponseStatus.NOT_EXIST_LEADER;
 import static com.ssafy.be.common.response.BaseResponseStatus.NOT_EXIST_UNREADY_TEAM;
 import static com.ssafy.be.common.response.BaseResponseStatus.NOT_MATCH_PASSWORD;
 
@@ -157,7 +158,7 @@ public class GameManager {
 
     // 방 나가기위한 method
     public ExitRoomVO exitRoom(SocketDTO socketDTO, GamerPrincipalVO gamerPrincipalVO) {
-
+        // TODO : 방 내 모든 사람이 나간경우 삭제
         // TODO : 각각의 경우 Exception 처리
         // game
         GameComponent gameComponent = games.get(socketDTO.getSenderGameId());
@@ -174,9 +175,20 @@ public class GameManager {
         // TeamGamerComponent to ExitRoomVO
         TeamGamerComponent teamGamerComponent = teamGamers.get(gamerPrincipalVO.getGamerId());
         ExitRoomVO exitRoomVO = null;
+
         // 나가는 사람이 리더라면
         if (gamerPrincipalVO.getGamerId() == gameComponent.getLeaderId()){
+            // 새로운 리더 받아오기
             TeamGamerComponent newLeader = getNewLeader(gameComponent);
+            // 리더로 할당할 사람이 없다면
+            if (newLeader == null){
+                // 게임 삭제
+                getGames().remove(socketDTO.getSenderGameId());
+                throw new BaseException(NOT_EXIST_LEADER, gamerPrincipalVO.getGamerId());
+            }
+
+            // 새로운 리더 아이디를 방에 할당
+            gameComponent.setLeaderId(newLeader.getGamerId());
 
             exitRoomVO = ExitRoomVO.builder()
                     .senderDateTime(socketDTO.getSenderDateTime())
