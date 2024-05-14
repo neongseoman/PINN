@@ -560,17 +560,17 @@ public class GameServiceImpl implements GameService {
             QuestionComponent question = existGame.getQuestions().get(round - 1);
 
             // stage2 힌트만 골라내기
-            List<HintComponent> stage2Hints = new ArrayList<>();
-            for (HintComponent hint : question.getHints()) {
-                if (hint.getOfferStage() == 2) {
-                    stage2Hints.add(hint);
-                }
-            }
+//            List<HintComponent> stage2Hints = new ArrayList<>();
+//            for (HintComponent hint : question.getHints()) {
+//                if (hint.getOfferStage() == 2) {
+//                    stage2Hints.add(hint);
+//                }
+//            }
 
             stage2InitVO.setGameId(gameId);
             stage2InitVO.setRound(round);
             stage2InitVO.setStage(2);
-            stage2InitVO.setHints(stage2Hints);
+            stage2InitVO.setHints(question.getHints());
 
             log.info(stage2InitVO);
             return stage2InitVO;
