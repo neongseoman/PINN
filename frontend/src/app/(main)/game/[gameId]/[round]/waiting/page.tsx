@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react'
 import styles from './roundResult.module.css'
-import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Loader } from '@googlemaps/js-api-loader'
 import RoundResultMap from './_components/RoundResultMap'
@@ -81,7 +80,7 @@ export default function WaitingPage({ params }: { params: { gameId: string; roun
       <div className={styles.container}>
         <div className={styles.round}>라운드 {1}</div>
         <div className={styles.waiting}>
-          <Timer stageTime={stageTime} />
+          {/* <Timer stageTime={stageTime} /> */}
         </div>
         <div className={styles.mapWrapper}>
           <RoundResultMap loader={loader} />
