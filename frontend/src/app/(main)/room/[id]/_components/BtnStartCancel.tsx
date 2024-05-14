@@ -1,10 +1,17 @@
 import styles from './btn.module.css'
 
+interface TeamGamers {
+    colorId: number
+    gamerId: string
+    teamId: number
+    nickname: string
+}
+
 interface TeamsProp {
     teams: {
         colorCode: string
         teamNumber: number
-        teamGamer: string[]
+        teamGamer: TeamGamers[]
         ready: boolean
     }[]
     setTeams: React.Dispatch<React.SetStateAction<TeamsProp[]>>;

@@ -2,14 +2,19 @@
 
 import styles from './teamList.module.css'
 import Team from './Team'
-import { useEffect, useRef, useState } from 'react'
-import { Stomp, Client, IFrame, IMessage } from '@stomp/stompjs'
+
+interface TeamGamers {
+    colorId: number
+    gamerId: string
+    teamId: number
+    nickname: string
+}
 
 interface TeamsProp {
     teams: {
         colorCode: string
         teamNumber: number
-        teamGamer: string[]
+        teamGamers: TeamGamers[] | null[]
         ready: boolean
     }[]
     handleTeamDoubleClick: (teamNumber: number) => void

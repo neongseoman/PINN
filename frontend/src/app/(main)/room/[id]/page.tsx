@@ -2,7 +2,6 @@
 
 import styles from './room.module.css'
 
-import useTeamStore from '@/stores/teamStore'
 import useUserStore from '@/stores/userStore'
 import Chatting from '@/components/Chatting'
 import TeamList from './_components/TeamList'
@@ -13,7 +12,7 @@ import BtnStart from './_components/BtnStart'
 import BtnStartCancel from './_components/BtnStartCancel'
 
 import { useEffect, useRef, useState } from 'react'
-import { Client, IFrame } from '@stomp/stompjs'
+import { Client, IFrame, IMessage } from '@stomp/stompjs'
 import { useRouter } from 'next/navigation'
 
 interface EnterFormat {
@@ -26,80 +25,94 @@ interface EnterFormat {
   msg: string
 }
 
+interface TeamGamers {
+  colorId: number
+  gamerId: string
+  teamId: number
+  nickname: string
+}
+
 interface Team {
   colorCode: string
   teamNumber: number
-  teamGamer: string[]
+  teamGamers: TeamGamers[] | null[]
   ready: boolean
+}
+
+interface GameInfo {
+  gameId: number
+  leaderId: string
+  roundCount: number
+  stage1Time: number
+  stage2Time: number
+  themeId: number
 }
 
 export default function RoomPage({ params }: { params: { id: string } }) {
 
-  // const teamStore = useTeamStore(params.id)
-  // const { teams, setMove } = teamStore()
-
   const { gamerId, nickname } = useUserStore()
   const router = useRouter()
-
+  const [gameInfo, setGameInfo] = useState<GameInfo>()
+  const [startMsg, setStartMsg] = useState()
   const [teams, setTeams] = useState<Team[]>([
     {
       teamNumber: 1,
       colorCode: 'rgba(255, 0, 61, 1)',
-      teamGamer: ['', '', ''],
+      teamGamers: [],
       ready: false,
     },
     {
       teamNumber: 2,
       colorCode: 'rgba(182, 53, 53, 1)',
-      teamGamer: ['', '', ''],
+      teamGamers: [],
       ready: false,
     },
     {
       teamNumber: 3,
       colorCode: 'rgba(255, 111, 0, 1)',
-      teamGamer: ['', '', ''],
+      teamGamers: [],
       ready: false,
     },
     {
       teamNumber: 4,
       colorCode: 'rgba(153, 155, 41, 1)',
-      teamGamer: ['', '', ''],
+      teamGamers: [],
       ready: false,
     },
     {
       teamNumber: 5,
       colorCode: 'rgba(0, 131, 143, 1)',
-      teamGamer: ['', '', ''],
+      teamGamers: [],
       ready: false,
     },
     {
       teamNumber: 6,
       colorCode: 'rgba(105, 53, 170, 1)',
-      teamGamer: ['', '', ''],
+      teamGamers: [],
       ready: false,
     },
     {
       teamNumber: 7,
       colorCode: 'rgba(251, 52, 159, 1)',
-      teamGamer: ['', '', ''],
+      teamGamers: [],
       ready: false,
     },
     {
       teamNumber: 8,
       colorCode: 'rgba(255, 172, 207, 1)',
-      teamGamer: ['', '', ''],
+      teamGamers: [],
       ready: false,
     },
     {
       teamNumber: 9,
       colorCode: 'rgba(188, 157, 157, 1)',
-      teamGamer: ['', '', ''],
+      teamGamers: [],
       ready: false,
     },
     {
       teamNumber: 10,
       colorCode: 'rgba(85, 85, 85, 1)',
-      teamGamer: ['', '', ''],
+      teamGamers: [],
       ready: false,
     },
   ])
@@ -118,13 +131,42 @@ export default function RoomPage({ params }: { params: { id: string } }) {
   // 채팅
   const chatTitle = '전체 채팅'
   const subscribeUrl = `/game/${params.id}`
+  const subscribeUrl2 = `/game/sse/${params.id}`
   const publishChatUrl = `/app/game/chat/${params.id}`
   // 유저 입장
   const publishUserUrl = `/app/game/enter/${params.id}`
+  // 팀 옮기기
+  const publishMoveUrl = `/app/room/move`
   // 방나가기
   const publishExitUrl = `/app/game/exit/${params.id}`
 
-  const isTeamReady = teams.some(team => team.teamNumber === 1 && team.ready === false);
+  const isTeamReady = teams.some(team => team.teamNumber === 1 && team.ready === false)
+
+  // 팀 목록 받아오는 함수
+  const teamList = async () => {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/room/${params.id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('accessToken') as string}`
+      },
+    });
+
+    if (response.ok) {
+      console.log('팀 목록 요청 통신 성공');
+      const responseData = await response.json();
+      if (responseData.code === 1000) {
+        console.log('팀 목록 출력 성공!', responseData);
+        setTeams(responseData.result.teams)
+        setGameInfo(responseData.result)
+
+      } else {
+        console.log('팀 목록 출력 실패!', responseData.code);
+      }
+    } else {
+      console.error('팀 목록 요청 통신 실패', response);
+    }
+  }
 
   useEffect(() => {
     clientRef.current.onConnect = function (_frame: IFrame) {
@@ -135,16 +177,24 @@ export default function RoomPage({ params }: { params: { id: string } }) {
         },
         destination: publishUserUrl,
         body: JSON.stringify({
-
         }),
       })
-
       console.log('엔터')
 
+      clientRef.current.subscribe(subscribeUrl2, (message: IMessage) => {
+        const messageResponse = JSON.parse(message.body)
+        console.log('Subscribed message:', messageResponse)
+        if (messageResponse.code === 1202) {
+          router.push(`/game/${params.id}/1`)
+        }
+      })
+
       // 채팅 또는 다른 메시지를 위한 구독
-      clientRef.current.subscribe(subscribeUrl, (message: any) => {
+      clientRef.current.subscribe(subscribeUrl, async (message: any) => {
         const messageResponse = JSON.parse(message.body) as EnterFormat
         console.log('Subscribed message:', messageResponse)
+
+        await teamList()
       })
     }
 
@@ -155,62 +205,68 @@ export default function RoomPage({ params }: { params: { id: string } }) {
 
     // 소켓을 활성화
     clientRef.current.activate()
-
     return () => {
-      // 컴포넌트가 언마운트될 때 소켓을 비활성화
       clientRef.current.deactivate()
     }
-  }, [subscribeUrl, publishUserUrl])
 
+  }, [subscribeUrl, publishUserUrl, subscribeUrl2])
 
-  const handleTeamDoubleClick = (teamNumber: number) => {
-    // if (nickname)
-    //   setMove(teamNumber, nickname)
-  };
+  const gameStartRequest = {
+    senderNickname: nickname,
+    senderGameId: params.id,
+    senderTeamId: 1,
+    gameId: params.id,
+    roundCount: 3,
+    stage1Time: 30,
+    stage2Time: 30,
+    scorePageTime: 10
+  }
 
-  useEffect(() => {
-    const teamList = async () => {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/room/${params.id}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('accessToken') as string}`
-        },
-      });
-
-      if (response.ok) {
-        console.log('팀 목록 요청 통신 성공');
-        const responseData = await response.json();
-        if (responseData.code === 1000) {
-          console.log('팀 목록 출력 성공!', responseData);
-          const teamsArray = Object.keys(responseData.result.teams).map(key => responseData.result.teams[key]);
-          setTeams(teamsArray)
-
-        } else {
-          console.log('팀 목록 출력 실패!', responseData.code);
-        }
-      } else {
-        console.error('팀 목록 요청 통신 실패', response);
-      }
-    }
-    teamList()
-  }, [params.id]);
-
-  const handleOutClick = () => {
+  function gameStart() {
     clientRef.current.publish({
       headers: {
         Auth: localStorage.getItem('accessToken') as string,
       },
-      destination: publishUserUrl,
+      destination: `/app/game/start`,
+      body: JSON.stringify(gameStartRequest),
+    })
+  }
+
+  // 팀 옮기기
+  const handleTeamDoubleClick = (teamNumber: number) => {
+    const myTeam = teams.find(team => team.teamGamers.some(gamer => gamer?.gamerId === gamerId))
+    clientRef.current.publish({
+      headers: {
+        Auth: localStorage.getItem('accessToken') as string,
+      },
+      destination: publishMoveUrl,
+      body: JSON.stringify({
+        senderGameId: params.id,
+        senderNickname: nickname,
+        oldTeamId: myTeam?.teamNumber,
+        newTeamId: teamNumber
+      }),
+    })
+  }
+
+  // 팀 나가기
+  const handleOutClick = () => {
+    const myTeam = teams.find(team => team.teamGamers.some(gamer => gamer?.gamerId === gamerId))
+    clientRef.current.publish({
+      headers: {
+        Auth: localStorage.getItem('accessToken') as string,
+      },
+      destination: publishExitUrl,
       body: JSON.stringify({
         senderNickname: nickname,
         senderGameId: gamerId,
-        senderTeamId: 1,
+        senderTeamId: myTeam?.teamNumber,
       })
     })
-    router.push(`/lobby}`)
+    console.log('성공')
+    router.push(`/lobby`)
   }
-
+  const isLeader = gameInfo?.leaderId === gamerId ? true : false
   return (
     <main className={styles.background}>
       <div className={styles.container}>
@@ -228,10 +284,15 @@ export default function RoomPage({ params }: { params: { id: string } }) {
             />
           </div>
           <div className={styles['ready-out']}>
-            {isTeamReady ? (
+            {/* {isTeamReady ? (
               <BtnReady teams={teams} />
             ) : (
               <BtnReadyCancel teams={teams} />
+            )} */}
+            {isLeader ? (
+              <BtnStart gameStart={gameStart} />
+            ) : (
+              <BtnReady />
             )}
             <button className={styles.out} onClick={handleOutClick}>나가기</button>
           </div>

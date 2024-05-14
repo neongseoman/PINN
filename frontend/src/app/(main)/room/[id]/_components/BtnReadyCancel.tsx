@@ -1,15 +1,19 @@
 import styles from './btn.module.css'
 
-interface Team {
-    colorCode: string
-    teamNumber: number
-    teamGamer: string[]
-    ready: boolean
+interface TeamGamers {
+    colorId: number
+    gamerId: string
+    teamId: number
+    nickname: string
 }
 
-
 interface TeamsProp {
-    teams: Team[];
+    teams: {
+        colorCode: string
+        teamNumber: number
+        teamGamers: TeamGamers[]
+        ready: boolean
+    }[]
 }
 
 export default function BtnReadyCancel({ teams }: TeamsProp) {

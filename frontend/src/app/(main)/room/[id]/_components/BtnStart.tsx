@@ -1,19 +1,31 @@
+import { useEffect, useRef } from 'react'
 import styles from './btn.module.css'
 
-interface TeamsProp {
-    teams: {
-        colorCode: string
-        teamNumber: number
-        teamGamer: string[]
-        ready: boolean
-    }[]
-    setTeams: React.Dispatch<React.SetStateAction<TeamsProp[]>>;
+import useUserStore from '@/stores/userStore'
+import { Client, IFrame, IMessage } from '@stomp/stompjs'
+
+interface TeamGamers {
+    colorId: number
+    gamerId: string
+    teamId: number
+    nickname: string
 }
 
-export default function BtnStart() {
+interface TeamsProp {
+    // teams: {
+    //     colorCode: string
+    //     teamNumber: number
+    //     teamGamer: TeamGamers[]
+    //     ready: boolean
+    // }[]
+    gameStart: () => void;
+}
+
+export default function BtnStart({ gameStart }: TeamsProp) {
+
     return (
         <div>
-            <button className={styles.start}>게임 시작</button>
+            <button className={styles.start} onClick={gameStart}>게임 시작</button>
         </div>
     )
 }
