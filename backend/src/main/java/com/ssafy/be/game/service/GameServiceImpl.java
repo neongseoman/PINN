@@ -560,17 +560,17 @@ public class GameServiceImpl implements GameService {
             QuestionComponent question = existGame.getQuestions().get(round - 1);
 
             // stage2 힌트만 골라내기
-            List<HintComponent> stage2Hints = new ArrayList<>();
-            for (HintComponent hint : question.getHints()) {
-                if (hint.getOfferStage() == 2) {
-                    stage2Hints.add(hint);
-                }
-            }
+//            List<HintComponent> stage2Hints = new ArrayList<>();
+//            for (HintComponent hint : question.getHints()) {
+//                if (hint.getOfferStage() == 2) {
+//                    stage2Hints.add(hint);
+//                }
+//            }
 
             stage2InitVO.setGameId(gameId);
             stage2InitVO.setRound(round);
             stage2InitVO.setStage(2);
-            stage2InitVO.setHints(stage2Hints);
+            stage2InitVO.setHints(question.getHints());
 
             log.info(stage2InitVO);
             return stage2InitVO;
@@ -639,6 +639,7 @@ public class GameServiceImpl implements GameService {
             RoundResultVO roundResultVO = new RoundResultVO();
             roundResultVO.setGameId(roundResultRequestDTO.getGameId());
             roundResultVO.setRoundNumber(roundResultRequestDTO.getRound());
+            roundResultVO.setQuestion(existGame.getQuestions().get(roundResultRequestDTO.getRound()-1));
             roundResultVO.setRoundResult(roundResult);
 
             log.info(roundResultVO);
@@ -665,6 +666,7 @@ public class GameServiceImpl implements GameService {
             gameResultVO.setGameId(gameResultRequestDTO.getGameId());
             gameResultVO.setTeamId(gameResultRequestDTO.getTeamId());
             gameResultVO.setRoundResults(existGame.getRoundResults());
+            gameResultVO.setQuestions(existGame.getQuestions());
 //            gameResultVO.setGameResult();
 
             log.info(gameResultVO);
