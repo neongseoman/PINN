@@ -47,7 +47,7 @@ interface CursorResponse {
   lng: number
 }
 
-export interface RemainTime {
+interface RemainTime {
   leftTime: number
   stageTime: number
   stage: string
