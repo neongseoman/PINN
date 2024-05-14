@@ -45,7 +45,7 @@ export default function GamePage({
   const { theme, teamId } = useIngameStore()
 
   // 스테이지 시간 - 소켓으로 받아옴
-  const stageTime = 100
+  const [stageTime, setStageTime] = useState<number>(30)
   const [currentStage, setCurrentStage] = useState<number>(1)
 
   // 정답 좌표
@@ -108,6 +108,8 @@ export default function GamePage({
   // 소켓 구독
   const ingameSubscribeUrl = `/game/sse/${params.gameId}`
   useEffect(() => {
+    // 게임 시작 정보
+
     // 라운드 시작 정보
     roundStartRender()
 
