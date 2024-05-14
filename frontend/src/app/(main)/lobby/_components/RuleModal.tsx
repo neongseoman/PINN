@@ -1,32 +1,44 @@
 'use client'
 
 import { useRef } from 'react'
-import { IoExitOutline } from 'react-icons/io5'
+import { ImExit } from 'react-icons/im'
 import { PiSealWarningFill } from 'react-icons/pi'
 import styles from '../lobby.module.css'
 
-export default function RuleModal() {
+interface RuleModalProps {
+  hoverSound: () => void
+  clickSound: () => void
+}
+
+export default function RuleModal({ hoverSound, clickSound }: RuleModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null)
 
   const showModal = () => {
+    clickSound()
     dialogRef.current?.showModal()
   }
 
   const closeModal = () => {
+    clickSound()
     dialogRef.current?.close()
   }
 
   return (
     <div>
-      <p className={styles.buttons} onClick={showModal}>
+      <p
+        className={styles.buttons}
+        onClick={showModal}
+        onMouseEnter={hoverSound}
+      >
+        {' '}
         게임 설명
       </p>
 
       <dialog className={styles.ruleWrapper} ref={dialogRef}>
-        <p className={styles.exitIcon} onClick={closeModal}>
-          <IoExitOutline />
-        </p>
         <div className={styles.ruleContents}>
+          <span className={styles.exitIcon} onClick={closeModal}>
+            <ImExit />
+          </span>
           <p className={styles.ruleTitle}>참여 방법</p>
           <div className={styles.ruleBox}>
             <p className={styles.ruleName}>1. 게임 생성</p>

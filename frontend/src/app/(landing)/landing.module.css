@@ -1,5 +1,6 @@
 .landing {
-  background-image: url('/assets/images/LandingImageTop.jpg'), url('/assets/images/LandingImageBottom.jpg');
+  background-image: url('/assets/images/LandingImageTop.jpg'),
+    url('/assets/images/LandingImageBottom.jpg');
   background-repeat: no-repeat, no-repeat;
   background-position: top center, bottom center;
   display: flex;
@@ -30,18 +31,18 @@
 }
 
 .scroll {
-  color: white;
+  color: rgb(255, 255, 255, 0.3);
   font-size: 100px;
   margin-top: 50px;
   transition: transform 0.3s ease;
   background: none;
   border: none;
   margin-bottom: 70px;
-}
-
-.scroll:hover {
-  transform: translateY(10px);
-  cursor: pointer;
+  &:hover {
+    transform: translateY(10px);
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.7);
+  }
 }
 
 /* bottom */

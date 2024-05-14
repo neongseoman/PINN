@@ -9,7 +9,6 @@
   top: 0;
   display: flex;
   flex-direction: column;
-  background-color: black;
 }
 
 .top {
@@ -17,11 +16,28 @@
   justify-content: space-between;
   margin: 20px;
   margin-bottom: 65px;
+  height: 60px;
+}
+
+.logoSound {
+  display: flex;
 }
 
 .logo {
   height: 60px;
   margin-left: 10px;
+  margin-right: 15px;
+}
+
+.soundIcon {
+  cursor: pointer;
+  font-size: 60px;
+  color: white;
+  &:hover {
+    color: var(--Main-Yellow);
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+  }
 }
 
 .userInfo {
@@ -30,8 +46,8 @@
   margin: 0px;
   padding: 0px 15px;
   border-radius: 30px;
+  background-color: rgb(255, 255, 255, 0.3);
   &:hover {
-    background-color: rgb(255, 255, 255, 0.3);
     cursor: pointer;
     transform: scale(1.05);
     transition: transform 0.3s ease;
@@ -73,7 +89,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: 50px;
-  /* flex-grow: 1; */
   margin: 0px 10px;
   padding: 0px 20px 10px 20px;
   color: white;
@@ -220,19 +235,33 @@
 .radio {
   display: flex;
   justify-content: space-around;
+  align-items: center;
   width: 70%;
   margin: 0px;
 }
 
-/* .radioButtons {
+.radioButton {
   appearance: none;
-  border-color: var(--Main-Yellow);
+  border: max(2px, 0.1em) solid var(--Main-Yellow);
+  border-radius: 50%;
+  width: 1.25em;
+  height: 1.25em;
+  margin-top: 7px;
+  &:hover {
+    cursor: pointer;
+  }
 }
 
-.radioButtons:checked {
-  appearance: none;
+.radioButton:checked {
   background-color: var(--Main-Yellow);
-} */
+}
+
+.radioText {
+  margin-left: 5px;
+  &:hover {
+    cursor: pointer;
+  }
+}
 
 .stageInputBox {
   width: 30%;
@@ -432,6 +461,8 @@
 
 /* RuleModal.tsx */
 .ruleWrapper {
+  z-index: 1;
+  position: relative;
   width: 800px;
   height: 500px;
   padding: 25px;
@@ -458,11 +489,12 @@
 }
 
 .exitIcon {
-  font-size: 30px;
+  z-index: 10;
+  font-size: 40px;
   color: var(--Main-Navy);
-  position: fixed;
-  top: 75px;
-  right: 360px;
+  position: absolute;
+  top: 20px;
+  right: 10px;
   &:hover {
     cursor: pointer;
     transform: scale(1.1);
