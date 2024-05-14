@@ -461,7 +461,6 @@
 
 /* RuleModal.tsx */
 .ruleWrapper {
-  z-index: 1;
   position: relative;
   width: 800px;
   height: 500px;
@@ -489,7 +488,6 @@
 }
 
 .exitIcon {
-  z-index: 10;
   font-size: 40px;
   color: var(--Main-Navy);
   position: absolute;
@@ -557,4 +555,20 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+/* ProfileModal.tsx */
+.inputNickname {
+  margin-left: 5px;
+  width: 70%;
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: var(--Main-Yellow);
+  &:focus {
+    outline: none;
+  }
+  &::placeholder {
+    color: rgba(242, 202, 80, 0.5);
+  }
 }

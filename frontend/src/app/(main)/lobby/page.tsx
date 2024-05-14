@@ -1,6 +1,7 @@
 'use client'
 
 import CreateRoomModal from '@/app/(main)/lobby/_components/CreateRoomModal'
+import ProfileModal from '@/app/(main)/lobby/_components/ProfileModal'
 import RoomCard from '@/app/(main)/lobby/_components/RoomCard'
 import RuleModal from '@/app/(main)/lobby/_components/RuleModal'
 import useUserStore from '@/stores/userStore'
@@ -50,19 +51,19 @@ export default function LobbyPage() {
     )
 
     if (response.ok) {
-      console.log('빠른 시작 통신 성공')
+      // console.log('빠른 시작 통신 성공')
       const responseData = await response.json()
       if (responseData.code === 1000) {
-        console.log('빠른 시작 성공!', responseData)
+        // console.log('빠른 시작 성공!', responseData)
         const gameId = responseData.result.senderGameId
-        console.log(`${gameId}번 방으로 입장합니다`)
+        // console.log(`${gameId}번 방으로 입장합니다`)
         router.push(`/room/${gameId}`)
       } else {
-        console.log('빠른 시작 실패!', responseData.code)
+        // console.log('빠른 시작 실패!', responseData.code)
         alert(responseData.message)
       }
     } else {
-      console.error('빠른 시작 통신 실패', response)
+      // console.error('빠른 시작 통신 실패', response)
     }
   }
 
@@ -149,7 +150,7 @@ export default function LobbyPage() {
           onClick={profileEdit}
           onMouseEnter={hoverSound}
         >
-          <p className={styles.username}>{nickname}</p>
+          <ProfileModal hoverSound={hoverSound} clickSound={clickSound} />
         </div>
       </div>
       <div className={styles.medium}>
