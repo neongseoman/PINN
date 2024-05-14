@@ -68,7 +68,7 @@ public class JwtProvider {
                 .compact();
     }
 
-    public UsernamePasswordAuthenticationToken getAuthentication(String accessToken) throws ExpiredJwtException {
+    public UsernamePasswordAuthenticationToken getAuthentication(String accessToken) throws BaseException {
         try{
             Claims claims = validateToken(accessToken);
             int gamerId = claims.get("gamerId", Integer.class);
@@ -76,9 +76,9 @@ public class JwtProvider {
             GamerPrincipalVO gamerPrincipalVO = new GamerPrincipalVO(gamerId,nickname);
             log.debug("{} 유저 인증 성공 " , nickname);
             return new UsernamePasswordAuthenticationToken(gamerPrincipalVO, "",List.of(new SimpleGrantedAuthority("USER")));
-        } catch (ExpiredJwtException e){
+        } catch (Exception e){
             log.error("JWT Auth fail : {}", e.getMessage());
-            throw e;
+            throw new BaseException(BaseResponseStatus.INVALID_CREDENTIAL);
         }
     }
 
