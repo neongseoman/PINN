@@ -223,7 +223,7 @@
 }
 
 .roundInputBox {
-  width: 40%;
+  width: 46%;
   font-size: 20px;
   padding: 10px;
   background-color: rgba(255, 255, 255, 0.1);
@@ -237,7 +237,8 @@
   justify-content: space-around;
   align-items: center;
   width: 70%;
-  margin: 0px;
+  margin: 0px 10px 0px 0px;
+  gap: 15px;
 }
 
 .radioButton {
@@ -264,7 +265,7 @@
 }
 
 .stageInputBox {
-  width: 30%;
+  width: 27%;
   font-size: 20px;
   padding-top: 5px;
   padding-left: 10px;
@@ -272,7 +273,7 @@
 }
 
 .dropbtn {
-  margin-left: 30px;
+  margin-left: 15px;
   background: none;
   color: var(--Main-Yellow);
   font-size: 20px;
@@ -571,9 +572,4 @@
   &::placeholder {
     color: rgba(242, 202, 80, 0.5);
   }
-}
-
-/* sweetalert2 */
-.swal {
-  z-index: 9999 !important;
 }
