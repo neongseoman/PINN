@@ -4,10 +4,10 @@ import CreateRoomModal from '@/app/(main)/lobby/_components/CreateRoomModal'
 import ProfileModal from '@/app/(main)/lobby/_components/ProfileModal'
 import RoomCard from '@/app/(main)/lobby/_components/RoomCard'
 import RuleModal from '@/app/(main)/lobby/_components/RuleModal'
-import useUserStore from '@/stores/userStore'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { GiSoundOff, GiSoundOn } from 'react-icons/gi'
+import { MdReplay } from 'react-icons/md'
 import styles from './lobby.module.css'
 
 interface GameInfo {
@@ -25,7 +25,6 @@ interface GameInfo {
 }
 
 export default function LobbyPage() {
-  const { nickname } = useUserStore()
   const [gameList, setGameList] = useState<GameInfo[]>([])
   const [soundOn, setSoundOn] = useState<boolean>(false)
   const router = useRouter()
@@ -69,13 +68,55 @@ export default function LobbyPage() {
 
   const hoverSound = () => {
     const audio = new Audio('/assets/sounds/hover.wav')
-    audio.play()
+    if (soundOn) {
+      audio.play()
+    }
   }
 
   const clickSound = () => {
     const audio = new Audio('/assets/sounds/click.mp3')
-    audio.play()
+    if (soundOn) {
+      audio.play()
+    }
   }
+
+  const reload = () => {
+    roomList()
+    clickSound()
+  }
+
+  const roomList = async () => {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/lobby/search`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${
+            localStorage.getItem('accessToken') as string
+          }`,
+        },
+      },
+    )
+
+    if (response.ok) {
+      // console.log('게임 목록 요청 통신 성공')
+      const responseData = await response.json()
+      if (responseData.code === 1000) {
+        // console.log('게임 목록 출력 성공!', responseData)
+        setGameList(responseData.result)
+      } else {
+        // console.log('게임 목록 출력 실패!', responseData.code)
+        alert(responseData.message)
+      }
+    } else {
+      // console.error('게임 목록 요청 통신 실패', response)
+    }
+  }
+
+  useEffect(() => {
+    roomList()
+  }, [])
 
   useEffect(() => {
     const audio = new Audio('/assets/sounds/lobby.mp3')
@@ -92,39 +133,6 @@ export default function LobbyPage() {
       audio.currentTime = 0
     }
   }, [soundOn])
-
-  useEffect(() => {
-    const roomList = async () => {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/lobby/search`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${
-              localStorage.getItem('accessToken') as string
-            }`,
-          },
-        },
-      )
-
-      if (response.ok) {
-        // console.log('게임 목록 요청 통신 성공')
-        const responseData = await response.json()
-        if (responseData.code === 1000) {
-          // console.log('게임 목록 출력 성공!', responseData)
-          setGameList(responseData.result)
-        } else {
-          // console.log('게임 목록 출력 실패!', responseData.code)
-          alert(responseData.message)
-        }
-      } else {
-        // console.error('게임 목록 요청 통신 실패', response)
-      }
-    }
-
-    roomList()
-  }, [])
 
   return (
     <main className={styles.lobby}>
@@ -155,6 +163,11 @@ export default function LobbyPage() {
           >
             빠른 시작
           </p>
+          <MdReplay
+            className={styles.buttons}
+            onMouseEnter={hoverSound}
+            onClick={reload}
+          />
         </div>
         <RuleModal hoverSound={hoverSound} clickSound={clickSound} />
       </div>

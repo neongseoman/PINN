@@ -36,11 +36,17 @@ export default function CreateRoomModal({
   // )
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRoomName(event.target.value)
+    const inputTitle = event.target.value
+    if (inputTitle.length <= 20) {
+      setRoomName(inputTitle)
+    }
   }
 
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(event.target.value)
+    const inputPassword = event.target.value
+    if (inputPassword.length <= 8) {
+      setPassword(inputPassword)
+    }
   }
 
   const handleRoundChange = (event: React.ChangeEvent<HTMLInputElement>) => {
