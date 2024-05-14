@@ -5,23 +5,33 @@ import { useEffect, useRef } from 'react'
 import styles from '../roundResult.module.css'
 
 
-interface RoundWaitingMapProps {
-    loader: Loader
+interface RoundResult {
+    teamId: number
+    roundNumber: number
+    roundRank: number
+    totalRank: number
+    roundScore: number
+    totalScore: number
+    submitLat: number
+    submitLng: number
+    colorCode: string
 }
 
-// interface MarkerInfo {
-//     position: google.maps.LatLngLiteral
-//     title: string
-// }
+interface RoundResultMapProps {
+    loader: Loader
+    roundResult: RoundResult[]
+}
 
-// interface AnswerInfo {
-//     position: google.maps.LatLngLiteral
-// }
+interface MarkerInfo {
+    position: google.maps.LatLngLiteral
+    title: string
+}
 
-export default function RoundResultMap({ loader }: RoundWaitingMapProps) {
+
+export default function RoundResultMap({ params, loader }: { params: { gameId: string; round: string }; loader: Loader; }) {
     const mapRef = useRef<any>()
     const mapObjectRef = useRef<google.maps.Map | null>(null)
-    // const markersRef = useRef<google.maps.Marker[]>([])
+    const markersRef = useRef<google.maps.Marker[]>([])
 
     useEffect(() => {
         loader.importLibrary('maps').then(async () => {
@@ -29,7 +39,6 @@ export default function RoundResultMap({ loader }: RoundWaitingMapProps) {
             const { Map } = (await google.maps.importLibrary(
                 'maps',
             )) as google.maps.MapsLibrary
-
 
             const map = new Map(mapRef.current, {
                 center: position,
@@ -43,6 +52,7 @@ export default function RoundResultMap({ loader }: RoundWaitingMapProps) {
             // const markerInfos: MarkerInfo[] = roundResult.map(result => ({
             //     position: { lat: result.submitLat, lng: result.submitLng },
             //     title: `팀 ${result.teamId}`,
+            //     // color: colorCode
             //     // teamNumber: result.teamNumber,
             // }))
 
@@ -62,11 +72,6 @@ export default function RoundResultMap({ loader }: RoundWaitingMapProps) {
             //     })
             //     markersRef.current.push(marker)
             // })
-
-            const currentZoom = mapObjectRef.current.getZoom();
-            if (currentZoom !== undefined && currentZoom > 2) {
-                mapObjectRef.current.setZoom(currentZoom - 1);
-            }
 
         })
     }, [])
