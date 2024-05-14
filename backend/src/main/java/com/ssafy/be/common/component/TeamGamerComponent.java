@@ -9,7 +9,7 @@ import lombok.ToString;
 @ToString
 public class TeamGamerComponent {
     private int teamId;
-    private int colorId;
+    private String teamGamerColor;
     private int gamerId;
     private String nickname;
     private int teamGamerNumber;
