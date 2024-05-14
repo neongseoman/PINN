@@ -17,7 +17,7 @@ interface IngameStore extends IngameInitState {
 const initState: IngameInitState = {
   teamId: 1,
   teamColor: 'red',
-  theme: 'random',
+  theme: '랜덤',
 }
 
 const useIngameStore = create(
