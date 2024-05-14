@@ -1,5 +1,8 @@
 package com.ssafy.be.common.component;
 
+import static com.ssafy.be.common.Provider.ColorCode.NEON_GREEN;
+import static com.ssafy.be.common.Provider.ColorCode.NEON_PINK;
+import static com.ssafy.be.common.Provider.ColorCode.NEON_YELLOW;
 import static com.ssafy.be.common.response.BaseResponseStatus.ALREADY_START_GAME;
 import static com.ssafy.be.common.response.BaseResponseStatus.FULL_ROOM_ERROR;
 import static com.ssafy.be.common.response.BaseResponseStatus.FULL_TEAM_ERROR;
@@ -8,6 +11,7 @@ import static com.ssafy.be.common.response.BaseResponseStatus.NOT_EXIST_GAMER;
 import static com.ssafy.be.common.response.BaseResponseStatus.NOT_EXIST_UNREADY_TEAM;
 import static com.ssafy.be.common.response.BaseResponseStatus.NOT_MATCH_PASSWORD;
 
+import com.ssafy.be.common.Provider.ColorCode;
 import com.ssafy.be.common.exception.BaseException;
 import com.ssafy.be.common.model.domain.Game;
 import com.ssafy.be.common.model.dto.SocketDTO;
@@ -104,11 +108,21 @@ public class GameManager {
                 }
                 // 팀 내 멤버 수 + 1번째 (원래는 DB에 넣고 해당 key id를 넣어야 했음)
                 int teamGamerNumber = team.getValue().getTeamGamers().size() + 1;
+                ColorCode teamGamerColor = null;
+                if (teamGamerNumber == 1){
+                    teamGamerColor = NEON_GREEN;
+                } else if (teamGamerNumber == 2){
+                    teamGamerColor = NEON_PINK;
+                } else {
+                    teamGamerColor = NEON_YELLOW;
+                }
+
                 TeamGamerComponent teamGamerComponent = TeamGamerComponent.builder()
                         .teamGamerNumber(teamGamerNumber)
                         .gamerId(gamerPrincipalVO.getGamerId())
                         .teamId(team.getValue().getTeamId())
                         .nickname(gamerPrincipalVO.getNickname())
+                        .teamGamerColor(teamGamerColor.name())
                         .build();
                 // 멤버를 팀에 삽입
                 log.info(team.getValue().getTeamId() + "팀에 들어간 " + teamGamerComponent);
@@ -133,10 +147,6 @@ public class GameManager {
         // team
         TeamComponent teamComponent = gameComponent.teams.get(socketDTO.getSenderTeamId());
         // teamGamer
-        // TeamComponent가 없다면 객체 생성
-//        if(teamComponent == null){
-//            teamComponent = new TeamComponent();
-//        }
         ConcurrentHashMap<Integer, TeamGamerComponent> teamGamers = teamComponent.getTeamGamers();
         if (teamGamers == null){
             throw new BaseException(NOT_EXIST_GAMER, gamerPrincipalVO.getGamerId());
@@ -146,7 +156,19 @@ public class GameManager {
         ExitRoomVO exitRoomVO = null;
         // 나가는 사람이 리더라면
         if (gamerPrincipalVO.getGamerId() == gameComponent.getLeaderId()){
+            TeamGamerComponent newLeader = getNewLeader(gameComponent);
 
+            exitRoomVO = ExitRoomVO.builder()
+                    .senderDateTime(socketDTO.getSenderDateTime())
+                    .senderNickname(socketDTO.getSenderNickname())
+                    .senderGameId(socketDTO.getSenderGameId())
+                    .senderTeamId(socketDTO.getSenderTeamId())
+                    .changeLeader(true)
+                    .newLeaderNickname(newLeader.getNickname())
+                    .senderTeamNumber(teamComponent.getTeamNumber())
+                    .code(1012)
+                    .msg(gamerPrincipalVO.getNickname() + "님이 " + socketDTO.getSenderGameId() + "번 방 " + socketDTO.getSenderTeamId() + "팀 " + teamComponent.getTeamNumber() + "번째 자리에서 나갔습니다.")
+                    .build();
         }
         // 리더가 아니라면
         else{
@@ -156,6 +178,7 @@ public class GameManager {
                     .senderGameId(socketDTO.getSenderGameId())
                     .senderTeamId(socketDTO.getSenderTeamId())
                     .senderTeamNumber(teamComponent.getTeamNumber())
+                    .changeLeader(false)
                     .code(1011)
                     .msg(gamerPrincipalVO.getNickname() + "님이 " + socketDTO.getSenderGameId() + "번 방 " + socketDTO.getSenderTeamId() + "팀 " + teamComponent.getTeamNumber() + "번째 자리에서 나갔습니다.")
                     .build();
@@ -163,7 +186,30 @@ public class GameManager {
 
         // remove gamer
         teamGamers.remove(gamerPrincipalVO.getGamerId());
+        // 방에 아무도 없는 경우 확인
+//        checkRoomEmpty();
+
         return exitRoomVO;
+    }
+
+    // 리더가 될 사람을 찾는 메서드
+    private TeamGamerComponent getNewLeader(GameComponent gameComponent) {
+        TeamGamerComponent newLeader = null;
+
+        for (TeamComponent teamComponent : gameComponent.getTeams().values()){
+            ConcurrentHashMap<Integer, TeamGamerComponent> teamGamerComponent = teamComponent.getTeamGamers();
+            // 팀 내 사람이 있다면
+            if (teamGamerComponent != null && !teamGamerComponent.isEmpty()){
+                for (int i=1; i<=3; i++){
+                    // 팀 내 앞에서부터 존재하는 사람 찾음
+                    newLeader = teamGamerComponent.getOrDefault(i, null);
+                    if(newLeader != null){
+                        return newLeader;
+                    }
+                }
+            }
+        }
+        return newLeader;
     }
 
     // 팀 옮기기위한 method
