@@ -639,6 +639,7 @@ public class GameServiceImpl implements GameService {
             RoundResultVO roundResultVO = new RoundResultVO();
             roundResultVO.setGameId(roundResultRequestDTO.getGameId());
             roundResultVO.setRoundNumber(roundResultRequestDTO.getRound());
+            roundResultVO.setQuestion(existGame.getQuestions().get(roundResultRequestDTO.getRound()-1));
             roundResultVO.setRoundResult(roundResult);
 
             log.info(roundResultVO);
@@ -665,6 +666,7 @@ public class GameServiceImpl implements GameService {
             gameResultVO.setGameId(gameResultRequestDTO.getGameId());
             gameResultVO.setTeamId(gameResultRequestDTO.getTeamId());
             gameResultVO.setRoundResults(existGame.getRoundResults());
+            gameResultVO.setQuestions(existGame.getQuestions());
 //            gameResultVO.setGameResult();
 
             log.info(gameResultVO);
