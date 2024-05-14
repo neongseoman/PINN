@@ -180,6 +180,9 @@ export default function GamePage({
     <main>
       {countDown && (
         <div className={styles.lottieAnimation}>
+          <div className={styles.lottieTitle}>
+            스테이지 {currentStage} 종료까지
+          </div>
           <LottieAnimation
             animationData={CountDown}
             play={countDown}
