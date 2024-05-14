@@ -1,6 +1,7 @@
 'use client'
 
 import Chatting from '@/components/Chatting'
+import LottieAnimation from '@/components/LottieAnimation'
 import Timer from '@/components/Timer'
 import themeStyles from '@/components/theme.module.css'
 import useIngameStore from '@/stores/ingameStore'
@@ -19,6 +20,8 @@ import StreetView from './_components/StreetView'
 import ThemeInfo from './_components/ThemeInfo'
 import styles from './game.module.css'
 
+import StageTwoLottie from '@public/assets/images/lotties/StageTwo.json'
+
 export default function GamePage({
   params,
 }: {
@@ -32,6 +35,9 @@ export default function GamePage({
   const [hintPin, setHintPin] = useState<boolean>(false)
   const [mapPin, setMapPin] = useState<boolean>(false)
 
+  // 스테이지 넘김 애니메이션
+  const [stageTwoPlay, setStageTwoPlay] = useState<boolean>(false)
+
   // 힌트
   const [hints, setHints] = useState<Hint[] | null>(null)
 
@@ -39,7 +45,7 @@ export default function GamePage({
   const { theme, teamId } = useIngameStore()
 
   // 스테이지 시간 - 소켓으로 받아옴
-  const stageTime = 100
+  const [stageTime, setStageTime] = useState<number>(30)
   const [currentStage, setCurrentStage] = useState<number>(1)
 
   // 정답 좌표
@@ -76,7 +82,10 @@ export default function GamePage({
       params.gameId,
       params.round,
     )) as RoundInit
-
+    if (!roundInfo.success) {
+      alert(roundInfo.message)
+      return
+    }
     setHints(roundInfo.result.hints)
     setLat(roundInfo.result.lat)
     setLng(roundInfo.result.lng)
@@ -88,6 +97,10 @@ export default function GamePage({
       params.gameId,
       params.round,
     )) as StageTwoInit
+    if (!stageTwoInfo.success) {
+      alert(stageTwoInfo.message)
+      return
+    }
     setCurrentStage(2)
     setHints(stageTwoInfo.result.hints)
   }
@@ -95,6 +108,8 @@ export default function GamePage({
   // 소켓 구독
   const ingameSubscribeUrl = `/game/sse/${params.gameId}`
   useEffect(() => {
+    // 게임 시작 정보
+
     // 라운드 시작 정보
     roundStartRender()
 
@@ -112,19 +127,14 @@ export default function GamePage({
             break
           case 1203:
             // 스테이지 2 스타트
-
+            setStageTwoPlay(true)
             // 스테이지 2 렌더링
             stageTwoRender()
             break
           case 1204:
             // 스테이지 2 끝
-            // router.push(`/game/${params.gameId}/${params.round}/result`)
+            router.push(`/game/${params.gameId}/${params.round}/result`)
             break
-
-          // 라운드 종료
-          // case 1206:
-          //   router.push(`/game/${params.gameId}/${Number(params.round) + 1}`)
-          //   break
         }
       })
     }
@@ -147,8 +157,23 @@ export default function GamePage({
 
   return (
     <main>
+      {stageTwoPlay && (
+        <div className={styles.lottieAnimation}>
+          <LottieAnimation
+            animationData={StageTwoLottie}
+            play={stageTwoPlay}
+            loop={false}
+            speed={0.4}
+            setPlay={setStageTwoPlay}
+          />
+        </div>
+      )}
       <div className={styles.infos}>
-        <GameInfo theme={theme} round={Number(params.round)} stage={1} />
+        <GameInfo
+          theme={theme}
+          round={Number(params.round)}
+          stage={currentStage}
+        />
         <ThemeInfo theme={theme} />
       </div>
       <div

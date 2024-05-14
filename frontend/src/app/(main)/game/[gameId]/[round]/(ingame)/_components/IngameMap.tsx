@@ -3,7 +3,7 @@
 import themeStyles from '@/components/theme.module.css'
 import useIngameStore from '@/stores/ingameStore'
 import useUserStore from '@/stores/userStore'
-import { PinRespoonse } from '@/types/IngameSocketTypes'
+import { IngameMapRespoonse } from '@/types/IngameSocketTypes'
 import { Loader } from '@googlemaps/js-api-loader'
 import { Client, IFrame, IMessage } from '@stomp/stompjs'
 import { useRouter } from 'next/navigation'
@@ -23,6 +23,9 @@ interface MyGuess {
   lng: number
 }
 
+interface CursorState {
+  [nickname: string]: google.maps.Marker
+}
 export default function IngameMap({
   theme,
   loader,
@@ -48,12 +51,15 @@ export default function IngameMap({
     }),
   )
 
+  const cursorListRef = useRef<CursorState>({})
+
   const { nickname } = useUserStore()
   const { teamId, teamColor } = useIngameStore()
 
   const subUrl = `/team/${gameId}/${teamId}`
   const guessUrl = `/app/team/guess`
   const pinUrl = '/app/team/pin'
+  const cursorUrl = '/app/team/cursor'
 
   // 지도 핀 변경
   function changePin(lat: number, lng: number) {
@@ -85,6 +91,34 @@ export default function IngameMap({
     }
   }
 
+  function changeCursor(lat: number, lng: number, senderNickname: string) {
+    if (senderNickname == nickname) {
+      return
+    }
+    if (cursorListRef.current[senderNickname]) {
+      // 기존에 같은 닉네임의 커서가 있으면 제거
+      cursorListRef.current[senderNickname].setMap(null)
+      delete cursorListRef.current[senderNickname]
+    }
+
+    // 새 커서 추가
+    const newCursor = new google.maps.Marker({
+      position: { lat, lng },
+      map: mapObjectRef.current,
+      icon: {
+        path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+        rotation: -45,
+        scale: 3,
+        fillColor: 'blue',
+        fillOpacity: 1,
+        strokeColor: 'black',
+        strokeWeight: 1,
+      },
+    })
+
+    // 새 커서를 리스트에 추가
+    cursorListRef.current[senderNickname] = newCursor
+  }
   // 지도 init
   useEffect(() => {
     loader.importLibrary('maps').then(async () => {
@@ -100,6 +134,8 @@ export default function IngameMap({
         clickableIcons: false,
         zoom: 8,
       })
+
+      // 지도에 특정 지점을 클릭 했을 때
       map.addListener('click', (e: google.maps.MapMouseEvent) => {
         changePin(e.latLng?.lat()!, e.latLng?.lng()!)
         clientRef.current.publish({
@@ -119,34 +155,45 @@ export default function IngameMap({
         })
       })
 
+      // 지도에서 마우스를 움직일 때
       map.addListener('mousemove', function (e: google.maps.MapMouseEvent) {
-        const lat = e.latLng?.lat() // 위도
-        const lng = e.latLng?.lng() // 경도
-        console.log(`위도: ${lat}, 경도: ${lng}`)
+        clientRef.current.publish({
+          headers: {
+            Auth: localStorage.getItem('accessToken') as string,
+          },
+          destination: cursorUrl,
+          body: JSON.stringify({
+            senderNickname: nickname,
+            senderGameId: gameId,
+            senderTeamId: teamId,
+            lat: e.latLng?.lat(),
+            lng: e.latLng?.lng(),
+          }),
+        })
       })
       mapObjectRef.current = map
     })
-  }, [loader])
+  }, [loader, nickname, teamId, gameId, round])
 
   // 소켓 init
   useEffect(() => {
     clientRef.current.onConnect = function (_frame: IFrame) {
       clientRef.current.subscribe(subUrl, (message: IMessage) => {
-        const mesRes = JSON.parse(message.body) as PinRespoonse
+        const mesRes = JSON.parse(message.body) as IngameMapRespoonse
         switch (mesRes.code) {
           case 1115:
             // 핀 위치 변경
-            if (
-              !myGuess.current ||
-              (mesRes.submitLat != myGuess.current?.lat &&
-                mesRes.submitLng != myGuess.current?.lng)
-            ) {
+            if (mesRes.senderNickname != nickname) {
               changePin(mesRes.submitLat, mesRes.submitLng)
             }
             break
           case 1116:
             // 핀 제출
-            // router.push(`/game/${gameId}/${round}/waiting`)
+            router.push(`/game/${gameId}/${round}/waiting`)
+            break
+          case 1120:
+            // 실시간 커서
+            changeCursor(mesRes.lat, mesRes.lng, mesRes.senderNickname)
             break
         }
       })
@@ -162,7 +209,7 @@ export default function IngameMap({
     return () => {
       clientRef.current.deactivate()
     }
-  }, [gameId, round])
+  }, [gameId, round, nickname])
 
   function handleSubmitGuess() {
     if (myGuess.current) {
@@ -174,7 +221,7 @@ export default function IngameMap({
         body: JSON.stringify({
           senderNickname: nickname,
           senderGameId: gameId,
-          senderTeamId: 1,
+          senderTeamId: teamId,
           submitLat: myGuess.current.lat,
           submitLng: myGuess.current.lng,
           roundNumber: round,
