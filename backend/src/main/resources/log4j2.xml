@@ -14,7 +14,7 @@
 
         <NoSql name="MongoDbAppender">
             <MongoDb4
-                    connection="mongodb://logger:ssafy701@3.34.108.114:${sys:MONGO_PORT:-27017}/logging.logs"
+                    connection="mongodb://${env:MONGO_LOG_USER}:${env:MONGO_LOG_PASS}@${env:MONGO_HOST}:${env:MONGO_PORT}/logging.logs"
                     capped="true"
                     collectionSize="1073741824"
             />
