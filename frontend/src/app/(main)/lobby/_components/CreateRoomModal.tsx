@@ -36,11 +36,17 @@ export default function CreateRoomModal({
   // )
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRoomName(event.target.value)
+    const inputTitle = event.target.value
+    if (inputTitle.length <= 20) {
+      setRoomName(inputTitle)
+    }
   }
 
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(event.target.value)
+    const inputPassword = event.target.value
+    if (inputPassword.length <= 8) {
+      setPassword(inputPassword)
+    }
   }
 
   const handleRoundChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -213,6 +219,28 @@ export default function CreateRoomModal({
                   onChange={handleRoundChange}
                 />
                 <span className={styles.radioText}>3</span>
+              </label>
+              <label>
+                <input
+                  className={styles.radioButton}
+                  type="radio"
+                  name="options"
+                  value="4"
+                  checked={roundCount === 4}
+                  onChange={handleRoundChange}
+                />
+                <span className={styles.radioText}>4</span>
+              </label>
+              <label>
+                <input
+                  className={styles.radioButton}
+                  type="radio"
+                  name="options"
+                  value="5"
+                  checked={roundCount === 5}
+                  onChange={handleRoundChange}
+                />
+                <span className={styles.radioText}>5</span>
               </label>
             </p>
           </div>
