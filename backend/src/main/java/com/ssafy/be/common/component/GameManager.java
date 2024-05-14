@@ -99,15 +99,22 @@ public class GameManager {
         for (Entry<Integer, TeamComponent> team : gameComponent.teams.entrySet()) {
             // 준비가 아직 안 된 & 팀 내 멤버가 3명 초과하지 않음
             if(!team.getValue().isReady()){
-                // 팀멤버 객체가 없다면 생성
-                if(team.getValue().getTeamGamers() == null){
+                // 팀게이머 객체가 없다면 생성
+                ConcurrentHashMap<Integer, TeamGamerComponent> teamGamers = team.getValue().getTeamGamers();
+                if(teamGamers == null){
                     team.getValue().setTeamGamers(new ConcurrentHashMap<>());
-                } else if(team.getValue().getTeamGamers().size() == 3){
-                    // 팀멤버 객체가 있다면 멤버가 3명이라면 넘어감
+                    teamGamers = team.getValue().teamGamers;
+                } else if(teamGamers.size() == 3){
+                    // 팀게이머 객체가 있고 멤버가 3명이라면 넘어감
                     continue;
                 }
-                // 팀 내 멤버 수 + 1번째 (원래는 DB에 넣고 해당 key id를 넣어야 했음)
-                int teamGamerNumber = team.getValue().getTeamGamers().size() + 1;
+                // 팀 내 번호 할당 (원래는 DB에 넣고 해당 key id를 넣어야 했음)
+                int teamGamerNumber = getTeamGamerNumber(teamGamers);
+                if (teamGamerNumber == 0){
+                    // TODO : 팀 내에 제대로 할당받지 못 함 (사람이 모두 찼을 경우)
+//                    throw new BaseException();
+                }
+
                 // 색상 할당
                 ColorCode teamGamerColor = null;
                 if (teamGamerNumber == 1){
@@ -134,6 +141,18 @@ public class GameManager {
 
         //  들어갈 수 있는 공간이 없는 경우 Exception 처리
         throw new BaseException(FULL_ROOM_ERROR, gamerPrincipalVO.getGamerId());
+    }
+
+    private int getTeamGamerNumber(ConcurrentHashMap<Integer, TeamGamerComponent> teamGamers) {
+        boolean[] checkTeamGamerNumber = new boolean[4];
+
+        for (int i = 1; i < 4; i++) {
+            if (teamGamers.getOrDefault(i, null) == null){
+                // 할당할 번호 찾음
+                return i;
+            }
+        }
+        return 0;
     }
 
     // 방 나가기위한 method
