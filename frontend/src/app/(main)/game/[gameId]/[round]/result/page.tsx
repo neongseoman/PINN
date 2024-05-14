@@ -1,11 +1,13 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import styles from './roundResult.module.css'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Loader } from '@googlemaps/js-api-loader'
 import RoundResultMap from './_components/RoundResultMap'
+import { Client, IFrame, IMessage } from '@stomp/stompjs'
+import { GameProgressInfo } from '@/types/IngameSocketTypes'
 
 
 interface RoundResult {
@@ -17,11 +19,11 @@ interface RoundResult {
   totalScore: number
   submitLat: number
   submitLng: number
+  colorCode: string
 }
 
-export default function LoadingPage({ params }: { params: { id: number } }) {
+export default function RoundResultPage({ params }: { params: { gameId: string; round: string } }) {
   const [roundResult, setRoundResult] = useState<RoundResult[]>([])
-  const [count, setCount] = useState(5)
   const router = useRouter()
 
   const loader = new Loader({
@@ -30,10 +32,22 @@ export default function LoadingPage({ params }: { params: { id: number } }) {
     // ...additionalOptions,
   })
 
+  const clientRef = useRef<Client>(
+    new Client({
+      brokerURL: process.env.NEXT_PUBLIC_SERVER_SOCKET_URL,
+      debug: function (str: string) {
+      },
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
+    }),
+  )
+
+
   useEffect(() => {
     const roundResultList = async () => {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/round/result`,
+        `${process.env.NEXT_PUBLIC_API_URL}/game/round/result`,
         {
           method: 'POST',
           headers: {
@@ -41,6 +55,10 @@ export default function LoadingPage({ params }: { params: { id: number } }) {
             Authorization: `Bearer ${localStorage.getItem('accessToken') as string
               }`,
           },
+          body: JSON.stringify({
+            gameId: params.gameId,
+            round: params.round
+          }),
         },
       )
 
@@ -58,20 +76,40 @@ export default function LoadingPage({ params }: { params: { id: number } }) {
         console.error('라운드 결과 요청 통신 실패', response)
       }
     }
+
     roundResultList()
   }, [])
 
+  const ingameSubscribeUrl = `/game/sse/${params.gameId}`
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCount((prevCount) => prevCount - 1)
-    }, 1000)
-
-    if (count === 0) {
-      clearInterval(timer)
+    // 소켓 연결 시 동작
+    clientRef.current.onConnect = function (_frame: IFrame) {
+      // 게임 진행 구독
+      clientRef.current.subscribe(ingameSubscribeUrl, (message: IMessage) => {
+        const gameProgressResponse = JSON.parse(
+          message.body,
+        ) as GameProgressInfo
+        switch (gameProgressResponse.code) {
+          case 1206:
+            if (parseInt(params.round) + 1 < 4) {
+              router.push(`/game/${params.gameId}/${parseInt(params.round) + 1}`);
+            }
+            break
+        }
+      })
     }
 
-    return () => clearInterval(timer)
-  }, [count, router])
+    clientRef.current.onStompError = function (frame: IFrame) {
+      console.log('스톰프 에러: ' + frame.headers['message'])
+      console.log('추가 정보: ' + frame.body)
+    }
+
+    clientRef.current.activate()
+
+    return () => {
+      clientRef.current.deactivate()
+    }
+  }, [params.gameId, params.round])
 
   // api받아오기
 
@@ -81,7 +119,7 @@ export default function LoadingPage({ params }: { params: { id: number } }) {
         <div className={styles.round}>라운드 {1}</div>
         <div className={styles.result}>Result</div>
         <div className={styles.mapWrapper}>
-          <RoundResultMap loader={loader} roundResult={roundResult} />
+          <RoundResultMap params={params} loader={loader} roundResult={roundResult} />
         </div>
         <div className={styles['rank-container']}>
           <div className={styles.trophy}>
@@ -94,7 +132,7 @@ export default function LoadingPage({ params }: { params: { id: number } }) {
               .sort((a, b) => a.roundRank - b.roundRank)
               .map(result => (
                 <div key={result.teamId} className={styles.teamList}>
-                  <div>{result.roundRank} TEAM {result.teamId}</div>
+                  <div>{result.roundRank}. TEAM {result.teamId}</div>
                   <div>{result.roundScore.toLocaleString()}</div>
                 </div>
               ))

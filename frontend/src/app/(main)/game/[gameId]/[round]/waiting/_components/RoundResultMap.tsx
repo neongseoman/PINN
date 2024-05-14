@@ -1,43 +1,31 @@
 'use client'
 
-import themeStyles from '@/components/theme.module.css'
 import { Loader } from '@googlemaps/js-api-loader'
 import { useEffect, useRef } from 'react'
 import styles from '../roundResult.module.css'
 
-interface RoundResult {
-    teamId: number
-    roundNumber: number
-    roundRank: number
-    totalRank: number
-    roundScore: number
-    totalScore: number
-    submitLat: number
-    submitLng: number
-}
 
-interface RoundResultMapProps {
+interface RoundWaitingMapProps {
     loader: Loader
-    roundResult: RoundResult[]
 }
 
-interface MarkerInfo {
-    position: google.maps.LatLngLiteral
-    title: string
-}
+// interface MarkerInfo {
+//     position: google.maps.LatLngLiteral
+//     title: string
+// }
 
-interface AnswerInfo {
-    position: google.maps.LatLngLiteral
-}
+// interface AnswerInfo {
+//     position: google.maps.LatLngLiteral
+// }
 
-export default function RoundResultMap({ loader, roundResult }: RoundResultMapProps) {
+export default function RoundResultMap({ loader }: RoundWaitingMapProps) {
     const mapRef = useRef<any>()
     const mapObjectRef = useRef<google.maps.Map | null>(null)
-    const markersRef = useRef<google.maps.Marker[]>([])
+    // const markersRef = useRef<google.maps.Marker[]>([])
 
     useEffect(() => {
         loader.importLibrary('maps').then(async () => {
-            const position = { lat: 37.5642135, lng: 127.0016985 }
+            const position = { lat: 30, lng: 150 }
             const { Map } = (await google.maps.importLibrary(
                 'maps',
             )) as google.maps.MapsLibrary
@@ -47,33 +35,33 @@ export default function RoundResultMap({ loader, roundResult }: RoundResultMapPr
                 center: position,
                 disableDefaultUI: true,
                 clickableIcons: false,
-                zoom: 12,
+                zoom: 2,
             })
 
             mapObjectRef.current = map
 
-            const markerInfos: MarkerInfo[] = roundResult.map(result => ({
-                position: { lat: result.submitLat, lng: result.submitLng },
-                title: `팀 ${result.teamId}`,
-                // teamNumber: result.teamNumber,
-            }))
+            // const markerInfos: MarkerInfo[] = roundResult.map(result => ({
+            //     position: { lat: result.submitLat, lng: result.submitLng },
+            //     title: `팀 ${result.teamId}`,
+            //     // teamNumber: result.teamNumber,
+            // }))
 
-            markerInfos.forEach(markerInfo => {
-                const marker = new google.maps.Marker({
-                    position: markerInfo.position,
-                    map: mapObjectRef.current,
-                    title: markerInfo.title,
-                    icon: {
-                        path: google.maps.SymbolPath.CIRCLE,
-                        scale: 5,
-                        fillColor: 'red',
-                        fillOpacity: 1,
-                        strokeColor: 'black',
-                        strokeWeight: 2,
-                    },
-                })
-                markersRef.current.push(marker)
-            })
+            // markerInfos.forEach(markerInfo => {
+            //     const marker = new google.maps.Marker({
+            //         position: markerInfo.position,
+            //         map: mapObjectRef.current,
+            //         title: markerInfo.title,
+            //         icon: {
+            //             path: google.maps.SymbolPath.CIRCLE,
+            //             scale: 5,
+            //             fillColor: 'red',
+            //             fillOpacity: 1,
+            //             strokeColor: 'black',
+            //             strokeWeight: 2,
+            //         },
+            //     })
+            //     markersRef.current.push(marker)
+            // })
 
             const currentZoom = mapObjectRef.current.getZoom();
             if (currentZoom !== undefined && currentZoom > 2) {
