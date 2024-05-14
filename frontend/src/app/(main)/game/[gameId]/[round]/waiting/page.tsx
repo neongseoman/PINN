@@ -22,7 +22,7 @@ interface RoundResult {
 }
 
 export default function WaitingPage({ params }: { params: { gameId: string; round: string } }) {
-  const [count, setCount] = useState(5)
+  const [remainSeconds, setRemainSeconds] = useState<number>(30)
   const router = useRouter()
   const stageTime = 100
 
@@ -57,6 +57,17 @@ export default function WaitingPage({ params }: { params: { gameId: string; roun
             // 스테이지 2 끝
             router.push(`/game/${params.gameId}/${params.round}/result`)
             break
+
+          case 1210:
+            // 현재 페이지와 라운드가 다를 경우
+            if (gameProgressResponse.round != Number(params.round)) {
+              router.push(
+                `/game/${params.gameId}/${gameProgressResponse.round}`,
+              )
+              return
+            }
+            setRemainSeconds(gameProgressResponse.leftTime)
+            break
         }
       })
     }
@@ -78,12 +89,12 @@ export default function WaitingPage({ params }: { params: { gameId: string; roun
   return (
     <main className={styles.background}>
       <div className={styles.container}>
-        <div className={styles.round}>라운드 {1}</div>
+        <div className={styles.round}>라운드 {params.round}</div>
         <div className={styles.waiting}>
-          {/* <Timer stageTime={stageTime} /> */}
+          <Timer remainSeconds={remainSeconds} />
         </div>
         <div className={styles.mapWrapper}>
-          <RoundResultMap loader={loader} />
+          <RoundResultMap params={params} loader={loader} />
         </div>
       </div>
     </main>

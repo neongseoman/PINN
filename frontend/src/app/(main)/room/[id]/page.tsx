@@ -11,6 +11,7 @@ import TeamList from './_components/TeamList'
 import BtnStart from './_components/BtnStart'
 // import BtnStartCancel from './_components/BtnStartCancel'
 
+import { GameProgressInfo } from '@/types/IngameSocketTypes'
 import { Client, IFrame, IMessage } from '@stomp/stompjs'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
@@ -52,7 +53,7 @@ export default function RoomPage({ params }: { params: { id: string } }) {
   const { gamerId, nickname } = useUserStore()
   const router = useRouter()
   const [gameInfo, setGameInfo] = useState<GameInfo>()
-  const [startMsg, setStartMsg] = useState()
+  const [remainTime, setRemainTime] = useState<number>(0)
   const [teams, setTeams] = useState<Team[]>([
     {
       teamNumber: 1,
@@ -189,6 +190,20 @@ export default function RoomPage({ params }: { params: { id: string } }) {
         console.log('Subscribed message:', messageResponse)
         if (messageResponse.code === 1202) {
           router.push(`/game/${params.id}/1`)
+        }
+      })
+
+      clientRef.current.subscribe(subscribeUrl2, (message: IMessage) => {
+        const gameProgressResponse = JSON.parse(
+          message.body,
+        ) as GameProgressInfo
+        switch (gameProgressResponse.code) {
+          case 1202:
+            router.push(`/game/${params.id}/1`)
+            break
+
+          case 1210:
+            setRemainTime(gameProgressResponse.leftTime)
         }
       })
 

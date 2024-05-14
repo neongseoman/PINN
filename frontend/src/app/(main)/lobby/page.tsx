@@ -124,7 +124,7 @@ export default function LobbyPage() {
     }
 
     roomList()
-  }, [nickname])
+  }, [])
 
   return (
     <main className={styles.lobby}>
