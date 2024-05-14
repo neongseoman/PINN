@@ -160,6 +160,7 @@ export default function GamePage({
           <LottieAnimation
             animationData={StageTwoLottie}
             play={stageTwoPlay}
+            loop={false}
             speed={0.4}
             setPlay={setStageTwoPlay}
           />
