@@ -1,6 +1,7 @@
 'use client'
 
 import Chatting from '@/components/Chatting'
+import LottieAnimation from '@/components/LottieAnimation'
 import Timer from '@/components/Timer'
 import themeStyles from '@/components/theme.module.css'
 import useIngameStore from '@/stores/ingameStore'
@@ -19,6 +20,8 @@ import StreetView from './_components/StreetView'
 import ThemeInfo from './_components/ThemeInfo'
 import styles from './game.module.css'
 
+import StageTwoLottie from '@public/assets/images/lotties/StageTwo.json'
+
 export default function GamePage({
   params,
 }: {
@@ -31,6 +34,9 @@ export default function GamePage({
   const [chatPin, setChatPin] = useState<boolean>(false)
   const [hintPin, setHintPin] = useState<boolean>(false)
   const [mapPin, setMapPin] = useState<boolean>(false)
+
+  // 스테이지 넘김 애니메이션
+  const [stageTwoPlay, setStageTwoPlay] = useState<boolean>(false)
 
   // 힌트
   const [hints, setHints] = useState<Hint[] | null>(null)
@@ -111,7 +117,7 @@ export default function GamePage({
             break
           case 1203:
             // 스테이지 2 스타트
-
+            setStageTwoPlay(true)
             // 스테이지 2 렌더링
             stageTwoRender()
             break
@@ -141,6 +147,16 @@ export default function GamePage({
 
   return (
     <main>
+      {stageTwoPlay && (
+        <div className={styles.lottieAnimation}>
+          <LottieAnimation
+            animationData={StageTwoLottie}
+            play={stageTwoPlay}
+            speed={0.4}
+            setPlay={setStageTwoPlay}
+          />
+        </div>
+      )}
       <div className={styles.infos}>
         <GameInfo
           theme={theme}
