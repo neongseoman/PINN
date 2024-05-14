@@ -64,7 +64,7 @@ public class LobbyController {
         GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
         createRoomDTO.setLeader_id(gamerPrincipalVO.getGamerId());
         log.info(gamerPrincipalVO);
-        log.info("createRoomDTO : " + createRoomDTO);
+        log.info("createRoomDTO : {}", createRoomDTO);
         // 생성된 초기 게임 설정을 DB에 저장
         GameComponent savedGame = lobbyService.createRoom(createRoomDTO);
         // 게임 내 팀 객체를 생성
