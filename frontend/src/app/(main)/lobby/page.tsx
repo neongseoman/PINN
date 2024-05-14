@@ -30,10 +30,6 @@ export default function LobbyPage() {
   const [soundOn, setSoundOn] = useState<boolean>(false)
   const router = useRouter()
 
-  const profileEdit = () => {
-    //
-  }
-
   const fastStart = async () => {
     clickSound()
 
@@ -128,7 +124,7 @@ export default function LobbyPage() {
     }
 
     roomList()
-  }, [])
+  }, [nickname])
 
   return (
     <main className={styles.lobby}>
@@ -145,11 +141,7 @@ export default function LobbyPage() {
             <GiSoundOff className={styles.soundIcon} onClick={lobbySound} />
           )}
         </div>
-        <div
-          className={styles.userInfo}
-          onClick={profileEdit}
-          onMouseEnter={hoverSound}
-        >
+        <div className={styles.userInfo}>
           <ProfileModal hoverSound={hoverSound} clickSound={clickSound} />
         </div>
       </div>

@@ -2,18 +2,18 @@
 
 import styles from './room.module.css'
 
-import useUserStore from '@/stores/userStore'
 import Chatting from '@/components/Chatting'
-import TeamList from './_components/TeamList'
-import SelectOption from './_components/SelectOption'
+import useUserStore from '@/stores/userStore'
 import BtnReady from './_components/BtnReady'
+import SelectOption from './_components/SelectOption'
+import TeamList from './_components/TeamList'
 // import BtnReadyCancel from './_components/BtnReadyCancel'
 import BtnStart from './_components/BtnStart'
 // import BtnStartCancel from './_components/BtnStartCancel'
 
-import { useEffect, useRef, useState } from 'react'
 import { Client, IFrame, IMessage } from '@stomp/stompjs'
 import { useRouter } from 'next/navigation'
+import { useEffect, useRef, useState } from 'react'
 
 interface EnterFormat {
   senderDateTime: string
@@ -49,7 +49,6 @@ interface GameInfo {
 }
 
 export default function RoomPage({ params }: { params: { id: string } }) {
-
   const { gamerId, nickname } = useUserStore()
   const router = useRouter()
   const [gameInfo, setGameInfo] = useState<GameInfo>()
@@ -120,8 +119,7 @@ export default function RoomPage({ params }: { params: { id: string } }) {
   const clientRef = useRef<Client>(
     new Client({
       brokerURL: process.env.NEXT_PUBLIC_SERVER_SOCKET_URL,
-      debug: function (str: string) {
-      },
+      debug: function (str: string) {},
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
@@ -140,31 +138,37 @@ export default function RoomPage({ params }: { params: { id: string } }) {
   // 방나가기
   const publishExitUrl = `/app/game/exit/${params.id}`
 
-  const isTeamReady = teams.some(team => team.teamNumber === 1 && team.ready === false)
+  const isTeamReady = teams.some(
+    (team) => team.teamNumber === 1 && team.ready === false,
+  )
 
   // 팀 목록 받아오는 함수
   const teamList = async () => {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/room/${params.id}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('accessToken') as string}`
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/room/${params.id}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${
+            localStorage.getItem('accessToken') as string
+          }`,
+        },
       },
-    });
+    )
 
     if (response.ok) {
-      console.log('팀 목록 요청 통신 성공');
-      const responseData = await response.json();
+      console.log('팀 목록 요청 통신 성공')
+      const responseData = await response.json()
       if (responseData.code === 1000) {
-        console.log('팀 목록 출력 성공!', responseData);
+        console.log('팀 목록 출력 성공!', responseData)
         setTeams(responseData.result.teams)
         setGameInfo(responseData.result)
-
       } else {
-        console.log('팀 목록 출력 실패!', responseData.code);
+        console.log('팀 목록 출력 실패!', responseData.code)
       }
     } else {
-      console.error('팀 목록 요청 통신 실패', response);
+      console.error('팀 목록 요청 통신 실패', response)
     }
   }
 
@@ -173,11 +177,10 @@ export default function RoomPage({ params }: { params: { id: string } }) {
       // 사용자 입장을 알리는 publish
       clientRef.current.publish({
         headers: {
-          Auth: localStorage.getItem('accessToken') as string
+          Auth: localStorage.getItem('accessToken') as string,
         },
         destination: publishUserUrl,
-        body: JSON.stringify({
-        }),
+        body: JSON.stringify({}),
       })
       console.log('엔터')
 
@@ -208,7 +211,6 @@ export default function RoomPage({ params }: { params: { id: string } }) {
     return () => {
       clientRef.current.deactivate()
     }
-
   }, [subscribeUrl, publishUserUrl, subscribeUrl2])
 
   const gameStartRequest = {
@@ -219,7 +221,7 @@ export default function RoomPage({ params }: { params: { id: string } }) {
     roundCount: 3,
     stage1Time: 30,
     stage2Time: 30,
-    scorePageTime: 10
+    scorePageTime: 10,
   }
 
   function gameStart() {
@@ -234,7 +236,9 @@ export default function RoomPage({ params }: { params: { id: string } }) {
 
   // 팀 옮기기
   const handleTeamDoubleClick = (teamNumber: number) => {
-    const myTeam = teams.find(team => team.teamGamers.some(gamer => gamer?.gamerId === gamerId))
+    const myTeam = teams.find((team) =>
+      team.teamGamers.some((gamer) => gamer?.gamerId === gamerId),
+    )
     clientRef.current.publish({
       headers: {
         Auth: localStorage.getItem('accessToken') as string,
@@ -244,14 +248,16 @@ export default function RoomPage({ params }: { params: { id: string } }) {
         senderGameId: params.id,
         senderNickname: nickname,
         oldTeamId: myTeam?.teamNumber,
-        newTeamId: teamNumber
+        newTeamId: teamNumber,
       }),
     })
   }
 
   // 팀 나가기
   const handleOutClick = () => {
-    const myTeam = teams.find(team => team.teamGamers.some(gamer => gamer?.gamerId === gamerId))
+    const myTeam = teams.find((team) =>
+      team.teamGamers.some((gamer) => gamer?.gamerId === gamerId),
+    )
     clientRef.current.publish({
       headers: {
         Auth: localStorage.getItem('accessToken') as string,
@@ -261,7 +267,7 @@ export default function RoomPage({ params }: { params: { id: string } }) {
         senderNickname: nickname,
         senderGameId: gamerId,
         senderTeamId: myTeam?.teamNumber,
-      })
+      }),
     })
     console.log('성공')
     router.push(`/lobby`)
@@ -272,7 +278,10 @@ export default function RoomPage({ params }: { params: { id: string } }) {
       <div className={styles.container}>
         <div className={styles['option-team-container']}>
           <SelectOption></SelectOption>
-          <TeamList teams={teams} handleTeamDoubleClick={handleTeamDoubleClick} ></TeamList>
+          <TeamList
+            teams={teams}
+            handleTeamDoubleClick={handleTeamDoubleClick}
+          ></TeamList>
         </div>
         <div className={styles['chat-ready-out']}>
           <div className={styles.chat}>
@@ -289,15 +298,13 @@ export default function RoomPage({ params }: { params: { id: string } }) {
             ) : (
               <BtnReadyCancel teams={teams} />
             )} */}
-            {isLeader ? (
-              <BtnStart gameStart={gameStart} />
-            ) : (
-              <BtnReady />
-            )}
-            <button className={styles.out} onClick={handleOutClick}>나가기</button>
+            {isLeader ? <BtnStart gameStart={gameStart} /> : <BtnReady />}
+            <button className={styles.out} onClick={handleOutClick}>
+              나가기
+            </button>
           </div>
         </div>
       </div>
-    </main >
+    </main>
   )
 }

@@ -214,6 +214,28 @@ export default function CreateRoomModal({
                 />
                 <span className={styles.radioText}>3</span>
               </label>
+              <label>
+                <input
+                  className={styles.radioButton}
+                  type="radio"
+                  name="options"
+                  value="4"
+                  checked={roundCount === 4}
+                  onChange={handleRoundChange}
+                />
+                <span className={styles.radioText}>4</span>
+              </label>
+              <label>
+                <input
+                  className={styles.radioButton}
+                  type="radio"
+                  name="options"
+                  value="5"
+                  checked={roundCount === 5}
+                  onChange={handleRoundChange}
+                />
+                <span className={styles.radioText}>5</span>
+              </label>
             </p>
           </div>
           <div className={styles.stageInputBox}>
