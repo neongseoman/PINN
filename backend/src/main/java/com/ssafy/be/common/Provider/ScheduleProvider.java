@@ -35,7 +35,7 @@ public class ScheduleProvider {
     // 5초 지났고 게임 시작합시다.
     public CompletableFuture<Integer> startGame(int gameId, int round) throws BaseException {
         log.info("{} game start after 5 sec : {}", gameId, LocalDateTime.now());
-        notifyRemainingTime(gameId, 5, "before start", ServerEvent.NOTIFY_LEFT_TIME);
+        notifyRemainingTime(gameId, 5, 1,0, ServerEvent.NOTIFY_LEFT_TIME);
 
         sendingOperations.convertAndSend("/game/sse/" + gameId,
                 new ServerSendEvent(ServerEvent.START, round)); // #1201 game start
@@ -56,7 +56,7 @@ public class ScheduleProvider {
         return future;
     }
 
-    public CompletableFuture<Integer> notifyRemainingTime(int gameId, int stageTime, String stage, ServerEvent event) {
+    public CompletableFuture<Integer> notifyRemainingTime(int gameId, int stageTime, int stage,int round, ServerEvent event) {
         CompletableFuture<Integer> timerChain = CompletableFuture.completedFuture(null);
 
         for (int i = stageTime; i > 0; i--) {
@@ -64,7 +64,7 @@ public class ScheduleProvider {
             timerChain = timerChain.thenCompose(ignore -> CompletableFuture.runAsync(() -> {
                         log.info("{} : Remaining time {} seconds for stage {}", gameId, time, stage);
                         sendingOperations.convertAndSend("/game/sse/" + gameId,
-                                new NotifyLeftTimeVO(time, stageTime,stage, event));
+                                new NotifyLeftTimeVO(time, stageTime,stage, round, event));
                     }).thenCompose(aVoid -> scheduleFuture(gameId, 1))
                     .exceptionally(ex -> {
                         log.error("Error during notification for game " + gameId + ", time " + time + ": " + ex.getMessage(), ex);
@@ -83,13 +83,13 @@ public class ScheduleProvider {
         sendingOperations.convertAndSend("/game/sse/" + gameId,
                 new ServerSendEvent(ServerEvent.ROUND_START, currentRound)); // Game Start # 12
 
-        notifyRemainingTime(gameId, gameStartRequestDTO.getStage1Time(), "stage 1", ServerEvent.NOTIFY_LEFT_TIME);
+        notifyRemainingTime(gameId, gameStartRequestDTO.getStage1Time(), 1, currentRound , ServerEvent.NOTIFY_LEFT_TIME);
         scheduleFuture(gameId, gameStartRequestDTO.getStage1Time())
                 .thenCompose(r -> { // Round Start stage 1
                     log.info("{} game stage 1 End : {}", gameStartRequestDTO.getGameId(), LocalDateTime.now());
                     sendingOperations.convertAndSend("/game/sse/" + gameId,
                             new ServerSendEvent(ServerEvent.STAGE_1_END, currentRound)); // send Hint and Stage 1 End # 1203
-                    notifyRemainingTime(gameId, gameStartRequestDTO.getStage2Time(), "stage 2", ServerEvent.NOTIFY_LEFT_TIME);
+                    notifyRemainingTime(gameId, gameStartRequestDTO.getStage2Time(), 2,currentRound, ServerEvent.NOTIFY_LEFT_TIME);
                     return scheduleFuture(gameId, gameStartRequestDTO.getStage2Time());  // Stage 2 기다리기
                 }).thenCompose(r -> { // Stage 2
                     log.info("{} game stage 2 End : {}", gameStartRequestDTO.getGameId(), LocalDateTime.now());
@@ -99,14 +99,14 @@ public class ScheduleProvider {
                     RoundFinishRequestDTO finishRequestDTO = new RoundFinishRequestDTO(gameStartRequestDTO.getSenderNickname(), gameStartRequestDTO.getSenderGameId(), gameStartRequestDTO.getSenderTeamId(), currentRound);
                     gameService.finishRound(finishRequestDTO);
 
-                    notifyRemainingTime(gameId, gameStartRequestDTO.getScorePageTime(), "Score Page", ServerEvent.NOTIFY_LEFT_TIME);
+                    notifyRemainingTime(gameId, gameStartRequestDTO.getScorePageTime(), 3,currentRound, ServerEvent.NOTIFY_LEFT_TIME);
                     return scheduleFuture(gameId, gameStartRequestDTO.getScorePageTime());
                 }).thenCompose(r -> {
                     log.info("{} game {} Round End  : {}", gameStartRequestDTO.getGameId(), currentRound, LocalDateTime.now());
                     sendingOperations.convertAndSend("/game/sse/" + gameId,
                             new ServerSendEvent(ServerEvent.ROUND_END, currentRound)); // Round End stage 1, 2 score # 1205
 
-                    notifyRemainingTime(gameId, 1, "대기시간", ServerEvent.NOTIFY_LEFT_TIME);
+                    notifyRemainingTime(gameId, 1, 4,currentRound, ServerEvent.NOTIFY_LEFT_TIME);
                     return scheduleFuture(gameId, 1);
                 }).thenRun(() -> {
                     future.complete(currentRound);
