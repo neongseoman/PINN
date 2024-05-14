@@ -1,5 +1,6 @@
 //package com.ssafy.be.common.Provider;
 //
+//import com.ssafy.be.common.model.dto.ServerEvent;
 //import com.ssafy.be.game.model.dto.GameStartRequestDTO;
 //import com.ssafy.be.game.model.dto.RoundFinishRequestDTO;
 //import com.ssafy.be.game.service.GameServiceImpl;
@@ -191,6 +192,20 @@
 //        assertEquals(roundCount, executedRounds.get(), "roundScheduler 호출 횟수가 예상한 반복 횟수와 다릅니다.");
 //        assertTrue(compare >= minTime && compare <= maxTime, "scheduler가 예상 시간 범위에서 벗어났습니다. "+ compare +" "+ expectedTime);
 //
+//    }
+//
+//    @DisplayName("남은 시간 보내주기")
+//    @Test
+//    void _notify_remain_time() throws ExecutionException, InterruptedException {
+//        int gameId = 1;
+//        int stageTime = 30;
+//        String stage = "1";
+//        LocalDateTime startTime = LocalDateTime.now();
+//        scheduleProvider.notifyRemainingTime(gameId,stageTime,stage, ServerEvent.NOTIFY_LEFT_TIME).get();
+//        LocalDateTime endTime = LocalDateTime.now();
+//        log.info(startTime +" : "+endTime);
+//        long compare = ChronoUnit.SECONDS.between(startTime, endTime);
+//        assertEquals(compare,30);
 //    }
 //
 //}
