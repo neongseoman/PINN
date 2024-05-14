@@ -11,8 +11,9 @@ public enum ServerEvent {
 //    SCORE_PAGE(1205,"Go to Round Score Page."),
     ROUND_END(1206,"Round End. Wait Next Round"),
     GAME_SCORE(1207,"Go to Game Score Page"),
-    GO_TO_ROOM(1208,"GO to Room");
+    GO_TO_ROOM(1208,"GO to Room"),
 
+    NOTIFY_LEFT_TIME(1210,"현재 스테이지 남은 시간");
     private final int code;
     private final String msg;
     ServerEvent(int code, String msg) {
