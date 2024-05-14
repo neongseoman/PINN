@@ -6,6 +6,11 @@ import styles from '../roundResult.module.css'
 import { getRoundInfo } from '@/utils/IngameApi'
 import { RoundInit } from '@/types/IngameRestTypes'
 
+interface RoundQuestion {
+    lat: number
+    lng: number
+}
+
 interface RoundResult {
     teamId: number
     roundNumber: number
@@ -28,35 +33,15 @@ interface MarkerInfo {
     title: string
 }
 
-interface AnswerInfo {
-    position: google.maps.LatLngLiteral
-}
 
-export default function RoundResultMap({ params, loader, roundResult }: { params: { gameId: string; round: string }; loader: Loader; roundResult: RoundResult[] }) {
+export default function RoundResultMap({ params, loader, roundResult, roundQuestion }: { params: { gameId: string; round: string }; loader: Loader; roundResult: RoundResult[]; roundQuestion: RoundQuestion }) {
     const mapRef = useRef<any>()
     const mapObjectRef = useRef<google.maps.Map | null>(null)
     const markersRef = useRef<google.maps.Marker[]>([])
-    const [answerLat, setAnswerLat] = useState<number>(1)
-    const [answerLng, setAnswerLng] = useState<number>(1)
-
-    // 라운드 시작 정보 받아오기
-    async function roundStartRender() {
-        const roundInfo = (await getRoundInfo(
-            params.gameId,
-            params.round,
-        )) as RoundInit
-        if (!roundInfo.success) {
-            alert(roundInfo.message)
-            return
-        }
-        setAnswerLat(roundInfo.result.lat)
-        setAnswerLng(roundInfo.result.lng)
-    }
 
     useEffect(() => {
-        roundStartRender()
         loader.importLibrary('maps').then(async () => {
-            const position = { lat: answerLat, lng: answerLng }
+            const position = { lat: roundQuestion.lat, lng: roundQuestion.lng }
             const { Map } = (await google.maps.importLibrary(
                 'maps',
             )) as google.maps.MapsLibrary
@@ -91,7 +76,7 @@ export default function RoundResultMap({ params, loader, roundResult }: { params
                 // color: colorCode
                 // teamNumber: result.teamNumber,
             }))
-
+            console.log(markerInfos)
             markerInfos.forEach(markerInfo => {
                 const marker = new google.maps.Marker({
                     position: markerInfo.position,
@@ -118,7 +103,7 @@ export default function RoundResultMap({ params, loader, roundResult }: { params
             }
 
         })
-    }, [])
+    }, [roundQuestion, roundResult])
 
     return (
         <>

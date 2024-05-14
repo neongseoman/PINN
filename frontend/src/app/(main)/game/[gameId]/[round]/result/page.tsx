@@ -10,6 +10,11 @@ import { Client, IFrame, IMessage } from '@stomp/stompjs'
 import { GameProgressInfo } from '@/types/IngameSocketTypes'
 
 
+interface RoundQuestion {
+  lat: number
+  lng: number
+}
+
 interface RoundResult {
   teamId: number
   roundNumber: number
@@ -24,6 +29,7 @@ interface RoundResult {
 
 export default function RoundResultPage({ params }: { params: { gameId: string; round: string } }) {
   const [roundResult, setRoundResult] = useState<RoundResult[]>([])
+  const [roundQuestion, setRoundQuestion] = useState<RoundQuestion>({ lat: 0, lng: 0 })
   const router = useRouter()
 
   const loader = new Loader({
@@ -68,6 +74,7 @@ export default function RoundResultPage({ params }: { params: { gameId: string; 
         if (responseData.code === 1000) {
           console.log('라운드 결과 출력 성공!', responseData)
           setRoundResult(responseData.result.roundResult)
+          setRoundQuestion(responseData.result.question)
         } else {
           console.log('라운드 결과 출력 실패!', responseData.code)
           alert(responseData.message)
@@ -94,6 +101,9 @@ export default function RoundResultPage({ params }: { params: { gameId: string; 
             if (parseInt(params.round) + 1 < 4) {
               router.push(`/game/${params.gameId}/${parseInt(params.round) + 1}`);
             }
+            else {
+              router.push(`/game/${params.gameId}/end/1`)
+            }
             break
         }
       })
@@ -111,15 +121,13 @@ export default function RoundResultPage({ params }: { params: { gameId: string; 
     }
   }, [params.gameId, params.round])
 
-  // api받아오기
-
   return (
     <main className={styles.background}>
       <div className={styles.container}>
-        <div className={styles.round}>라운드 {1}</div>
+        <div className={styles.round}>라운드 {params.round}</div>
         <div className={styles.result}>Result</div>
         <div className={styles.mapWrapper}>
-          <RoundResultMap params={params} loader={loader} roundResult={roundResult} />
+          <RoundResultMap params={params} loader={loader} roundResult={roundResult} roundQuestion={roundQuestion} />
         </div>
         <div className={styles['rank-container']}>
           <div className={styles.trophy}>
