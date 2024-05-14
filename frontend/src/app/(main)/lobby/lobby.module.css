@@ -572,3 +572,8 @@
     color: rgba(242, 202, 80, 0.5);
   }
 }
+
+/* sweetalert2 */
+.swal {
+  z-index: 9999 !important;
+}

@@ -105,8 +105,9 @@ export default function LobbyPage() {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('accessToken') as string
-              }`,
+            Authorization: `Bearer ${
+              localStorage.getItem('accessToken') as string
+            }`,
           },
         },
       )
