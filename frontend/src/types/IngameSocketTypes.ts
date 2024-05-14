@@ -50,7 +50,8 @@ interface CursorResponse {
 interface RemainTime {
   leftTime: number
   stageTime: number
-  stage: string
+  stage: number
+  round: number
   code: 1210
   msg: string
 }

@@ -82,8 +82,13 @@ export default function GamePage({
       params.gameId,
       params.round,
     )) as RoundInit
+    // 라운드 받아오기 오류
     if (!roundInfo.success) {
       alert(roundInfo.message)
+      // 존재하지 않는 게임인 경우
+      if (roundInfo.code == 3101) {
+        router.push('/lobby')
+      }
       return
     }
     setHints(roundInfo.result.hints)
@@ -136,6 +141,18 @@ export default function GamePage({
             router.push(`/game/${params.gameId}/${params.round}/result`)
             break
           case 1210:
+            // 현재 페이지와 라운드가 다를 경우
+            if (gameProgressResponse.round != Number(params.round)) {
+              alert('현재 라운드가 아닙니다')
+              router.push(
+                `/game/${params.gameId}/${gameProgressResponse.round}`,
+              )
+              return
+            }
+            // 현재 스테이지가 다른 경우
+            if (currentStage != gameProgressResponse.stage) {
+              stageTwoRender()
+            }
             setRemainSeconds(gameProgressResponse.leftTime)
             break
         }
