@@ -1,21 +1,21 @@
 import styles from './btn.module.css'
 
-interface TeamGamers {
-    colorId: number
-    gamerId: string
-    teamId: number
-    nickname: string
-}
+// interface TeamGamers {
+//     colorId: number
+//     gamerId: string
+//     teamId: number
+//     nickname: string
+// }
 
-interface TeamsProp {
-    teams: {
-        colorCode: string
-        teamNumber: number
-        teamGamer: TeamGamers[]
-        ready: boolean
-    }[]
-    setTeams: React.Dispatch<React.SetStateAction<TeamsProp[]>>;
-}
+// interface TeamsProp {
+//     teams: {
+//         colorCode: string
+//         teamNumber: number
+//         teamGamer: TeamGamers[]
+//         ready: boolean
+//     }[]
+//     setTeams: React.Dispatch<React.SetStateAction<TeamsProp[]>>;
+// }
 
 export default function BtnStartCancel() {
 

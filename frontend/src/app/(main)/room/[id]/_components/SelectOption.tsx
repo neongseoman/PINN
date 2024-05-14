@@ -2,7 +2,7 @@
 
 import styles from './selectOption.module.css'
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 
 export default function Option() {
     const [selectedTheme, setSelectedTheme] = useState<string>('')
@@ -10,10 +10,10 @@ export default function Option() {
     const [selectedStage1, setSelectedStage1] = useState<string>('')
     const [selectedStage2, setSelectedStage2] = useState<string>('')
 
-    useEffect(() => {
-        // API 
-        const themeOptions = []
-    }, [])
+    // useEffect(() => {
+    //     // API 
+    //     const themeOptions = []
+    // }, [])
 
     const themeOptions = ['예시1', '예시2', '예시3']
     const roundOptions = ['1', '2', '3', '4', '5']

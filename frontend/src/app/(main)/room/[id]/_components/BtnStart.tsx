@@ -1,15 +1,12 @@
-import { useEffect, useRef } from 'react'
 import styles from './btn.module.css'
 
-import useUserStore from '@/stores/userStore'
-import { Client, IFrame, IMessage } from '@stomp/stompjs'
 
-interface TeamGamers {
-    colorId: number
-    gamerId: string
-    teamId: number
-    nickname: string
-}
+// interface TeamGamers {
+//     colorId: number
+//     gamerId: string
+//     teamId: number
+//     nickname: string
+// }
 
 interface TeamsProp {
     // teams: {
