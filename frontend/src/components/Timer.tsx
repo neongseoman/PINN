@@ -1,32 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import styles from './timer.module.css'
 
 interface TimerProp {
-  stageTime: number
+  remainSeconds: number
 }
 
-export default function Timer({ stageTime }: TimerProp) {
-  const [remainSeconds, setRemainSeconds] = useState<number>(stageTime)
-
-  //init 타임으로 하기
-  useEffect(() => {
-    const myInterval = setInterval(() => {
-      if (remainSeconds > 0) {
-        setRemainSeconds((prev) => prev - 1)
-      } else {
-        clearInterval(myInterval)
-      }
-    }, 1000)
-    return () => {
-      clearInterval(myInterval)
-    }
-  }, [stageTime, remainSeconds])
-
-  //서버에서 시간 받아오기
-  useEffect(() => {}, [])
-
+export default function Timer({ remainSeconds }: TimerProp) {
   return (
     <>
       <div className={styles.timer}>

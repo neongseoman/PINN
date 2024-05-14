@@ -45,7 +45,7 @@ export default function GamePage({
   const { theme, teamId } = useIngameStore()
 
   // 스테이지 시간 - 소켓으로 받아옴
-  const [stageTime, setStageTime] = useState<number>(30)
+  const [remainSeconds, setRemainSeconds] = useState<number>(30)
   const [currentStage, setCurrentStage] = useState<number>(1)
 
   // 정답 좌표
@@ -135,6 +135,9 @@ export default function GamePage({
             // 스테이지 2 끝
             router.push(`/game/${params.gameId}/${params.round}/result`)
             break
+          case 1210:
+            setRemainSeconds(gameProgressResponse.leftTime)
+            break
         }
       })
     }
@@ -187,7 +190,7 @@ export default function GamePage({
         <Hints hints={hints} />
       </div>
       <div className={`${styles.timer} ${themeStyles[theme]}`}>
-        <Timer stageTime={stageTime} />
+        <Timer remainSeconds={remainSeconds} />
       </div>
       <div
         className={`${styles.chat} ${
