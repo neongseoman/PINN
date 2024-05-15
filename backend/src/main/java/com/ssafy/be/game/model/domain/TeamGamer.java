@@ -22,8 +22,8 @@ public class TeamGamer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long teamGamerId;
     private int teamId;
-    //    private int colorId; // TODO: 이거 진짜 string으로 해도 되는 건지 확인 필요
-    private String colorCode; // teamGamerComponent를 따라감...
+    private int colorId; // TODO: 이거 진짜 string으로 해도 되는 건지 확인 필요
+//    private String colorCode; // teamGamerComponent를 따라감...
     private int gamerId;
     @CreationTimestamp
     private LocalDateTime createdDate;

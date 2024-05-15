@@ -22,6 +22,7 @@ public interface TeamGamerService {
 
     List<TeamGamerDTO> getAllTeamGamerByGamerId(int gamerId) throws BaseException;
 
-    List<TeamGamerDTO> getAllTeamGamerByColorCode(String colorCode) throws BaseException;
+//    List<TeamGamerDTO> getAllTeamGamerByColorCode(String colorCode) throws BaseException;
 
+    List<TeamGamerDTO> getAllTeamGamerByColorId(int colorId) throws BaseException;
 }

@@ -13,7 +13,8 @@ import java.time.LocalDateTime;
 public class TeamGamerDTO {
     private Long teamGamerId;
     private int teamId;
-    private String colorCode;
+    private int colorId;
+//    private String colorCode;
     private int gamerId;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
@@ -22,7 +23,8 @@ public class TeamGamerDTO {
     public TeamGamerDTO(TeamGamer teamGamer) {
         this.teamGamerId = teamGamer.getTeamGamerId();
         this.teamId = teamGamer.getTeamId();
-        this.colorCode = teamGamer.getColorCode();
+        this.colorId = teamGamer.getColorId();
+//        this.colorCode = teamGamer.getColorCode();
         this.gamerId = teamGamer.getGamerId();
         this.createdDate = teamGamer.getCreatedDate();
         this.updatedDate = teamGamer.getUpdatedDate();
@@ -32,7 +34,8 @@ public class TeamGamerDTO {
         return TeamGamer.builder()
                 .teamGamerId(this.teamGamerId)
                 .teamId(this.teamId)
-                .colorCode(this.colorCode)
+                .colorId(this.colorId)
+//                .colorCode(this.colorCode)
                 .gamerId(this.gamerId)
 //                .createdDate(this.createdDate)
 //                .updatedDate(this.updatedDate)
