@@ -221,19 +221,44 @@ export default function RoomPage({ params }: { params: { id: string } }) {
         switch (gameProgressResponse.code) {
           case 1202:
             const myTeamInfo = teams.find(team => team.teamGamers.some(gamer => gamer?.gamerId === gamerId))
+            const themeMapping: { [key: number]: string } = {
+              1: "랜덤",
+              2: "한국",
+              3: "그리스",
+              4: "이집트",
+              5: "랜드마크"
+            }
+            const themeId = gameInfo?.themeId
             if (myTeamInfo) {
               const myTeamId = myTeamInfo.teamNumber
               const myTeamColor = myTeamInfo.colorCode
               setTeamId(myTeamId)
               setTeamColor(myTeamColor)
-              // setTheme(gameInfo?.themeId)
             }
-            // setTheme()
+
+            if (themeId) {
+              setTheme(themeMapping[themeId])
+            }
+
             router.push(`/game/${params.id}/1`)
             break
 
           case 1210:
-            setRemainTime(gameProgressResponse.leftTime)
+            if (gameProgressResponse.round === 0) {
+              clientRef.current.publish({
+                headers: {
+                  Auth: localStorage.getItem('accessToken') as string,
+                },
+                destination: publishChatUrl,
+                body: JSON.stringify({
+                  senderNickname: "시스템",
+                  senderGameId: params.id,
+                  senderTeamId: '0',
+                  content: `${gameProgressResponse.leftTime}초 뒤 게임 시작!`,
+                })
+              })
+            }
+            break
         }
       })
     }
