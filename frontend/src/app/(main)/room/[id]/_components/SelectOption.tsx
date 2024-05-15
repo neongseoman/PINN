@@ -41,7 +41,7 @@ export default function Option() {
             <div className={styles.theme}>
                 {/* 테마 선택 select box */}
                 <label htmlFor="theme">테마</label>
-                <select id="theme" value={selectedTheme} onChange={undefined}>
+                <select id="theme" value={selectedTheme} onChange={handleThemeChange}>
                     {themeOptions.map((option, index) => (
                         <option key={index} value={option}>{option}</option>
                     ))}
