@@ -159,7 +159,7 @@ public class GameManager {
     }
 
     // 방 나가기위한 method
-    public ExitRoomVO exitRoom(SocketDTO socketDTO, GamerPrincipalVO gamerPrincipalVO) {
+    public ExitRoomVO exitRoom(SocketDTO socketDTO, GamerPrincipalVO gamerPrincipalVO, boolean moveTeam) {
         // TODO : 방 내 모든 사람이 나간경우 삭제
         // TODO : 각각의 경우 Exception 처리
         // game
@@ -178,8 +178,8 @@ public class GameManager {
         TeamGamerComponent teamGamerComponent = teamGamers.get(gamerPrincipalVO.getGamerId());
         ExitRoomVO exitRoomVO = null;
 
-        // 나가는 사람이 리더라면
-        if (gamerPrincipalVO.getGamerId() == gameComponent.getLeaderId()){
+        // 팀을 옮기는 경우가 아님 & 나가는 사람이 리더라면
+        if (!moveTeam && gamerPrincipalVO.getGamerId() == gameComponent.getLeaderId()){
             // 새로운 리더 받아오기
             TeamGamerComponent newLeader = getNewLeader(gameComponent);
             // 리더로 할당할 사람이 없다면
@@ -204,7 +204,7 @@ public class GameManager {
                     .msg(gamerPrincipalVO.getNickname() + "님이 " + socketDTO.getSenderGameId() + "번 방 " + socketDTO.getSenderTeamId() + "팀 " + teamComponent.getTeamNumber() + "번째 자리에서 나갔습니다.")
                     .build();
         }
-        // 리더가 아니라면
+        // 팀을 옮기는 경우 | 리더가 아니라면
         else{
             exitRoomVO = ExitRoomVO.builder()
                     .senderDateTime(socketDTO.getSenderDateTime())
