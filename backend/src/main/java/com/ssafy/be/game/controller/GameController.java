@@ -162,6 +162,7 @@ public class GameController {
         // 요청 보낸 사용자의 gamerId
         GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
         int gamerId = gamerPrincipalVO.getGamerId();
+        log.info("{} : {} Game Init", gamerId,map.get("gameId"));
 
         int gameId = map.get("gameId");
         GameInitVO gameInitVO = gameService.getGameInfo(gamerId, gameId);
