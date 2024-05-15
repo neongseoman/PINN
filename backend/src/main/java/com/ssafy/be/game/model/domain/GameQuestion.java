@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class GameAndQuestion {
+public class GameQuestion {
     @Id
     private int gameQuestionId;
     private int gameId;

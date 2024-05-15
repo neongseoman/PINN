@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @ToString
 public class GamerLog {
     @Id
-    private int gamerLogId;
+    private Long gamerLogId;
     private int gamerId;
     private int gameId;
     private int teamId;
