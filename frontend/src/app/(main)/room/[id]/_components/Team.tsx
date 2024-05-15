@@ -37,7 +37,13 @@ export default function Team({ team, handleTeamDoubleClick }: TeamProps) {
     const myTeam = nickname && team && team.teamGamers.some(gamer => gamer?.nickname === nickname) ? styles.myTeam : styles.team;
 
     return (
-        <div className={IsEmptyTeam ? styles.noMember : myTeam} onDoubleClick={() => handleTeamDoubleClick(team.teamNumber)}>
+        <div className={IsEmptyTeam ? styles.noMember : myTeam} onDoubleClick={() => {
+            if (!team.ready) { // 팀이 준비 상태가 아닐 때만 handleTeamDoubleClick 호출
+                handleTeamDoubleClick(team.teamNumber);
+            } else {
+                alert('이 팀은 이미 준비가 완료되었습니다.');
+            }
+        }}>
             <div className={styles.teamName}>Team {team.teamNumber}</div>
             <div className={styles.users}>
                 {team.teamGamers.map((member, index) => (
