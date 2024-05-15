@@ -8,7 +8,7 @@ import Chatting from '@/components/Chatting'
 import BtnReady from './_components/BtnReady'
 import SelectOption from './_components/SelectOption'
 import TeamList from './_components/TeamList'
-// import BtnReadyCancel from './_components/BtnReadyCancel'
+import BtnReadyCancel from './_components/BtnReadyCancel'
 import BtnStart from './_components/BtnStart'
 // import BtnStartCancel from './_components/BtnStartCancel'
 
@@ -16,6 +16,7 @@ import { GameProgressInfo } from '@/types/IngameSocketTypes'
 import { Client, IFrame, IMessage } from '@stomp/stompjs'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
+import BtnWaiting from './_components/BtnWaiting'
 
 interface RoomInfo {
   senderDateTime: string
@@ -53,6 +54,7 @@ interface Team {
 
 interface GameInfo {
   gameId: number
+  roomName: string
   leaderId: string
   roundCount: number
   stage1Time: number
@@ -129,6 +131,13 @@ export default function RoomPage({ params }: { params: { id: string } }) {
     },
   ])
 
+  const isLeader = gameInfo?.leaderId === gamerId ? true : false
+  const isTeamLeader = teams.some(team =>
+    team.teamGamers.length > 0 && team.teamGamers[0]?.gamerId === gamerId)
+  const myTeam = teams.find((team) =>
+    team.teamGamers.some((gamer) => gamer?.gamerId === gamerId),
+  )
+
   const clientRef = useRef<Client>(
     new Client({
       brokerURL: process.env.NEXT_PUBLIC_SERVER_SOCKET_URL,
@@ -145,6 +154,8 @@ export default function RoomPage({ params }: { params: { id: string } }) {
   const publishChatUrl = `/app/game/chat/${params.id}`
   // 유저 입장
   const publishUserUrl = `/app/game/enter/${params.id}`
+  // 준비
+  const publishReadyUrl = `/app/game/teamStatus/${params.id}`
   // 팀 옮기기
   const publishMoveUrl = `/app/room/move`
   // 방나가기
@@ -216,7 +227,7 @@ export default function RoomPage({ params }: { params: { id: string } }) {
               setTeamId(myTeamId)
               setTeamColor(myTeamColor)
             }
-
+            // setTheme()
             router.push(`/game/${params.id}/1`)
             break
 
@@ -224,7 +235,6 @@ export default function RoomPage({ params }: { params: { id: string } }) {
             setRemainTime(gameProgressResponse.leftTime)
         }
       })
-
     }
 
     clientRef.current.onStompError = function (frame: IFrame) {
@@ -232,7 +242,6 @@ export default function RoomPage({ params }: { params: { id: string } }) {
       console.log('Additional details: ' + frame.body)
     }
 
-    // 소켓을 활성화
     clientRef.current.activate()
 
     return () => {
@@ -240,18 +249,27 @@ export default function RoomPage({ params }: { params: { id: string } }) {
     }
   }, [params.id])
 
-  const gameStartRequest = {
-    senderNickname: nickname,
-    senderGameId: params.id,
-    senderTeamId: 1,
-    gameId: params.id,
-    roundCount: 3,
-    stage1Time: 30,
-    stage2Time: 30,
-    scorePageTime: 10,
-  }
-
   function gameStart() {
+    const allOtherTeamsReady = teams.every(team =>
+      team.teamNumber === myTeam?.teamNumber || team.ready
+    );
+
+    if (!allOtherTeamsReady) {
+      alert("모든 다른 팀이 준비 상태가 아닙니다. 게임을 시작할 수 없습니다.");
+      return
+    }
+
+    const gameStartRequest = {
+      senderNickname: nickname,
+      senderGameId: params.id,
+      senderTeamId: myTeam?.teamNumber,
+      gameId: params.id,
+      roundCount: 3,
+      stage1Time: 30,
+      stage2Time: 30,
+      scorePageTime: 10,
+    }
+
     clientRef.current.publish({
       headers: {
         Auth: localStorage.getItem('accessToken') as string,
@@ -260,12 +278,25 @@ export default function RoomPage({ params }: { params: { id: string } }) {
       body: JSON.stringify(gameStartRequest),
     })
   }
+  // 준비 버튼
+  const gameReady = () => {
+    console.log(myTeam)
+    console.log(teams)
+    clientRef.current.publish({
+      headers: {
+        Auth: localStorage.getItem('accessToken') as string,
+      },
+      destination: publishReadyUrl,
+      body: JSON.stringify({
+        senderNickname: nickname,
+        senderGameId: params.id,
+        senderTeamId: myTeam?.teamNumber
+      }),
+    })
+  }
 
   // 팀 옮기기
   const handleTeamDoubleClick = (teamNumber: number) => {
-    const myTeam = teams.find((team) =>
-      team.teamGamers.some((gamer) => gamer?.gamerId === gamerId),
-    )
     clientRef.current.publish({
       headers: {
         Auth: localStorage.getItem('accessToken') as string,
@@ -275,16 +306,14 @@ export default function RoomPage({ params }: { params: { id: string } }) {
         senderGameId: params.id,
         senderNickname: nickname,
         oldTeamId: myTeam?.teamNumber,
-        newTeamId: teamNumber,
+        newTeamId: teamNumber
       }),
     })
+    teamList()
   }
 
-  // 팀 나가기
+  // 방 나가기
   const handleOutClick = () => {
-    const myTeam = teams.find((team) =>
-      team.teamGamers.some((gamer) => gamer?.gamerId === gamerId),
-    )
     clientRef.current.publish({
       headers: {
         Auth: localStorage.getItem('accessToken') as string,
@@ -292,19 +321,19 @@ export default function RoomPage({ params }: { params: { id: string } }) {
       destination: publishExitUrl,
       body: JSON.stringify({
         senderNickname: nickname,
-        senderGameId: gamerId,
+        senderGameId: params.id,
         senderTeamId: myTeam?.teamNumber,
       }),
     })
     router.push(`/lobby`)
   }
 
-  const isLeader = gameInfo?.leaderId === gamerId ? true : false
   return (
     <main className={styles.background}>
+      <div></div>
       <div className={styles.container}>
         <div className={styles['option-team-container']}>
-          <SelectOption></SelectOption>
+          <SelectOption roomId={params.id} />
           <TeamList
             teams={teams}
             handleTeamDoubleClick={handleTeamDoubleClick}
@@ -320,12 +349,17 @@ export default function RoomPage({ params }: { params: { id: string } }) {
             />
           </div>
           <div className={styles['ready-out']}>
-            {/* {isTeamReady ? (
-              <BtnReady teams={teams} />
+            {isLeader ? (
+              <BtnStart gameStart={gameStart} />
+            ) : isTeamLeader ? (
+              myTeam && myTeam.ready ? (
+                <BtnReadyCancel gameReady={gameReady} />
+              ) : (
+                <BtnReady gameReady={gameReady} />
+              )
             ) : (
-              <BtnReadyCancel teams={teams} />
-            )} */}
-            {isLeader ? <BtnStart gameStart={gameStart} /> : <BtnReady />}
+              <BtnWaiting />
+            )}
             <button className={styles.out} onClick={handleOutClick}>
               나가기
             </button>
