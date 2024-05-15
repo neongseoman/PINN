@@ -221,18 +221,44 @@ export default function RoomPage({ params }: { params: { id: string } }) {
         switch (gameProgressResponse.code) {
           case 1202:
             const myTeamInfo = teams.find(team => team.teamGamers.some(gamer => gamer?.gamerId === gamerId))
+            const themeMapping: { [key: number]: string } = {
+              1: "랜덤",
+              2: "한국",
+              3: "그리스",
+              4: "이집트",
+              5: "랜드마크"
+            }
+            const themeId = gameInfo?.themeId
             if (myTeamInfo) {
               const myTeamId = myTeamInfo.teamNumber
               const myTeamColor = myTeamInfo.colorCode
               setTeamId(myTeamId)
               setTeamColor(myTeamColor)
             }
-            // setTheme()
+
+            if (themeId) {
+              setTheme(themeMapping[themeId])
+            }
+
             router.push(`/game/${params.id}/1`)
             break
 
           case 1210:
-            setRemainTime(gameProgressResponse.leftTime)
+            if (gameProgressResponse.round === 0) {
+              clientRef.current.publish({
+                headers: {
+                  Auth: localStorage.getItem('accessToken') as string,
+                },
+                destination: publishChatUrl,
+                body: JSON.stringify({
+                  senderNickname: "시스템",
+                  senderGameId: params.id,
+                  senderTeamId: '0',
+                  content: `${gameProgressResponse.leftTime}초 뒤 게임 시작!`,
+                })
+              })
+            }
+            break
         }
       })
     }
@@ -250,13 +276,20 @@ export default function RoomPage({ params }: { params: { id: string } }) {
   }, [params.id])
 
   function gameStart() {
-    const allOtherTeamsReady = teams.every(team =>
-      team.teamNumber === myTeam?.teamNumber || team.ready
+    // 다른 팀이 있는지 확인
+    const otherTeamsExist = teams.some(team =>
+      team.teamNumber !== myTeam?.teamNumber && team.teamGamers.length > 0
     );
 
+    // 다른 팀이 있을 때, 그 팀들이 모두 준비 상태인지 확인
+    const allOtherTeamsReady = !otherTeamsExist || teams.every(team =>
+      team.teamNumber === myTeam?.teamNumber || (team.teamGamers.length > 0 && team.ready)
+    );
+
+    console.log(allOtherTeamsReady);
     if (!allOtherTeamsReady) {
       alert("모든 다른 팀이 준비 상태가 아닙니다. 게임을 시작할 수 없습니다.");
-      return
+      return;
     }
 
     const gameStartRequest = {
@@ -264,9 +297,9 @@ export default function RoomPage({ params }: { params: { id: string } }) {
       senderGameId: params.id,
       senderTeamId: myTeam?.teamNumber,
       gameId: params.id,
-      roundCount: 3,
-      stage1Time: 30,
-      stage2Time: 30,
+      roundCount: gameInfo?.roundCount,
+      stage1Time: gameInfo?.stage1Time,
+      stage2Time: gameInfo?.stage2Time,
       scorePageTime: 10,
     }
 
