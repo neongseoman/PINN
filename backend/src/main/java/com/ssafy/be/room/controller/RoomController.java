@@ -61,7 +61,8 @@ public class RoomController {
         // 일단 팀 나가기
         moveTeamDTO.setSenderGameId(gameId);
         moveTeamDTO.setSenderTeamId(moveTeamDTO.getOldTeamId());
-        gameManager.exitRoom(moveTeamDTO, gamerPrincipalVO);
+        gameManager.exitRoom(moveTeamDTO, gamerPrincipalVO, true);
+//        gameManager.exitTeam(moveTeamDTO, gamerPrincipalVO);
         // 새로운 팀에 할당
         MoveTeamVO moveTeamVO = gameManager.enterSpecificTeam(moveTeamDTO, gamerPrincipalVO);
 
