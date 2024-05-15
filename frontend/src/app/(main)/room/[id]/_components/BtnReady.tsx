@@ -1,27 +1,13 @@
 import styles from './btn.module.css'
 
-// interface TeamGamers {
-//     colorId: number
-//     gamerId: string
-//     teamId: number
-//     nickname: string
-// }
+interface Prop {
+    gameReady: () => void;
+}
 
-// interface TeamsProp {
-//     teams: {
-//         colorCode: string
-//         teamNumber: number
-//         teamGamers: TeamGamers[]
-//         ready: boolean
-//     }[]
-// }
-
-export default function BtnReady() {
-    const handleReadyClick = () => {
-    }
+export default function BtnReady({ gameReady }: Prop) {
     return (
         <div>
-            <button className={styles.ready} onClick={handleReadyClick}>준비</button>
+            <button className={styles.ready} onClick={gameReady}>준비</button>
         </div>
     )
 }
