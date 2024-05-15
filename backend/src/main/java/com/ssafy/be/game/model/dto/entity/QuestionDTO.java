@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class QuestionDTO {
     private int questionId;
     private int themeId;
@@ -42,8 +41,8 @@ public class QuestionDTO {
                 .lat(this.lat)
                 .lng(this.lng)
                 .used(this.used)
-                .createdDate(this.createdDate)
-                .updatedDate(this.updatedDate)
+//                .createdDate(this.createdDate)
+//                .updatedDate(this.updatedDate)
                 .build();
     }
 }

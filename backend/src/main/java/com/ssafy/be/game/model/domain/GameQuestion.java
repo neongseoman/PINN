@@ -7,19 +7,20 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "game-question")
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class Color {
+public class GameQuestion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int colorId;
-    private String colorCode;
+    private int gameQuestionId;
+    private int gameId;
+    private int questionId;
+    private int roundNumber;
     @CreationTimestamp
     private LocalDateTime createdDate;
-    @CreationTimestamp
-    private LocalDateTime updatedDate;
 }

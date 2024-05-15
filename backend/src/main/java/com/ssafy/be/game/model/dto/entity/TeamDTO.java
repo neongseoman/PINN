@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class TeamDTO {
     private int teamId;
     private int gameId;
@@ -49,8 +48,8 @@ public class TeamDTO {
                 .lastReadyTime(this.lastReadyTime)
                 .finalRank(this.finalRank)
                 .finalScore(this.finalScore)
-                .createdDate(this.createdDate)
-                .updatedDate(this.updatedDate)
+//                .createdDate(this.createdDate)
+//                .updatedDate(this.updatedDate)
                 .build();
     }
 }

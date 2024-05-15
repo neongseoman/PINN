@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class HintTypeDTO {
     private int hintTypeId;
     private String hintTypeName;
@@ -31,8 +30,8 @@ public class HintTypeDTO {
         return HintType.builder()
                 .hintTypeId(this.hintTypeId)
                 .hintTypeName(this.hintTypeName)
-                .createdDate(this.createdDate)
-                .updatedDate(this.updatedDate)
+//                .createdDate(this.createdDate)
+//                .updatedDate(this.updatedDate)
                 .build();
     }
 }

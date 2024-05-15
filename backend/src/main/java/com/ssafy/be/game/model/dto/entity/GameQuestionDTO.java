@@ -1,6 +1,6 @@
 package com.ssafy.be.game.model.dto.entity;
 
-import com.ssafy.be.game.model.domain.GameAndQuestion;
+import com.ssafy.be.game.model.domain.GameQuestion;
 import lombok.*;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -12,8 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class GameAndQuestionDTO {
+public class GameQuestionDTO {
     private int gameQuestionId;
     private int gameId;
     private int questionId;
@@ -21,21 +20,21 @@ public class GameAndQuestionDTO {
     private LocalDateTime createdDate;
 
     @Builder
-    public GameAndQuestionDTO(GameAndQuestion gameAndQuestion) {
-        this.gameQuestionId = gameAndQuestion.getGameQuestionId();
-        this.gameId = gameAndQuestion.getGameId();
-        this.questionId = gameAndQuestion.getQuestionId();
-        this.roundNumber = gameAndQuestion.getRoundNumber();
-        this.createdDate = gameAndQuestion.getCreatedDate();
+    public GameQuestionDTO(GameQuestion gameQuestion) {
+        this.gameQuestionId = gameQuestion.getGameQuestionId();
+        this.gameId = gameQuestion.getGameId();
+        this.questionId = gameQuestion.getQuestionId();
+        this.roundNumber = gameQuestion.getRoundNumber();
+        this.createdDate = gameQuestion.getCreatedDate();
     }
 
-    public GameAndQuestion toEntity() {
-        return GameAndQuestion.builder()
+    public GameQuestion toEntity() {
+        return GameQuestion.builder()
                 .gameQuestionId(this.gameQuestionId)
                 .gameId(this.gameId)
                 .questionId(this.questionId)
                 .roundNumber(this.roundNumber)
-                .createdDate(this.createdDate)
+//                .createdDate(this.createdDate)
                 .build();
     }
 }

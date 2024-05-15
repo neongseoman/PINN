@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ThemeDTO {
     private int themeId;
     private String themeName;
@@ -31,8 +30,8 @@ public class ThemeDTO {
         return Theme.builder()
                 .themeId(this.themeId)
                 .themeName(this.themeName)
-                .createdDate(this.createdDate)
-                .updatedDate(this.updatedDate)
+//                .createdDate(this.createdDate)
+//                .updatedDate(this.updatedDate)
                 .build();
     }
 }
