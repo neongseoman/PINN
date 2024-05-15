@@ -176,9 +176,7 @@ public class LobbyController {
     public ExitRoomVO exitRoom(@Payload SocketDTO socketDTO, @DestinationVariable Integer gameId, StompHeaderAccessor accessor){
         GamerPrincipalVO gamerPrincipalVO = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor);
 
-        ExitRoomVO exitRoomVO = gameManager.exitRoom(socketDTO, gamerPrincipalVO);
-
-        return exitRoomVO;
+        return gameManager.exitRoom(socketDTO, gamerPrincipalVO);
     }
 
 
