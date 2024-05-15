@@ -9,6 +9,7 @@ import static com.ssafy.be.common.response.BaseResponseStatus.FULL_TEAM_ERROR;
 import static com.ssafy.be.common.response.BaseResponseStatus.NOT_EXIST_GAME;
 import static com.ssafy.be.common.response.BaseResponseStatus.NOT_EXIST_GAMER;
 import static com.ssafy.be.common.response.BaseResponseStatus.NOT_EXIST_LEADER;
+import static com.ssafy.be.common.response.BaseResponseStatus.NOT_EXIST_TEAM;
 import static com.ssafy.be.common.response.BaseResponseStatus.NOT_EXIST_UNREADY_TEAM;
 import static com.ssafy.be.common.response.BaseResponseStatus.NOT_MATCH_PASSWORD;
 
@@ -26,6 +27,7 @@ import com.ssafy.be.room.model.dto.MoveTeamDTO;
 import com.ssafy.be.lobby.model.vo.ExitRoomVO;
 import com.ssafy.be.room.model.vo.MoveTeamVO;
 
+import com.ssafy.be.room.model.vo.TeamStatusVO;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -421,5 +423,33 @@ public class GameManager {
                 .code(1015)
                 .msg("당신은 " + gamer.getTeamId() + "Team에 던져졌습니다.")
                 .build();
+    }
+
+    public TeamStatusVO changeTeamStatus(SocketDTO socketDTO, GamerPrincipalVO gamerPrincipalVO) {
+        // 룸(게임)
+        GameComponent gameComponent = games.get(socketDTO.getSenderGameId());
+        if (gameComponent == null){
+            throw new BaseException(NOT_EXIST_GAME, gamerPrincipalVO.getGamerId());
+        }
+        // 팀
+        TeamComponent teamComponent = gameComponent.getTeams().get(socketDTO.getSenderTeamId());
+        if(teamComponent == null){
+            throw new BaseException(NOT_EXIST_TEAM, gamerPrincipalVO.getGamerId());
+        }
+
+        // 상태 변경
+        teamComponent.setReady(!teamComponent.isReady());
+        // VO 생성
+        TeamStatusVO teamStatusVO = TeamStatusVO.builder()
+                .senderDateTime(socketDTO.getSenderDateTime())
+                .teamStatus(teamComponent.isReady())
+                .senderGameId(socketDTO.getSenderGameId())
+                .senderNickname(socketDTO.getSenderNickname())
+                .senderTeamId(socketDTO.getSenderTeamId())
+                .code(1026)
+                .msg(teamComponent.getTeamId() + "팀 상태가 " + !teamComponent.isReady() + "에서 " + teamComponent.isReady() + "로 변경되었습니다.")
+                .build();
+
+        return teamStatusVO;
     }
 }

@@ -4,11 +4,13 @@ import com.ssafy.be.auth.jwt.JwtProvider;
 import com.ssafy.be.common.component.GameComponent;
 import com.ssafy.be.common.component.GameManager;
 import com.ssafy.be.common.model.dto.ChatDTO;
+import com.ssafy.be.common.model.dto.SocketDTO;
 import com.ssafy.be.common.response.BaseResponse;
 import com.ssafy.be.gamer.model.GamerPrincipalVO;
 import com.ssafy.be.lobby.model.ReadyGame;
 import com.ssafy.be.room.model.dto.MoveTeamDTO;
 import com.ssafy.be.room.model.vo.MoveTeamVO;
+import com.ssafy.be.room.model.vo.TeamStatusVO;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -48,8 +50,8 @@ public class RoomController {
     /*
      * 팀 옮기기 Socket 메서드
      * subscribe : /game/{gameId}
-     * publish : /game/moveTeam/{gameId}
-     * send to : /app/game/{gameId}
+     * publish : /app/game/moveTeam/{gameId}
+     * send to : /game/{gameId}
      * */
     @MessageMapping("/game/moveTeam/{gameId}")
     @SendTo("/game/{gameId}")
@@ -69,7 +71,8 @@ public class RoomController {
     /*
      * 대기방 내 채팅을 위한 Socket 메서드
      * subscribe : /game/{gameId}
-     * send to : /app/game/{gameId}
+     * publish : /app/game/chat/{gameId}
+     * send to : /game/{gameId}
      * */
     @MessageMapping("/game/chat/{gameId}")
     @SendTo("/game/{gameId}")
@@ -84,6 +87,24 @@ public class RoomController {
         chatDTO.setCodeAndMsg(1001, "방 채팅이 성공적으로 보내졌습니다.");
 
         return chatDTO;
+    }
+
+    /*
+     * 팀의 상태를 변경하기 위한 Socket 메서드 ( ready <-> !ready )
+     * subscribe : /game/{gameId}
+     * publish : /app/game/teamStatus/{gameId}
+     * send to : /game/{gameId}
+     * */
+    @MessageMapping("/game/teamStatus/{gameId}")
+    @SendTo("/game/{gameId}")
+    public TeamStatusVO changeTeamStatus(SocketDTO socketDTO, @DestinationVariable int gameId, StompHeaderAccessor accessor){
+        GamerPrincipalVO gamerPrincipalVO = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor);
+        ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
+
+        socketDTO.setSenderGameId(gameId);
+
+        TeamStatusVO teamStatusVO =  gameManager.changeTeamStatus(socketDTO, gamerPrincipalVO);
+        return teamStatusVO;
     }
 
 }
