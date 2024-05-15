@@ -17,11 +17,14 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class HintType {
+public class TeamGamer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int hintTypeId;
-    private String hintTypeName;
+    private Long teamGamerId;
+    private int teamId;
+    //    private int colorId;
+    private String colorCode; // teamGamerComponent를 따라감...
+    private int gamerId;
     @CreationTimestamp
     private LocalDateTime createdDate;
     @UpdateTimestamp

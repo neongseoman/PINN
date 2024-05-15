@@ -1,27 +1,27 @@
-package com.ssafy.be.game.model.domain;
+package com.ssafy.be.gamer.model.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "game-question")
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class GameAndQuestion {
+public class GamerStatus {
     @Id
-    private int gameQuestionId;
-    private int gameId;
-    private int questionId;
-    private int roundNumber;
+    private int gamerId;
+    private int playCount;
+    private int winCount;
     @CreationTimestamp
     private LocalDateTime createdDate;
+    @UpdateTimestamp
+    private LocalDateTime updatedDate;
 }

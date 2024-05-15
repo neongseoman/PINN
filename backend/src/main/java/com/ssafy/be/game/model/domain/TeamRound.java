@@ -17,11 +17,17 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class HintType {
+public class TeamRound {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int hintTypeId;
-    private String hintTypeName;
+    private Long teamRoundId;
+    private int teamId;
+    private int roundNumber;
+    private int roundScore;
+    private int submitStage;
+    private LocalDateTime submitTime;
+    private double submitLat;
+    private double submitLng;
     @CreationTimestamp
     private LocalDateTime createdDate;
     @UpdateTimestamp

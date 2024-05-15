@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ColorDTO {
     private int colorId;
     private String colorCode;
@@ -31,8 +30,8 @@ public class ColorDTO {
         return Color.builder()
                 .colorId(this.colorId)
                 .colorCode(this.colorCode)
-                .createdDate(this.createdDate)
-                .updatedDate(this.updatedDate)
+//                .createdDate(this.createdDate)
+//                .updatedDate(this.updatedDate)
                 .build();
     }
 }
