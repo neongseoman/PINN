@@ -2,8 +2,9 @@
 
 import styles from './room.module.css'
 
-import Chatting from '@/components/Chatting'
 import useUserStore from '@/stores/userStore'
+import useIngameStore from '@/stores/ingameStore'
+import Chatting from '@/components/Chatting'
 import BtnReady from './_components/BtnReady'
 import SelectOption from './_components/SelectOption'
 import TeamList from './_components/TeamList'
@@ -15,6 +16,16 @@ import { GameProgressInfo } from '@/types/IngameSocketTypes'
 import { Client, IFrame, IMessage } from '@stomp/stompjs'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
+
+interface RoomInfo {
+  senderDateTime: string
+  senderNickname: string
+  senderGameId: number
+  senderTeamId: number
+  senderTeamNumber: number
+  code: number
+  msg: string
+}
 
 interface EnterFormat {
   senderDateTime: string
@@ -51,6 +62,7 @@ interface GameInfo {
 
 export default function RoomPage({ params }: { params: { id: string } }) {
   const { gamerId, nickname } = useUserStore()
+  const { setTeamColor, setTeamId, setTheme } = useIngameStore()
   const router = useRouter()
   const [gameInfo, setGameInfo] = useState<GameInfo>()
   const [remainTime, setRemainTime] = useState<number>(0)
@@ -120,7 +132,7 @@ export default function RoomPage({ params }: { params: { id: string } }) {
   const clientRef = useRef<Client>(
     new Client({
       brokerURL: process.env.NEXT_PUBLIC_SERVER_SOCKET_URL,
-      debug: function (str: string) {},
+      debug: function (str: string) { },
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
@@ -129,8 +141,7 @@ export default function RoomPage({ params }: { params: { id: string } }) {
 
   // 채팅
   const chatTitle = '전체 채팅'
-  const subscribeUrl = `/game/${params.id}`
-  const subscribeUrl2 = `/game/sse/${params.id}`
+  const subscribeRoomUrl = `/game/${params.id}`
   const publishChatUrl = `/app/game/chat/${params.id}`
   // 유저 입장
   const publishUserUrl = `/app/game/enter/${params.id}`
@@ -138,10 +149,9 @@ export default function RoomPage({ params }: { params: { id: string } }) {
   const publishMoveUrl = `/app/room/move`
   // 방나가기
   const publishExitUrl = `/app/game/exit/${params.id}`
-
-  const isTeamReady = teams.some(
-    (team) => team.teamNumber === 1 && team.ready === false,
-  )
+  // 시작
+  const subscribeStartUrl = `/game/sse/${params.id}`
+  // const isTeamReady = teams.some(team => team.teamNumber === 1 && team.ready === false)
 
   // 팀 목록 받아오는 함수
   const teamList = async () => {
@@ -151,9 +161,8 @@ export default function RoomPage({ params }: { params: { id: string } }) {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${
-            localStorage.getItem('accessToken') as string
-          }`,
+          Authorization: `Bearer ${localStorage.getItem('accessToken') as string
+            }`,
         },
       },
     )
@@ -173,32 +182,41 @@ export default function RoomPage({ params }: { params: { id: string } }) {
     }
   }
 
+  // 입장
   useEffect(() => {
     clientRef.current.onConnect = function (_frame: IFrame) {
-      // 사용자 입장을 알리는 publish
+      console.log('Connected:', _frame);
       clientRef.current.publish({
         headers: {
           Auth: localStorage.getItem('accessToken') as string,
         },
         destination: publishUserUrl,
-        body: JSON.stringify({}),
-      })
-      console.log('엔터')
-
-      clientRef.current.subscribe(subscribeUrl2, (message: IMessage) => {
-        const messageResponse = JSON.parse(message.body)
-        console.log('Subscribed message:', messageResponse)
-        if (messageResponse.code === 1202) {
-          router.push(`/game/${params.id}/1`)
-        }
+        body: JSON.stringify({
+        })
       })
 
-      clientRef.current.subscribe(subscribeUrl2, (message: IMessage) => {
-        const gameProgressResponse = JSON.parse(
-          message.body,
-        ) as GameProgressInfo
+      // 메시지 구독
+      clientRef.current.subscribe(subscribeRoomUrl, async (message: IMessage) => {
+        const enterResponse = JSON.parse(message.body) as GameInfo
+        console.log(enterResponse);
+
+        // 비동기 함수 호출
+        await teamList()
+      });
+
+      // 시작 메시지 구독
+      clientRef.current.subscribe(subscribeStartUrl, (message: IMessage) => {
+        const gameProgressResponse = JSON.parse(message.body) as GameProgressInfo
         switch (gameProgressResponse.code) {
           case 1202:
+            const myTeamInfo = teams.find(team => team.teamGamers.some(gamer => gamer?.gamerId === gamerId))
+            if (myTeamInfo) {
+              const myTeamId = myTeamInfo.teamNumber
+              const myTeamColor = myTeamInfo.colorCode
+              setTeamId(myTeamId)
+              setTeamColor(myTeamColor)
+            }
+
             router.push(`/game/${params.id}/1`)
             break
 
@@ -207,13 +225,6 @@ export default function RoomPage({ params }: { params: { id: string } }) {
         }
       })
 
-      // 채팅 또는 다른 메시지를 위한 구독
-      clientRef.current.subscribe(subscribeUrl, async (message: any) => {
-        const messageResponse = JSON.parse(message.body) as EnterFormat
-        console.log('Subscribed message:', messageResponse)
-
-        await teamList()
-      })
     }
 
     clientRef.current.onStompError = function (frame: IFrame) {
@@ -223,10 +234,11 @@ export default function RoomPage({ params }: { params: { id: string } }) {
 
     // 소켓을 활성화
     clientRef.current.activate()
+
     return () => {
       clientRef.current.deactivate()
     }
-  }, [subscribeUrl, publishUserUrl, subscribeUrl2])
+  }, [params.id])
 
   const gameStartRequest = {
     senderNickname: nickname,
@@ -284,9 +296,9 @@ export default function RoomPage({ params }: { params: { id: string } }) {
         senderTeamId: myTeam?.teamNumber,
       }),
     })
-    console.log('성공')
     router.push(`/lobby`)
   }
+
   const isLeader = gameInfo?.leaderId === gamerId ? true : false
   return (
     <main className={styles.background}>
@@ -302,7 +314,7 @@ export default function RoomPage({ params }: { params: { id: string } }) {
           <div className={styles.chat}>
             <Chatting
               chatTitle={chatTitle}
-              subscribeUrl={subscribeUrl}
+              subscribeUrl={subscribeRoomUrl}
               publishUrl={publishChatUrl}
               gameId={params.id}
             />

@@ -20,6 +20,8 @@ interface TeamsProp {
 
 export default function BtnStart({ gameStart }: TeamsProp) {
 
+
+
     return (
         <div>
             <button className={styles.start} onClick={gameStart}>게임 시작</button>
