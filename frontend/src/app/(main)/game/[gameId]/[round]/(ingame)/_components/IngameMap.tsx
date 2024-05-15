@@ -193,7 +193,9 @@ export default function IngameMap({
             break
           case 1120:
             // 실시간 커서
-            changeCursor(mesRes.lat, mesRes.lng, mesRes.senderNickname)
+            if (mesRes.senderTeamId == teamId) {
+              changeCursor(mesRes.lat, mesRes.lng, mesRes.senderNickname)
+            }
             break
         }
       })
