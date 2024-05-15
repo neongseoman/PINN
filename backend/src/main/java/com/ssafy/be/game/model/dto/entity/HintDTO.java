@@ -42,8 +42,8 @@ public class HintDTO {
                 .hintValue(this.hintValue)
                 .offerStage(this.offerStage)
                 .used(this.used)
-                .createdDate(this.createdDate)
-                .updatedDate(this.updatedDate)
+//                .createdDate(this.createdDate)
+//                .updatedDate(this.updatedDate)
                 .build();
     }
 }

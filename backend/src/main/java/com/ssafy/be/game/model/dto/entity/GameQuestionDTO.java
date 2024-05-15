@@ -34,7 +34,7 @@ public class GameQuestionDTO {
                 .gameId(this.gameId)
                 .questionId(this.questionId)
                 .roundNumber(this.roundNumber)
-                .createdDate(this.createdDate)
+//                .createdDate(this.createdDate)
                 .build();
     }
 }

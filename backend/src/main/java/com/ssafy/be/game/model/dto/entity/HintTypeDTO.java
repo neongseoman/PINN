@@ -30,8 +30,8 @@ public class HintTypeDTO {
         return HintType.builder()
                 .hintTypeId(this.hintTypeId)
                 .hintTypeName(this.hintTypeName)
-                .createdDate(this.createdDate)
-                .updatedDate(this.updatedDate)
+//                .createdDate(this.createdDate)
+//                .updatedDate(this.updatedDate)
                 .build();
     }
 }

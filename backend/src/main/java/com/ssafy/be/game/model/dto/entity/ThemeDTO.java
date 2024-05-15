@@ -30,8 +30,8 @@ public class ThemeDTO {
         return Theme.builder()
                 .themeId(this.themeId)
                 .themeName(this.themeName)
-                .createdDate(this.createdDate)
-                .updatedDate(this.updatedDate)
+//                .createdDate(this.createdDate)
+//                .updatedDate(this.updatedDate)
                 .build();
     }
 }

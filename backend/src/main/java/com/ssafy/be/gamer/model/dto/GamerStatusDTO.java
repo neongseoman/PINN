@@ -31,8 +31,8 @@ public class GamerStatusDTO {
                 .gamerId(this.gamerId)
                 .playCount(this.playCount)
                 .winCount(this.winCount)
-                .createdDate(this.createdDate)
-                .updatedDate(this.updatedDate)
+//                .createdDate(this.createdDate)
+//                .updatedDate(this.updatedDate)
                 .build();
     }
 }

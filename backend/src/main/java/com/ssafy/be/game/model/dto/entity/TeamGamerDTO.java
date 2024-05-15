@@ -34,8 +34,8 @@ public class TeamGamerDTO {
                 .teamId(this.teamId)
                 .colorCode(this.colorCode)
                 .gamerId(this.gamerId)
-                .createdDate(this.createdDate)
-                .updatedDate(this.updatedDate)
+//                .createdDate(this.createdDate)
+//                .updatedDate(this.updatedDate)
                 .build();
     }
 }

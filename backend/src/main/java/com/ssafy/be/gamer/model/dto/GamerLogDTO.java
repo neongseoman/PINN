@@ -46,8 +46,8 @@ public class GamerLogDTO {
                 .teamColor(this.teamColor)
                 .isRoomLeader(this.isRoomLeader)
                 .isTeamLeader(this.isTeamLeader)
-                .createdDate(this.createdDate)
-                .updatedDate(this.updatedDate)
+//                .createdDate(this.createdDate)
+//                .updatedDate(this.updatedDate)
                 .build();
     }
 }

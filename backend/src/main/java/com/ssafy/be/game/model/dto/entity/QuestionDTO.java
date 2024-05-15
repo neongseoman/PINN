@@ -41,8 +41,8 @@ public class QuestionDTO {
                 .lat(this.lat)
                 .lng(this.lng)
                 .used(this.used)
-                .createdDate(this.createdDate)
-                .updatedDate(this.updatedDate)
+//                .createdDate(this.createdDate)
+//                .updatedDate(this.updatedDate)
                 .build();
     }
 }

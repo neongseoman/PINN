@@ -30,8 +30,8 @@ public class ColorDTO {
         return Color.builder()
                 .colorId(this.colorId)
                 .colorCode(this.colorCode)
-                .createdDate(this.createdDate)
-                .updatedDate(this.updatedDate)
+//                .createdDate(this.createdDate)
+//                .updatedDate(this.updatedDate)
                 .build();
     }
 }
