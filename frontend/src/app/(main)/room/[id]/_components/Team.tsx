@@ -21,8 +21,6 @@ interface TeamProps {
 export default function Team({ team, handleTeamDoubleClick }: TeamProps) {
     const { nickname } = useUserStore()
 
-
-
     // 투명도 조절
     const transparentColor = (color: string) => {
         return color.replace('1)', '0.5)')
