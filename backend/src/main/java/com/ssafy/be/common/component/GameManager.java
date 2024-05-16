@@ -307,7 +307,8 @@ public class GameManager {
                     TeamGamerComponent teamGamerComponent = TeamGamerComponent.builder()
                             .gamerId(moveTeamDTO.getSenderGameId())
                             .teamId(moveTeamDTO.getNewTeamId())
-                            .gamerId(gamerPrincipalVO.getGamerId())
+//                            .gamerId(gamerPrincipalVO.getGamerId())
+                            .nickname(moveTeamDTO.getSenderNickname())
                             .teamGamerNumber(newTeamNumber)
                             .build();
                     // 팀에 해당 게이머 삽입
