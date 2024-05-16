@@ -1,24 +1,13 @@
 import styles from './btn.module.css'
 
 
-// interface TeamGamers {
-//     colorId: number
-//     gamerId: string
-//     teamId: number
-//     nickname: string
-// }
-
-interface TeamsProp {
-    // teams: {
-    //     colorCode: string
-    //     teamNumber: number
-    //     teamGamer: TeamGamers[]
-    //     ready: boolean
-    // }[]
+interface Prop {
     gameStart: () => void;
 }
 
-export default function BtnStart({ gameStart }: TeamsProp) {
+export default function BtnStart({ gameStart }: Prop) {
+
+
 
     return (
         <div>
