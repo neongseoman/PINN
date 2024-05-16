@@ -18,26 +18,6 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import BtnWaiting from './_components/BtnWaiting'
 
-interface RoomInfo {
-  senderDateTime: string
-  senderNickname: string
-  senderGameId: number
-  senderTeamId: number
-  senderTeamNumber: number
-  code: number
-  msg: string
-}
-
-interface EnterFormat {
-  senderDateTime: string
-  senderNickname: string
-  senderGameId: number
-  senderTeamId: number
-  senderTeamNumber: number
-  code: string
-  msg: string
-}
-
 interface TeamGamers {
   colorId: number
   gamerId: string
@@ -146,6 +126,17 @@ export default function RoomPage({ params }: { params: { id: string } }) {
       heartbeatOutgoing: 4000,
     }),
   )
+  const teamsRef = useRef(teams)
+  const gameInfoRef = useRef(gameInfo)
+
+  useEffect(() => {
+    teamsRef.current = teams
+  }, [teams])
+
+  useEffect(() => {
+    gameInfoRef.current = gameInfo
+  }, [gameInfo])
+
 
   // 채팅
   const chatTitle = '전체 채팅'
@@ -196,7 +187,6 @@ export default function RoomPage({ params }: { params: { id: string } }) {
   useEffect(() => {
     clientRef.current.onConnect = function (_frame: IFrame) {
       console.log('Connected:', _frame);
-
       clientRef.current.publish({
         headers: {
           Auth: localStorage.getItem('accessToken') as string,
@@ -210,18 +200,18 @@ export default function RoomPage({ params }: { params: { id: string } }) {
       // 메시지 구독
       clientRef.current.subscribe(subscribeRoomUrl, async (message: IMessage) => {
         const enterResponse = JSON.parse(message.body) as GameInfo
-        console.log(enterResponse);
-
-        // 비동기 함수 호출
+        console.log(enterResponse)
         await teamList()
       });
 
       // 시작 메시지 구독
       clientRef.current.subscribe(subscribeStartUrl, (message: IMessage) => {
         const gameProgressResponse = JSON.parse(message.body) as GameProgressInfo
+        const currentTeams = teamsRef.current
+        const currentGameInfo = gameInfoRef.current
         switch (gameProgressResponse.code) {
-          case 1202:
-            const myTeamInfo = teams.find(team => team.teamGamers.some(gamer => gamer?.gamerId === gamerId))
+          case 1201:
+            const myTeamInfo = currentTeams.find(team => team.teamGamers.some(gamer => gamer?.gamerId === gamerId))
             const themeMapping: { [key: number]: string } = {
               1: "랜덤",
               2: "한국",
@@ -229,7 +219,7 @@ export default function RoomPage({ params }: { params: { id: string } }) {
               4: "이집트",
               5: "랜드마크"
             }
-            const themeId = gameInfo?.themeId
+            const themeId = currentGameInfo?.themeId
             if (myTeamInfo) {
               const myTeamId = myTeamInfo.teamNumber
               const myTeamColor = myTeamInfo.colorCode
@@ -240,12 +230,11 @@ export default function RoomPage({ params }: { params: { id: string } }) {
             if (themeId) {
               setTheme(themeMapping[themeId])
             }
-
-            router.push(`/game/${params.id}/1`)
             break
 
           case 1210:
-            if (gameProgressResponse.round === 0) {
+            const isLeader = currentGameInfo?.leaderId === gamerId ? true : false
+            if (gameProgressResponse.round === 0 && isLeader) {
               clientRef.current.publish({
                 headers: {
                   Auth: localStorage.getItem('accessToken') as string,
@@ -258,6 +247,9 @@ export default function RoomPage({ params }: { params: { id: string } }) {
                   content: `${gameProgressResponse.leftTime}초 뒤 게임 시작!`
                 })
               })
+            }
+            if (gameProgressResponse.round === 0 && gameProgressResponse.leftTime === 1) {
+              router.push(`/game/${params.id}/1`)
             }
             break
         }
@@ -276,18 +268,15 @@ export default function RoomPage({ params }: { params: { id: string } }) {
     }
   }, [params.id])
 
+  useEffect(() => {
+
+  })
   function gameStart() {
     // 다른 팀이 있는지 확인
-    const otherTeamsExist = teams.some(team =>
-      team.teamNumber !== myTeam?.teamNumber && team.teamGamers.length > 0
-    );
+    const allOtherTeamsReady = teams
+      .filter(team => team.teamGamers.length > 0) // 비어있는 팀 제외
+      .every(team => team.ready);
 
-    // 다른팀이 존재하지 않거나 || 다른 팀이 있을 때, 그 팀들이 모두 준비 상태인지 확인
-    const allOtherTeamsReady = !otherTeamsExist || teams.every(team =>
-      team.teamNumber === myTeam?.teamNumber || (team.teamGamers.length > 0 && team.ready)
-    );
-
-    console.log(allOtherTeamsReady);
     if (!allOtherTeamsReady) {
       alert("모든 다른 팀이 준비 상태가 아닙니다. 게임을 시작할 수 없습니다.");
       return;
@@ -312,10 +301,9 @@ export default function RoomPage({ params }: { params: { id: string } }) {
       body: JSON.stringify(gameStartRequest),
     })
   }
+
   // 준비 버튼
   const gameReady = () => {
-    console.log(myTeam)
-    console.log(teams)
     clientRef.current.publish({
       headers: {
         Auth: localStorage.getItem('accessToken') as string,
