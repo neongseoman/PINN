@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class GameDTO {
     private int gameId;
     private String roomName;
