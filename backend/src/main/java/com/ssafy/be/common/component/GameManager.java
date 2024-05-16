@@ -305,9 +305,9 @@ public class GameManager {
                 if (!teamPersonNumber[i]) {
                     newTeamNumber = i;
                     TeamGamerComponent teamGamerComponent = TeamGamerComponent.builder()
-                            .gamerId(moveTeamDTO.getSenderGameId())
+//                            .gamerId(moveTeamDTO.getSenderGameId())
                             .teamId(moveTeamDTO.getNewTeamId())
-//                            .gamerId(gamerPrincipalVO.getGamerId())
+                            .gamerId(gamerPrincipalVO.getGamerId())
                             .nickname(moveTeamDTO.getSenderNickname())
                             .teamGamerNumber(newTeamNumber)
                             .build();
