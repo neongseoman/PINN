@@ -176,7 +176,7 @@ public class GameManager {
             throw new BaseException(NOT_EXIST_GAME, gamerPrincipalVO.getGamerId());
         }
         // team
-        TeamComponent teamComponent = gameComponent.teams.get(socketDTO.getSenderTeamId());
+        TeamComponent teamComponent = gameComponent.getTeams().get(socketDTO.getSenderTeamId());
         // teamGamer
         ConcurrentHashMap<Integer, TeamGamerComponent> teamGamers = teamComponent.getTeamGamers();
         if (teamGamers == null) {
