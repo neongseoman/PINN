@@ -12,6 +12,7 @@ import com.ssafy.be.common.response.BaseResponse;
 import com.ssafy.be.common.response.BaseResponseStatus;
 import com.ssafy.be.gamer.model.GamerPrincipalVO;
 import com.ssafy.be.lobby.model.dto.CreateRoomDTO;
+import com.ssafy.be.lobby.model.dto.QuickEnterDTO;
 import com.ssafy.be.lobby.model.vo.EnterRoomVO;
 import com.ssafy.be.lobby.model.vo.SearchVO;
 import com.ssafy.be.lobby.service.LobbyService;
@@ -119,9 +120,10 @@ public class LobbyController {
         return new BaseResponse<>(searchVO);
     }
 
-    @GetMapping("quickEnter")
-    public BaseResponse<?> enterFastestRoom(ServletRequest req){
+    @PostMapping("quickEnter")
+    public BaseResponse<?> enterFastestRoom(ServletRequest req, QuickEnterDTO enterDTO){
         GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
+        gamerPrincipalVO.setNickname(enterDTO.getSenderNickname());
         log.debug("빠른 시작 컨트롤러 : {}", gamerPrincipalVO.getGamerId());
         EnterRoomVO enterRoomVO = gameManager.findFastestStartRoom(gamerPrincipalVO);
 
@@ -141,6 +143,7 @@ public class LobbyController {
     @SendTo("/game/{gameId}")
     public EnterRoomVO enterRoom(@Payload SocketDTO socketDTO, @DestinationVariable Integer gameId, StompHeaderAccessor accessor){
         GamerPrincipalVO gamerPrincipalVO = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor);
+        gamerPrincipalVO.setNickname(socketDTO.getSenderNickname());
         log.debug(gamerPrincipalVO.getGamerId());
         // 게임이 없는 경우 Exception
         ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
