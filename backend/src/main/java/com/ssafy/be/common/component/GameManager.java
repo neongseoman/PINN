@@ -27,8 +27,10 @@ import com.ssafy.be.lobby.service.LobbyService;
 import com.ssafy.be.lobby.service.LobbyServiceImpl;
 import com.ssafy.be.room.model.dto.MoveTeamDTO;
 import com.ssafy.be.lobby.model.vo.ExitRoomVO;
+import com.ssafy.be.room.model.dto.RoomStatusDTO;
 import com.ssafy.be.room.model.vo.MoveTeamVO;
 
+import com.ssafy.be.room.model.vo.RoomStatusVO;
 import com.ssafy.be.room.model.vo.TeamStatusVO;
 
 import java.time.LocalDateTime;
@@ -473,5 +475,19 @@ public class GameManager {
                 .build();
 
         return teamStatusVO;
+    }
+
+    public RoomStatusVO changeRoomStatus(RoomStatusDTO roomStatusDTO) {
+        log.info("{} : room status is changed " ,roomStatusDTO.getSenderGameId());
+        GameComponent gameComponent = games.get(roomStatusDTO.getSenderGameId());
+        gameComponent.setStage1Time(roomStatusDTO.getStage1());
+        gameComponent.setStage2Time(roomStatusDTO.getStage2());
+        gameComponent.setThemeId(roomStatusDTO.getThemeId());
+        gameComponent.setRoundCount(roomStatusDTO.getRound());
+
+        return RoomStatusVO.builder()
+                .code(1027)
+                .msg("방의 상태가 바뀌었습니다.")
+                .build();
     }
 }

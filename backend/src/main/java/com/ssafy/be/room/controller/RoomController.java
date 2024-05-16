@@ -9,7 +9,9 @@ import com.ssafy.be.common.response.BaseResponse;
 import com.ssafy.be.gamer.model.GamerPrincipalVO;
 import com.ssafy.be.lobby.model.ReadyGame;
 import com.ssafy.be.room.model.dto.MoveTeamDTO;
+import com.ssafy.be.room.model.dto.RoomStatusDTO;
 import com.ssafy.be.room.model.vo.MoveTeamVO;
+import com.ssafy.be.room.model.vo.RoomStatusVO;
 import com.ssafy.be.room.model.vo.TeamStatusVO;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
@@ -106,6 +108,15 @@ public class RoomController {
 
         TeamStatusVO teamStatusVO =  gameManager.changeTeamStatus(socketDTO, gamerPrincipalVO);
         return teamStatusVO;
+    }
+
+    @MessageMapping("/game/room/update/{gameId}")
+    @SendTo("/game/{gameId}")
+    public RoomStatusVO changeRoom(RoomStatusDTO roomStatusDTO, @DestinationVariable Integer gameId, StompHeaderAccessor accessor){
+        GamerPrincipalVO gamerPrincipalVO = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor);
+        RoomStatusVO roomStatusVO = gameManager.changeRoomStatus(roomStatusDTO);
+
+        return roomStatusVO;
     }
 
 }

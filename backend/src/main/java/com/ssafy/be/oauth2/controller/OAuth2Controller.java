@@ -39,7 +39,7 @@ public class OAuth2Controller {
 //            log.info(cookie.getName() + " : " + cookie.getValue());
 //        }
         Map<String, String> token = new HashMap();
-        log.info("getAuthCode : " + code);
+        log.debug("getAuthCode : " + code);
         String kakaoAccessToken = oAuth2Service.getAccessTokenFromlocal(code);
         GamerDTO gamer = oAuth2Service.getUserInfo(kakaoAccessToken);
 
@@ -74,7 +74,7 @@ public class OAuth2Controller {
 //            log.info(cookie.getName() + " : " + cookie.getValue());
 //        }
         Map<String, String> token = new HashMap();
-        log.info("getAuthCode : " + code);
+        log.debug("getAuthCode : " + code);
         String kakaoAccessToken = oAuth2Service.getAccessTokenFromServer(code);
         GamerDTO gamer = oAuth2Service.getUserInfo(kakaoAccessToken);
 
@@ -109,7 +109,7 @@ public class OAuth2Controller {
 //            log.info(cookie.getName() + " : " + cookie.getValue());
 //        }
         Map<String, String> token = new HashMap();
-        log.info("getAuthCode : " + code);
+        log.debug("getAuthCode : " + code);
         String kakaoAccessToken = oAuth2Service.getAccessTokenFromTest(code,kakaoOAuthConfig.redirect_uri());
         GamerDTO gamer = oAuth2Service.getUserInfo(kakaoAccessToken);
 

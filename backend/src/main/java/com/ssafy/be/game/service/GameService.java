@@ -1,6 +1,7 @@
 package com.ssafy.be.game.service;
 
 import com.ssafy.be.common.exception.BaseException;
+import com.ssafy.be.common.model.dto.GameDTO;
 import com.ssafy.be.common.model.dto.SocketDTO;
 import com.ssafy.be.game.model.dto.*;
 import com.ssafy.be.game.model.vo.*;
@@ -13,7 +14,7 @@ public interface GameService {
 
     GameInitVO initGame(int gamerId, GameStartRequestDTO gameInitRequestDTO) throws BaseException;
 
-    RoundFinishVO finishRound(RoundFinishRequestDTO roundFinishRequestDTO) throws BaseException;
+    void finishRound(RoundFinishRequestDTO roundFinishRequestDTO) throws BaseException;
 
     void finishGame(SocketDTO gameFinishRequestDTO) throws BaseException; // not implemented
 
