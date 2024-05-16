@@ -7,18 +7,9 @@ import { Client, IFrame, IMessage } from '@stomp/stompjs'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import RoundResultMap from './_components/RoundResultMap'
-import styles from './roundResult.module.css'
-
-interface RoundResult {
-  teamId: number
-  roundNumber: number
-  roundRank: number
-  totalRank: number
-  roundScore: number
-  totalScore: number
-  submitLat: number
-  submitLng: number
-}
+import Timer from '@/components/Timer'
+import { Client, IFrame, IMessage } from '@stomp/stompjs'
+import { GameProgressInfo } from '@/types/IngameSocketTypes'
 
 export default function WaitingPage({
   params,
@@ -26,8 +17,8 @@ export default function WaitingPage({
   params: { gameId: string; round: string }
 }) {
   const [remainSeconds, setRemainSeconds] = useState<number>(30)
+  const [stage, setStage] = useState<string>()
   const router = useRouter()
-  const stageTime = 100
 
   const loader = new Loader({
     apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY as string,
@@ -38,7 +29,7 @@ export default function WaitingPage({
   const clientRef = useRef<Client>(
     new Client({
       brokerURL: process.env.NEXT_PUBLIC_SERVER_SOCKET_URL,
-      debug: function (str: string) {},
+      debug: function (str: string) { },
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,

@@ -1,31 +1,15 @@
 'use client'
 
 import { Loader } from '@googlemaps/js-api-loader'
-import { useEffect, useRef, useState } from 'react'
-import styles from '../roundResult.module.css'
-import { getRoundInfo } from '@/utils/IngameApi'
-import { RoundInit } from '@/types/IngameRestTypes'
+import { useEffect, useRef } from 'react'
+import styles from '../result1.module.css'
 
-interface RoundQuestion {
-    lat: number
-    lng: number
-}
-
-interface RoundResult {
-    teamId: number
-    roundNumber: number
-    roundRank: number
-    totalRank: number
+interface FilteredResult {
+    roundNumber: number;
+    roundRank: number;
+    submitLat: number;
+    submitLng: number;
     roundScore: number
-    totalScore: number
-    submitLat: number
-    submitLng: number
-    colorCode: string
-}
-
-interface RoundResultMapProps {
-    loader: Loader
-    roundResult: RoundResult[]
 }
 
 interface MarkerInfo {
@@ -33,15 +17,14 @@ interface MarkerInfo {
     title: string
 }
 
-
-export default function RoundResultMap({ params, loader, roundResult, roundQuestion }: { params: { gameId: string; round: string }; loader: Loader; roundResult: RoundResult[]; roundQuestion: RoundQuestion }) {
+export default function RoundResultMap({ params, loader, filteredResults }: { params: { gameId: string; }; loader: Loader; filteredResults: FilteredResult[]; }) {
     const mapRef = useRef<any>()
     const mapObjectRef = useRef<google.maps.Map | null>(null)
     const markersRef = useRef<google.maps.Marker[]>([])
 
     useEffect(() => {
         loader.importLibrary('maps').then(async () => {
-            const position = { lat: roundQuestion.lat, lng: roundQuestion.lng }
+            const position = { lat: 30, lng: 150 }
             const { Map } = (await google.maps.importLibrary(
                 'maps',
             )) as google.maps.MapsLibrary
@@ -55,27 +38,13 @@ export default function RoundResultMap({ params, loader, roundResult, roundQuest
 
             mapObjectRef.current = map
 
-            // 정답 마커 추가
-            const answerMarker = new google.maps.Marker({
-                position: position,
-                map: mapObjectRef.current,
-                title: '정답',
-                icon: {
-                    path: google.maps.SymbolPath.CIRCLE,
-                    scale: 6,
-                    fillColor: 'black',
-                    fillOpacity: 1,
-                    strokeColor: 'white',
-                    strokeWeight: 2,
-                },
-            })
-
-            const markerInfos: MarkerInfo[] = roundResult.map(result => ({
+            const markerInfos: MarkerInfo[] = filteredResults.map(result => ({
                 position: { lat: result.submitLat, lng: result.submitLng },
-                title: `팀 ${result.teamId}`,
+                title: `라운드 ${result.roundNumber}`,
                 // color: colorCode
                 // teamNumber: result.teamNumber,
             }))
+
             markerInfos.forEach(markerInfo => {
                 const marker = new google.maps.Marker({
                     position: markerInfo.position,
@@ -93,7 +62,7 @@ export default function RoundResultMap({ params, loader, roundResult, roundQuest
                 markersRef.current.push(marker)
             })
         })
-    }, [roundQuestion, roundResult])
+    }, [filteredResults])
 
     return (
         <>
