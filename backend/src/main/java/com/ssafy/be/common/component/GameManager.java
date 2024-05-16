@@ -240,7 +240,7 @@ public class GameManager {
             }
         }
 
-        if (count == 0) return removeGame(gameId);
+        if (count == 0) return true;
         return false;
     }
 
