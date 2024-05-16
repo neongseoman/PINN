@@ -1,5 +1,6 @@
 'use client'
 
+import useCustomAlert from '@/components/useCustomAlert'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import React, { useRef, useState } from 'react'
@@ -23,6 +24,7 @@ export default function CreateRoomModal({
   const [stage2Time, setStage2Time] = useState<number>(20)
   const [themeId, setThemeId] = useState<number>(1)
   const router = useRouter()
+  const { error } = useCustomAlert()
   // const clientRef = useRef<Client>(
   //   new Client({
   //     brokerURL: process.env.NEXT_PUBLIC_SERVER_SOCKET_URL,
@@ -88,10 +90,10 @@ export default function CreateRoomModal({
   // 생성 요청 함수
   const handleSubmit = async () => {
     if (!roomName || roomName.length > 20 || roomName.length < 1) {
-      alert('방 제목은 1글자 이상, 20글자 이하여야 합니다.')
+      error('방 제목을 입력해 주세요!')
       return
     } else if (password.length > 8) {
-      alert('비밀번호는 8글자 이하여야 합니다.')
+      error('비밀번호는 8글자 이하여야 합니다.')
       return
     }
     try {
@@ -137,7 +139,7 @@ export default function CreateRoomModal({
           router.push(`/room/${gameId}`)
         } else {
           // console.log('게임 생성 실패!', responseData.code)
-          alert(responseData.message)
+          error(responseData.message)
         }
       } else {
         // console.error('게임 생성 요청 통신 실패', response)
