@@ -20,19 +20,7 @@ export default function RootLayout({
     <html lang="ko-KR">
       <body>
         {children}
-        <ToastContainer
-          position="top-center"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="dark"
-          style={{ zIndex: 9999999999 }}
-        />
+        <ToastContainer />
       </body>
     </html>
   )
