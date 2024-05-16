@@ -1,5 +1,6 @@
 'use client'
 
+import useCustomAlert from '@/components/useCustomAlert'
 import useUserStore from '@/stores/userStore'
 import { useRouter } from 'next/navigation'
 import { Suspense, useEffect, useState } from 'react'
@@ -10,6 +11,7 @@ export default function LoginPage() {
   const { setGamerId, setNickname } = useUserStore()
   const [token, setToken] = useState<string | null>(null)
   const [accessToken, setAccessToken] = useState<string | null>(null)
+  const { error } = useCustomAlert()
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -47,7 +49,7 @@ export default function LoginPage() {
       setNickname(nicknameData)
       router.push('/lobby')
     } else {
-      alert('로그인에 실패하였습니다')
+      error('로그인에 실패하였습니다')
       router.push('/')
     }
   }

@@ -1,14 +1,13 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import styles from './roundResult.module.css'
+import { GameProgressInfo } from '@/types/IngameSocketTypes'
+import { Loader } from '@googlemaps/js-api-loader'
+import { Client, IFrame, IMessage } from '@stomp/stompjs'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { Loader } from '@googlemaps/js-api-loader'
+import { useEffect, useRef, useState } from 'react'
 import RoundResultMap from './_components/RoundResultMap'
-import { Client, IFrame, IMessage } from '@stomp/stompjs'
-import { GameProgressInfo } from '@/types/IngameSocketTypes'
-
+import styles from './roundResult.module.css'
 
 interface RoundQuestion {
   lat: number
@@ -46,8 +45,7 @@ export default function RoundResultPage({ params }: { params: { gameId: string; 
   const clientRef = useRef<Client>(
     new Client({
       brokerURL: process.env.NEXT_PUBLIC_SERVER_SOCKET_URL,
-      debug: function (str: string) {
-      },
+      debug: function (str: string) { },
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
@@ -92,7 +90,7 @@ export default function RoundResultPage({ params }: { params: { gameId: string; 
           },
           body: JSON.stringify({
             gameId: params.gameId,
-            round: params.round
+            round: params.round,
           }),
         },
       )
@@ -156,24 +154,36 @@ export default function RoundResultPage({ params }: { params: { gameId: string; 
         <div className={styles.round}>라운드 {params.round}</div>
         <div className={styles.result}>Result</div>
         <div className={styles.mapWrapper}>
-          <RoundResultMap params={params} loader={loader} roundResult={roundResult} roundQuestion={roundQuestion} />
+          <RoundResultMap
+            params={params}
+            loader={loader}
+            roundResult={roundResult}
+            roundQuestion={roundQuestion}
+          />
         </div>
         <div className={styles['rank-container']}>
           <div className={styles.trophy}>
             {roundResult.slice(0, 3).map((result, index) => (
-              <Image key={index} src={`/assets/images/svg/noto_${index + 1}-place-medal.svg`} alt="" width={28} height={28} />
+              <Image
+                key={index}
+                src={`/assets/images/svg/noto_${index + 1}-place-medal.svg`}
+                alt=""
+                width={28}
+                height={28}
+              />
             ))}
           </div>
           <div className={styles.rank}>
             {roundResult
               .sort((a, b) => a.roundRank - b.roundRank)
-              .map(result => (
+              .map((result) => (
                 <div key={result.teamId} className={styles.teamList}>
-                  <div>{result.roundRank}. TEAM {result.teamId}</div>
+                  <div>
+                    {result.roundRank}. TEAM {result.teamId}
+                  </div>
                   <div>{result.roundScore.toLocaleString()}</div>
                 </div>
-              ))
-            }
+              ))}
           </div>
         </div>
       </div>

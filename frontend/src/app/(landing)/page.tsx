@@ -1,7 +1,7 @@
 'use client'
 
 import KakaoScript from '@/utils/KakaoScript'
-import { FaAnglesDown } from 'react-icons/fa6'
+import { FaAnglesDown, FaAnglesUp } from 'react-icons/fa6'
 import styles from './landing.module.css'
 
 declare global {
@@ -21,6 +21,14 @@ export default function LandingPage() {
     landingSound()
     window.scrollTo({
       top: document.documentElement.scrollHeight,
+      behavior: 'smooth',
+    })
+  }
+
+  const scrollUp = () => {
+    // landingSound()
+    window.scrollTo({
+      top: 0,
       behavior: 'smooth',
     })
   }
@@ -53,6 +61,9 @@ export default function LandingPage() {
             <p className={styles.text}>정답과 근접한 곳을 유추하여</p>
             <p className={styles.text}>지도에 핀을 꽂아요!</p>
           </div>
+          <button className={styles.scroll} onClick={scrollUp}>
+            <FaAnglesUp />
+          </button>
           <div className={styles.right}>
             <img
               className={styles.guide2}

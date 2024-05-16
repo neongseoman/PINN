@@ -185,7 +185,7 @@
   color: var(--Main-Yellow);
   box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
   &::backdrop {
-    background-color: rgba(0, 0, 0, 0.9);
+    background-color: rgba(0, 0, 0, 0.2);
   }
 }
 
@@ -418,7 +418,7 @@
   color: var(--Main-Yellow);
   box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
   &::backdrop {
-    background-color: rgba(0, 0, 0, 0.9);
+    background-color: rgba(0, 0, 0, 0.2);
   }
 }
 
@@ -441,7 +441,7 @@
   color: var(--Main-Yellow);
   box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
   &::backdrop {
-    background-color: rgba(0, 0, 0, 0.9);
+    background-color: rgba(0, 0, 0, 0.2);
   }
 }
 
@@ -465,15 +465,36 @@
   position: relative;
   width: 800px;
   height: 500px;
-  padding: 25px;
+  padding: 10px;
   border: none;
   background-color: rgba(255, 255, 255, 0.8);
   color: var(--Main-Navy);
-  overflow-x: auto;
+  position: relative;
   box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
   &::backdrop {
-    background-color: rgba(0, 0, 0, 0.9);
+    background-color: rgba(0, 0, 0, 0.2);
   }
+}
+
+.exitIcon {
+  font-size: 40px;
+  color: var(--Main-Navy);
+  position: absolute;
+  z-index: 1;
+  top: 20px;
+  right: 25px;
+  &:hover {
+    cursor: pointer;
+    transform: scale(1.1);
+    transition: transform 0.3s ease;
+  }
+}
+
+.ruleContentsWrapper {
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+  overflow-x: auto;
   &::-webkit-scrollbar {
     width: 10px;
   }
@@ -488,23 +509,11 @@
   }
 }
 
-.exitIcon {
-  font-size: 40px;
-  color: var(--Main-Navy);
-  position: absolute;
-  top: 20px;
-  right: 10px;
-  &:hover {
-    cursor: pointer;
-    transform: scale(1.1);
-    transition: transform 0.3s ease;
-  }
-}
-
 .ruleContents {
   display: flex;
   flex-direction: column;
   height: 500px;
+  margin-bottom: 20px;
 }
 
 .ruleTitle {
@@ -539,12 +548,14 @@
 .warningIcon {
   font-size: 100px;
   margin-top: 20px;
+  height: 110px;
 }
 
 .ruleTextBox {
   display: flex;
   flex-direction: column;
   margin-top: 30px;
+  height: 110px;
 }
 
 .ruleText {
