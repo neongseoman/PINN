@@ -335,6 +335,7 @@ public class GameManager {
 
         return ReadyGame.builder()
                 .teams(teams)
+                .roomName(gameComponent.getRoomName())
                 .gameId(gameComponent.getGameId())
                 .themeId(gameComponent.getThemeId())
                 .leaderId(gameComponent.getLeaderId())
