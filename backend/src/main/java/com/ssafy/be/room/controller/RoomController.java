@@ -68,6 +68,7 @@ public class RoomController {
         // 새로운 팀에 할당
         MoveTeamVO moveTeamVO = gameManager.enterSpecificTeam(moveTeamDTO, gamerPrincipalVO);
 
+        log.info(moveTeamVO);
         return moveTeamVO;
     }
 
