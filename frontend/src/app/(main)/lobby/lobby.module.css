@@ -548,12 +548,14 @@
 .warningIcon {
   font-size: 100px;
   margin-top: 20px;
+  height: 110px;
 }
 
 .ruleTextBox {
   display: flex;
   flex-direction: column;
   margin-top: 30px;
+  height: 110px;
 }
 
 .ruleText {
