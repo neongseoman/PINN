@@ -9,22 +9,10 @@ import Timer from '@/components/Timer'
 import { Client, IFrame, IMessage } from '@stomp/stompjs'
 import { GameProgressInfo } from '@/types/IngameSocketTypes'
 
-
-interface RoundResult {
-  teamId: number
-  roundNumber: number
-  roundRank: number
-  totalRank: number
-  roundScore: number
-  totalScore: number
-  submitLat: number
-  submitLng: number
-}
-
 export default function WaitingPage({ params }: { params: { gameId: string; round: string } }) {
   const [remainSeconds, setRemainSeconds] = useState<number>(30)
+  const [stage, setStage] = useState<string>()
   const router = useRouter()
-  const stageTime = 100
 
   const loader = new Loader({
     apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY as string,

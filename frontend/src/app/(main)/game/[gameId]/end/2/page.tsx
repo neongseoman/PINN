@@ -1,45 +1,113 @@
 'use client'
 
+import useIngameStore from '@/stores/ingameStore'
 import { useEffect, useState } from 'react'
 import styles from './result2.module.css'
 import { useRouter } from 'next/navigation'
 
-export default function ResultPage2({ params }: { params: { id: number } }) {
+interface RoundResult {
+    teamId: number
+    roundNumber: number
+    roundRank: number
+    totalRank: number
+    roundScore: number
+    totalScore: number
+    submitLat: number
+    submitLng: number
+    colorCode: string
+}
+
+interface FilteredResult {
+    roundNumber: number;
+    roundRank: number;
+    submitLat: number;
+    submitLng: number;
+    roundScore: number
+}
+
+interface Team {
+    rank: number;
+    teamNumber: number;
+    score: number;
+    teamColor: string;
+}
+
+export default function ResultPage2({ params }: { params: { gameId: string; } }) {
     const router = useRouter()
-    // 더미
-    const teamNum = 1
-    const [teams, setTeams] = useState([
-        { rank: 1, teamNumber: 1, score: 15000, teamColor: 'rgba(255, 0, 61, 0.7)' },
-        { rank: 2, teamNumber: 2, score: 14000, teamColor: 'rgba(182, 53, 53, 0.7)' },
-        { rank: 3, teamNumber: 3, score: 13000, teamColor: 'rgba(255, 111, 0, 0.7)' },
-        { rank: 4, teamNumber: 4, score: 12000, teamColor: 'rgba(153, 155, 41, 0.7)' },
-        { rank: 5, teamNumber: 5, score: 11000, teamColor: 'rgba(0, 131, 143, 0.7)' },
-        { rank: 6, teamNumber: 6, score: 10000, teamColor: 'rgba(105, 53, 170, 0.7)' },
-        { rank: 7, teamNumber: 7, score: 9000, teamColor: 'rgba(251, 52, 159, 0.7)' },
-        { rank: 8, teamNumber: 8, score: 8000, teamColor: 'rgba(255, 172, 207, 0.7)' },
-        { rank: 9, teamNumber: 9, score: 7000, teamColor: 'rgba(188, 157, 157, 0.7)' },
-        { rank: 10, teamNumber: 10, score: 5000, teamColor: 'rgba(85, 85, 85, 0.7)' },
-    ])
+    const { teamId } = useIngameStore()
+    const [result, setResult] = useState<RoundResult[][]>([])
+    const teamNum = teamId
+    const [teams, setTeams] = useState<Team[]>([]);
+    // const myTeam = teams.find((team) =>
+    //     team.teamGamers.some((gamer) => gamer?.gamerId === gamerId),
+    // )
 
     useEffect(() => {
-        // 게임결과api
-    }, [])
-    // [추가 필요] 현재 유저의 팀이 어디에 속해있는지 teamNum 계산 
+        const getGameResult = async () => {
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL}/game/result`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${localStorage.getItem('accessToken') as string
+                            }`,
+                    },
+                    body: JSON.stringify({
+                        gameId: params.gameId,
+                        round: teamId
+                    }),
+                },
+            )
+
+            if (response.ok) {
+                const responseData = await response.json()
+                console.log(responseData)
+                if (responseData.code === 1000) {
+                    const lastRoundResults = responseData.result.roundResults.slice(-1)[0];
+                    const sortedTeams = lastRoundResults
+                        .map((r: RoundResult) => ({
+                            rank: r.roundRank,
+                            teamNumber: r.teamId,
+                            score: r.totalScore,
+                            teamColor: r.colorCode,
+                        }))
+                        .sort((a: Team, b: Team) => b.score - a.score);
+
+                    setTeams(sortedTeams);
+                } else {
+                    console.log('팀 목록 출력 실패!', responseData.code)
+                }
+            } else {
+                console.error('팀 목록 요청 통신 실패', response)
+            }
+        }
+        getGameResult()
+    }, [params])
 
     const outToLobby = () => {
         router.push('/lobby')
     }
 
-    const continueGame = (roomId: number) => {
-        router.push(`/room/${roomId}`)
+    const rankMapping: { [key: number]: string } = {
+        1: "1등! 오늘 저녁은 치킨이닭",
+        2: "2등! 진정한 패배자는 준우승이다.",
+        3: "3등! ",
+        4: "4등!!",
+        5: "5등!",
+        6: "6등!",
+        7: "7등!",
+        8: "8등!",
+        9: "9등!",
+        10: "10등!",
     }
 
     return (
         <main className={styles.background}>
-            <div className={styles.words}>?등! ??????????</div>
+            <div className={styles.words}>?????????</div>
             <div className={styles.container}>
                 <div className={styles.button}>
-                    <button className={styles['button-out']} onClick={() => outToLobby()}>&lt;&minus; 방나가기</button>
+                    {/* <button className={styles['button-out']} onClick={() => outToLobby()}>&lt;&minus; 방나가기</button> */}
                 </div>
                 <div className={styles['rank-container']}>
                     {/* 1 ~ 10  단순 등수*/}
@@ -62,7 +130,7 @@ export default function ResultPage2({ params }: { params: { id: number } }) {
                     </div>
                 </div>
                 <div className={styles.button}>
-                    <button className={styles['button-continue']} onClick={() => continueGame(1)} >계속하기 &minus;&gt;</button>
+                    <button className={styles['button-continue']} onClick={() => outToLobby()} >로비로 &minus;&gt;</button>
                 </div>
             </div>
         </main >
