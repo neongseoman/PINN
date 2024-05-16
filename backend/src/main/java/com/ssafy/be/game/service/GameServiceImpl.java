@@ -46,6 +46,8 @@ public class GameServiceImpl implements GameService {
     private final static int NOT_GUESSED_STAGE = 0;
     private final static int DEVELOPER_GAMER_ID = 0;
     private final static int NOT_SUBMITTED_CORD = 1000;
+    private final static int MAX_ROUND_SCORE = 5000;
+    private final static double STAGE2_SCORE_LIMIT_RATE = 0.7;
 
     /////
     // TODO: BaseException에 임시로 null 넣어둔 거 exception 종류에 맞게 수정
@@ -252,10 +254,13 @@ public class GameServiceImpl implements GameService {
             submitTeamRound.setSubmitLng(pinMoveRequestDTO.getSubmitLng());
 
             // 입력된 lat, lng 기반 score 계산 + submitTeamRound에 저장
-            // TODO: 제출 스테이지별 점수 상한선 지정 필요
+
             int round = pinMoveRequestDTO.getRoundNumber();
             QuestionComponent answer = existGame.getQuestions().get(round - 1);
             int submitScore = calculateScore(answer.getLat(), answer.getLng(), pinMoveRequestDTO.getSubmitLat(), pinMoveRequestDTO.getSubmitLng()); // 점수 계산
+            if (pinMoveRequestDTO.getSubmitStage() == 2) { // stage2에 찍은 핀인 경우: 산정된 점수 * STAGE2_SCORE_LIMIT_RATE 만큼만 획득 가능
+                submitScore *= STAGE2_SCORE_LIMIT_RATE;
+            }
             submitTeamRound.setRoundScore(submitScore);
 
             // broadcast할 정보 responseDTO에 채우기
@@ -721,8 +726,9 @@ public class GameServiceImpl implements GameService {
 
     // 'answer 위치'와 'submit 위치' 사이의 거리 기반 score 계산
     public static int calculateScore(double answerLat, double answerLng, double submitLat, double submitLng) {
-        // TODO: 계산된 거리+제출 스테이지에 따른 점수 계산 로직 추가
-        return (int) calculateDistance(answerLat, answerLng, submitLat, submitLng);
+        // 최대 점수 - (정답과 핀 사이 거리)
+        int dist = (int) calculateDistance(answerLat, answerLng, submitLat, submitLng);
+        return Math.max(MAX_ROUND_SCORE - dist, 0);
     }
 
 }
