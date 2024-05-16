@@ -26,16 +26,14 @@ interface RoundResult {
   colorCode: string
 }
 
-export default function RoundResultPage({
-  params,
-}: {
-  params: { gameId: string; round: string }
-}) {
+interface GameInfo {
+  roundCount: number
+}
+
+export default function RoundResultPage({ params }: { params: { gameId: string; round: string } }) {
   const [roundResult, setRoundResult] = useState<RoundResult[]>([])
-  const [roundQuestion, setRoundQuestion] = useState<RoundQuestion>({
-    lat: 0,
-    lng: 0,
-  })
+  const [roundQuestion, setRoundQuestion] = useState<RoundQuestion>({ lat: 0, lng: 0 })
+  const [gameInfo, setGameInfo] = useState<GameInfo>()
   const router = useRouter()
 
   const loader = new Loader({
@@ -47,7 +45,7 @@ export default function RoundResultPage({
   const clientRef = useRef<Client>(
     new Client({
       brokerURL: process.env.NEXT_PUBLIC_SERVER_SOCKET_URL,
-      debug: function (str: string) {},
+      debug: function (str: string) { },
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
@@ -55,6 +53,31 @@ export default function RoundResultPage({
   )
 
   useEffect(() => {
+    const getGameInfo = async () => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/room/${params.gameId}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('accessToken') as string
+              }`,
+          },
+        },
+      )
+
+      if (response.ok) {
+        const responseData = await response.json()
+        if (responseData.code === 1000) {
+          setGameInfo(responseData.result)
+        } else {
+          console.log('팀 목록 출력 실패!', responseData.code)
+        }
+      } else {
+        console.error('팀 목록 요청 통신 실패', response)
+      }
+    }
+
     const roundResultList = async () => {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/game/round/result`,
@@ -62,9 +85,8 @@ export default function RoundResultPage({
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${
-              localStorage.getItem('accessToken') as string
-            }`,
+            Authorization: `Bearer ${localStorage.getItem('accessToken') as string
+              }`,
           },
           body: JSON.stringify({
             gameId: params.gameId,
@@ -74,10 +96,8 @@ export default function RoundResultPage({
       )
 
       if (response.ok) {
-        console.log('라운드 결과 요청 통신 성공')
         const responseData = await response.json()
         if (responseData.code === 1000) {
-          console.log('라운드 결과 출력 성공!', responseData)
           setRoundResult(responseData.result.roundResult)
           setRoundQuestion(responseData.result.question)
         } else {
@@ -88,13 +108,14 @@ export default function RoundResultPage({
         console.error('라운드 결과 요청 통신 실패', response)
       }
     }
-
+    getGameInfo()
     roundResultList()
-  }, [])
+  }, [params])
 
   const ingameSubscribeUrl = `/game/sse/${params.gameId}`
+
   useEffect(() => {
-    // 소켓 연결 시 동작
+    console.log(gameInfo)
     clientRef.current.onConnect = function (_frame: IFrame) {
       // 게임 진행 구독
       clientRef.current.subscribe(ingameSubscribeUrl, (message: IMessage) => {
@@ -103,11 +124,11 @@ export default function RoundResultPage({
         ) as GameProgressInfo
         switch (gameProgressResponse.code) {
           case 1206:
-            if (parseInt(params.round) + 1 < 4) {
-              router.push(
-                `/game/${params.gameId}/${parseInt(params.round) + 1}`,
-              )
-            } else {
+            const totalRounds = gameInfo?.roundCount ?? 0
+            if (parseInt(params.round) + 1 <= totalRounds) {
+              router.push(`/game/${params.gameId}/${parseInt(params.round) + 1}`);
+            }
+            else {
               router.push(`/game/${params.gameId}/end/1`)
             }
             break
@@ -125,7 +146,7 @@ export default function RoundResultPage({
     return () => {
       clientRef.current.deactivate()
     }
-  }, [params.gameId, params.round])
+  }, [params, gameInfo])
 
   return (
     <main className={styles.background}>
