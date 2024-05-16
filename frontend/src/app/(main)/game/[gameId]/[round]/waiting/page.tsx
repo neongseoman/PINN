@@ -7,9 +7,7 @@ import { Client, IFrame, IMessage } from '@stomp/stompjs'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import RoundResultMap from './_components/RoundResultMap'
-import Timer from '@/components/Timer'
-import { Client, IFrame, IMessage } from '@stomp/stompjs'
-import { GameProgressInfo } from '@/types/IngameSocketTypes'
+import styles from './roundResult.module.css'
 
 export default function WaitingPage({
   params,

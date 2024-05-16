@@ -3,6 +3,7 @@
 import useIngameStore from '@/stores/ingameStore'
 import { useEffect, useState } from 'react'
 import styles from './result2.module.css'
+import { useRouter } from 'next/router'
 
 interface RoundResult {
   teamId: number
