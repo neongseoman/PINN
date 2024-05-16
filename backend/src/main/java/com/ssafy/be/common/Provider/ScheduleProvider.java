@@ -78,6 +78,7 @@ public class ScheduleProvider {
 
     public CompletableFuture<Integer> roundScheduler(int gameId, GameStartRequestDTO gameStartRequestDTO, int currentRound) {
         CompletableFuture<Integer> future = new CompletableFuture<>();
+
         // Round 시작
         log.info("{} Round {} Start: {}", gameStartRequestDTO.getGameId(), currentRound, LocalDateTime.now());
         sendingOperations.convertAndSend("/game/sse/" + gameId,

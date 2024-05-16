@@ -2,6 +2,7 @@ package com.ssafy.be.game.controller;
 
 import com.ssafy.be.auth.jwt.JwtProvider;
 import com.ssafy.be.common.Provider.ScheduleProvider;
+import com.ssafy.be.common.component.GameComponent;
 import com.ssafy.be.common.component.GameManager;
 import com.ssafy.be.common.exception.BaseException;
 import com.ssafy.be.common.model.dto.ChatDTO;
@@ -50,12 +51,17 @@ public class GameController {
     @MessageMapping("/game/start")
     public void startGame(GameStartRequestDTO gameStartRequestDTO, StompHeaderAccessor accessor) throws ExecutionException, InterruptedException, BaseException {
         log.debug("Is this async? Start of Method : {}", LocalDateTime.now());
-
+        int gameId = gameStartRequestDTO.getGameId();
+        GameComponent gameComponent = gameManager.getGames().get(gameId);
+        gameStartRequestDTO.setRoundCount(gameComponent.getRoundCount());
+        gameStartRequestDTO.setStage1Time(gameComponent.getStage1Time());
+        gameStartRequestDTO.setStage2Time(gameComponent.getStage2Time());
+        gameStartRequestDTO.setScorePageTime(15);
         int gamerId = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor).getGamerId();
         GameStartVO gameStartVO = gameService.startGame(gamerId, gameStartRequestDTO);
         GameInitVO gameInitVO = gameService.initGame(gamerId, gameStartRequestDTO);
-        int gameId = gameInitVO.getGameId();
         int currentRound = 0;
+
 
         // round가 늘어난다면 이걸 늘리면 될 것 같음.
 

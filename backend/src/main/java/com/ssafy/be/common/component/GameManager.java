@@ -478,6 +478,7 @@ public class GameManager {
     }
 
     public RoomStatusVO changeRoomStatus(RoomStatusDTO roomStatusDTO) {
+        log.info("{} : room status is changed " ,roomStatusDTO.getSenderGameId());
         GameComponent gameComponent = games.get(roomStatusDTO.getSenderGameId());
         gameComponent.setStage1Time(roomStatusDTO.getStage1());
         gameComponent.setStage2Time(roomStatusDTO.getStage2());
