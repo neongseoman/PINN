@@ -62,7 +62,7 @@ public class ScheduleProvider {
         for (int i = stageTime; i > 0; i--) {
             final int time = i;
             timerChain = timerChain.thenCompose(ignore -> CompletableFuture.runAsync(() -> {
-                        log.info("{} : Remaining time {} seconds for stage {}", gameId, time, stage);
+//                        log.info("{} : Remaining time {} seconds for stage {}", gameId, time, stage);
                         sendingOperations.convertAndSend("/game/sse/" + gameId,
                                 new NotifyLeftTimeVO(time, stageTime,stage, round, event));
                     }).thenCompose(aVoid -> scheduleFuture(gameId, 1))
