@@ -70,7 +70,7 @@ public class LobbyServiceImpl implements LobbyService {
                     .teamNumber(colorcodes[i].getTeamNumber())
                     .isReady(false)
                     .build();
-            log.info(teamComponent);
+//            log.info(teamComponent);
 
             teams.put(colorcodes[i].getTeamNumber(), teamComponent);
         }
