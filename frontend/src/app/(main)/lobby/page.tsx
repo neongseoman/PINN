@@ -45,10 +45,10 @@ export default function LobbyPage() {
           Authorization: `Bearer ${
             localStorage.getItem('accessToken') as string
           }`,
-          body: JSON.stringify({
-            senderNickname: nickname,
-          }),
         },
+        body: JSON.stringify({
+          senderNickname: nickname,
+        }),
       },
     )
 
