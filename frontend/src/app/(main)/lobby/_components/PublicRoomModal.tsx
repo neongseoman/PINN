@@ -1,5 +1,6 @@
 'use client'
 
+import useCustomAlert from '@/components/useCustomAlert'
 import { useRouter } from 'next/navigation'
 import { Dispatch, SetStateAction, useEffect, useRef } from 'react'
 import { FaQuestionCircle } from 'react-icons/fa'
@@ -20,6 +21,7 @@ export default function PublicRoomModal({
 }: PublicRoomModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const router = useRouter()
+  const { error } = useCustomAlert()
 
   useEffect(() => {
     showModal()
@@ -42,8 +44,9 @@ export default function PublicRoomModal({
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('accessToken') as string
-              }`,
+            Authorization: `Bearer ${
+              localStorage.getItem('accessToken') as string
+            }`,
           },
           body: JSON.stringify({
             password: '',
@@ -60,7 +63,7 @@ export default function PublicRoomModal({
           router.push(`/room/${gameId}`)
         } else {
           // console.log('공개방 입장 요청 실패!', responseData.code)
-          alert(responseData.message)
+          error(responseData.message)
         }
       } else {
         // console.error('공개방 입장 요청 통신 실패', response)

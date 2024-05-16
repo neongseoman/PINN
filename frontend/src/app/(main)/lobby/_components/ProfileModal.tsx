@@ -1,5 +1,6 @@
 'use client'
 
+import useCustomAlert from '@/components/useCustomAlert'
 import useUserStore from '@/stores/userStore'
 import { useRef, useState } from 'react'
 import { FaEdit } from 'react-icons/fa'
@@ -17,6 +18,7 @@ export default function ProfileModal({
   const { nickname, setNickname } = useUserStore()
   const dialogRef = useRef<HTMLDialogElement>(null)
   const [newNickname, setNewNickname] = useState<string>(nickname || '')
+  const { error } = useCustomAlert()
 
   const handleNicknameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewNickname(event.target.value)
@@ -34,7 +36,7 @@ export default function ProfileModal({
 
   const editNickname = async () => {
     if (!newNickname.trim()) {
-      alert('닉네임을 입력해 주세요')
+      error('닉네임을 입력해 주세요')
       setNewNickname('')
     } else {
       try {
@@ -63,7 +65,7 @@ export default function ProfileModal({
             closeModal()
           } else {
             console.log('닉네임 변경 실패!', responseData.code)
-            alert(responseData.message)
+            error(responseData.message)
           }
         } else {
           console.error('닉네임 변경 통신 실패', response)
