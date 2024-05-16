@@ -121,7 +121,7 @@ public class LobbyController {
     }
 
     @PostMapping("quickEnter")
-    public BaseResponse<?> enterFastestRoom(ServletRequest req, QuickEnterDTO enterDTO){
+    public BaseResponse<?> enterFastestRoom(ServletRequest req, @RequestBody QuickEnterDTO enterDTO){
         GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
         gamerPrincipalVO.setNickname(enterDTO.getSenderNickname());
         log.debug("빠른 시작 컨트롤러 : {}", gamerPrincipalVO.getGamerId());
