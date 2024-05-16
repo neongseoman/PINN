@@ -23,6 +23,8 @@ import com.ssafy.be.gamer.model.GamerPrincipalVO;
 import com.ssafy.be.lobby.model.ReadyGame;
 import com.ssafy.be.lobby.model.SearchTeam;
 import com.ssafy.be.lobby.model.vo.EnterRoomVO;
+import com.ssafy.be.lobby.service.LobbyService;
+import com.ssafy.be.lobby.service.LobbyServiceImpl;
 import com.ssafy.be.room.model.dto.MoveTeamDTO;
 import com.ssafy.be.lobby.model.vo.ExitRoomVO;
 import com.ssafy.be.room.model.vo.MoveTeamVO;
@@ -34,6 +36,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.NoSuchElementException;
@@ -45,7 +48,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GameManager {
     // key : game_id
     private ConcurrentHashMap<Integer, GameComponent> games;
-
     public GameManager() {
         this.games = new ConcurrentHashMap<>();
     }
@@ -221,9 +223,24 @@ public class GameManager {
         // remove gamer
         teamGamers.remove(gamerPrincipalVO.getGamerId());
         // 방에 아무도 없는 경우 확인
-//        checkRoomEmpty();
+        if(checkRoomEmpty(gamerPrincipalVO.getGamerId())) removeGame(gamerPrincipalVO.getGamerId());
 
         return exitRoomVO;
+    }
+
+    // 모든 TeamComponenet를 순회하면서 유저 상황을 체크하ㅡㄴ 것이 최선인가?
+    private boolean checkRoomEmpty(int gameId) {
+        GameComponent gameComponent = games.get(gameId);
+        int count = 0;
+        ConcurrentHashMap<Integer, TeamComponent> teams = gameComponent.getTeams();
+        for(TeamComponent team : teams.values()){
+            if(team.getTeamGamers() != null){
+                count += team.getTeamGamers().size();
+            }
+        }
+
+        if (count == 0) return removeGame(gameId);
+        return false;
     }
 
     // 리더가 될 사람을 찾는 메서드
@@ -359,7 +376,6 @@ public class GameManager {
         }
         games.remove(gameId);
         return true;
-
     }
 
     public EnterRoomVO findFastestStartRoom(GamerPrincipalVO gamerPrincipalVO) {
