@@ -229,7 +229,7 @@ public class GameManager {
         // remove gamer
         teamGamers.remove(gamerPrincipalVO.getGamerId());
         // 방에 아무도 없는 경우 확인
-        if (checkRoomEmpty(socketDTO.getSenderGameId()))
+        if (checkRoomEmpty(socketDTO.getSenderGameId()) && !moveTeam)
             removeGame(socketDTO.getSenderGameId());
 
         return exitRoomVO;
