@@ -57,11 +57,11 @@
             <AppenderRef ref="RollingFileAppender"/>
             <AppenderRef ref="MongoDbAppender"/>
         </Root>
-        <Root level="DEBUG" additivity="true">
-            <AppenderRef ref="ConsoleAppender"/>
-            <AppenderRef ref="RollingFileAppender"/>
-            <AppenderRef ref="MongoDbAppender"/>
-        </Root>
+<!--        <Root level="DEBUG" additivity="true">-->
+<!--            <AppenderRef ref="ConsoleAppender"/>-->
+<!--            <AppenderRef ref="RollingFileAppender"/>-->
+<!--            <AppenderRef ref="MongoDbAppender"/>-->
+<!--        </Root>-->
 <!--        <Logger level="ERROR">-->
 <!--            <AppenderRef ref="MongoDbAppender"/>-->
 <!--        </Logger>-->
