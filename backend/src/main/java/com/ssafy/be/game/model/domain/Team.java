@@ -21,7 +21,7 @@ public class Team {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int teamId;
     private int gameId;
-    private int colorId;
+    private int colorId; // TODO: 이것도 다시 생각해볼 것
     private int teamNumber;
     private boolean isReady;
     private LocalDateTime lastReadyTime;
