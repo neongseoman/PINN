@@ -44,11 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 //            log.info("In JWT Filter => {} user access", gamerPrincipalVO.getNickname());
             }
         } catch (JwtException e) {
-            response.setHeader("Access-Control-Allow-Origin", "*");
-            response.setHeader("Access-Control-Allow-Methods", "POST, GET, DELETE, PUT, OPTIONS");
-            response.setHeader("Access-Control-Allow-Credentials", "true");
-            response.sendRedirect("https://www.pinn.kr");
-            return;
+            throw e;
         }
 
         filterChain.doFilter(request, response);

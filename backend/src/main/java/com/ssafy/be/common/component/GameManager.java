@@ -223,7 +223,8 @@ public class GameManager {
         // remove gamer
         teamGamers.remove(gamerPrincipalVO.getGamerId());
         // 방에 아무도 없는 경우 확인
-        if(checkRoomEmpty(gamerPrincipalVO.getGamerId())) removeGame(gamerPrincipalVO.getGamerId());
+        if(checkRoomEmpty(socketDTO.getSenderGameId()))
+            removeGame(socketDTO.getSenderGameId());
 
         return exitRoomVO;
     }
@@ -335,6 +336,7 @@ public class GameManager {
 
         return ReadyGame.builder()
                 .teams(teams)
+                .roomName(gameComponent.getRoomName())
                 .gameId(gameComponent.getGameId())
                 .themeId(gameComponent.getThemeId())
                 .leaderId(gameComponent.getLeaderId())
