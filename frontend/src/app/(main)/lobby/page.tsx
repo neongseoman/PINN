@@ -4,6 +4,7 @@ import CreateRoomModal from '@/app/(main)/lobby/_components/CreateRoomModal'
 import ProfileModal from '@/app/(main)/lobby/_components/ProfileModal'
 import RoomCard from '@/app/(main)/lobby/_components/RoomCard'
 import RuleModal from '@/app/(main)/lobby/_components/RuleModal'
+import useCustomAlert from '@/components/useCustomAlert'
 import useUserStore from '@/stores/userStore'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -30,6 +31,7 @@ export default function LobbyPage() {
   const [gameList, setGameList] = useState<GameInfo[]>([])
   const [soundOn, setSoundOn] = useState<boolean>(false)
   const router = useRouter()
+  const { error } = useCustomAlert()
 
   const fastStart = async () => {
     clickSound()
@@ -37,12 +39,15 @@ export default function LobbyPage() {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/lobby/quickEnter`,
       {
-        method: 'GET',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${
             localStorage.getItem('accessToken') as string
           }`,
+          body: JSON.stringify({
+            senderNickname: nickname,
+          }),
         },
       },
     )
@@ -57,7 +62,7 @@ export default function LobbyPage() {
         router.push(`/room/${gameId}`)
       } else {
         // console.log('빠른 시작 실패!', responseData.code)
-        alert(responseData.message)
+        error(responseData.message)
       }
     } else {
       // console.error('빠른 시작 통신 실패', response)
@@ -109,7 +114,7 @@ export default function LobbyPage() {
         setGameList(responseData.result)
       } else {
         // console.log('게임 목록 출력 실패!', responseData.code)
-        alert(responseData.message)
+        error(responseData.message)
       }
     } else {
       // console.error('게임 목록 요청 통신 실패', response)
