@@ -4,6 +4,7 @@ import CreateRoomModal from '@/app/(main)/lobby/_components/CreateRoomModal'
 import ProfileModal from '@/app/(main)/lobby/_components/ProfileModal'
 import RoomCard from '@/app/(main)/lobby/_components/RoomCard'
 import RuleModal from '@/app/(main)/lobby/_components/RuleModal'
+import useUserStore from '@/stores/userStore'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { GiSoundOff, GiSoundOn } from 'react-icons/gi'
@@ -25,6 +26,7 @@ interface GameInfo {
 }
 
 export default function LobbyPage() {
+  const { nickname } = useUserStore()
   const [gameList, setGameList] = useState<GameInfo[]>([])
   const [soundOn, setSoundOn] = useState<boolean>(false)
   const router = useRouter()
@@ -62,7 +64,7 @@ export default function LobbyPage() {
     }
   }
 
-  const lobbySound = () => {
+  const backgroundSound = () => {
     setSoundOn(!soundOn)
   }
 
@@ -116,7 +118,8 @@ export default function LobbyPage() {
 
   useEffect(() => {
     roomList()
-  }, [])
+    console.log(`nickname: ${nickname}`)
+  }, [nickname])
 
   useEffect(() => {
     const audio = new Audio('/assets/sounds/lobby.mp3')
@@ -144,9 +147,12 @@ export default function LobbyPage() {
             alt="로고"
           />
           {soundOn ? (
-            <GiSoundOn className={styles.soundIcon} onClick={lobbySound} />
+            <GiSoundOn className={styles.soundIcon} onClick={backgroundSound} />
           ) : (
-            <GiSoundOff className={styles.soundIcon} onClick={lobbySound} />
+            <GiSoundOff
+              className={styles.soundIcon}
+              onClick={backgroundSound}
+            />
           )}
         </div>
         <div className={styles.userInfo}>
