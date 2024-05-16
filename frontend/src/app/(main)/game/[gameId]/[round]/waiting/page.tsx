@@ -1,14 +1,13 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import styles from './roundResult.module.css'
-import { useRouter } from 'next/navigation'
-import { Loader } from '@googlemaps/js-api-loader'
-import RoundResultMap from './_components/RoundResultMap'
 import Timer from '@/components/Timer'
-import { Client, IFrame, IMessage } from '@stomp/stompjs'
 import { GameProgressInfo } from '@/types/IngameSocketTypes'
-
+import { Loader } from '@googlemaps/js-api-loader'
+import { Client, IFrame, IMessage } from '@stomp/stompjs'
+import { useRouter } from 'next/navigation'
+import { useEffect, useRef, useState } from 'react'
+import RoundResultMap from './_components/RoundResultMap'
+import styles from './roundResult.module.css'
 
 interface RoundResult {
   teamId: number
@@ -21,7 +20,11 @@ interface RoundResult {
   submitLng: number
 }
 
-export default function WaitingPage({ params }: { params: { gameId: string; round: string } }) {
+export default function WaitingPage({
+  params,
+}: {
+  params: { gameId: string; round: string }
+}) {
   const [remainSeconds, setRemainSeconds] = useState<number>(30)
   const router = useRouter()
   const stageTime = 100
@@ -35,8 +38,7 @@ export default function WaitingPage({ params }: { params: { gameId: string; roun
   const clientRef = useRef<Client>(
     new Client({
       brokerURL: process.env.NEXT_PUBLIC_SERVER_SOCKET_URL,
-      debug: function (str: string) {
-      },
+      debug: function (str: string) {},
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,

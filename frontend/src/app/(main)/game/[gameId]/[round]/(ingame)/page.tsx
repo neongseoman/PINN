@@ -176,6 +176,22 @@ export default function GamePage({
     setChatFocus(bool)
   }
 
+  // 이벤트 전파 방지 및 알림 메시지
+  const onBackButtonEvent = (e: PopStateEvent) => {
+    e.stopPropagation()
+    alert('게임 진행 중에는 뒤로가기를 실행할 수 없습니다!')
+  }
+
+  // 뒤로가기 방지
+  useEffect(() => {
+    window.history.pushState(null, '', window.location.pathname)
+    window.addEventListener('popstate', onBackButtonEvent)
+    return () => {
+      // 언마운트 시, 이벤트 리스너 제거 (메모리 누수 방지)
+      window.removeEventListener('popstate', onBackButtonEvent)
+    }
+  }, [])
+
   return (
     <main>
       {countDown && (
