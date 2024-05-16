@@ -168,7 +168,7 @@ public class GameManager {
 
     // 방 나가기위한 method
     public ExitRoomVO exitRoom(SocketDTO socketDTO, GamerPrincipalVO gamerPrincipalVO, boolean moveTeam) {
-        // TODO : 방 내 모든 사람이 나간경우 삭제
+        // TODO : 방 내 모든 사람이 나간경우 삭제 > 완료
         // TODO : 각각의 경우 Exception 처리
         // game
         GameComponent gameComponent = games.get(socketDTO.getSenderGameId());
@@ -185,6 +185,9 @@ public class GameManager {
         // TeamGamerComponent to ExitRoomVO
         TeamGamerComponent teamGamerComponent = teamGamers.get(gamerPrincipalVO.getGamerId());
         ExitRoomVO exitRoomVO = null;
+
+        // exit하는 사용자가 속해 있던 팀의 준비 상태(isReady)를 false로 변경한다.
+        teamComponent.setReady(false);
 
         // 팀을 옮기는 경우가 아님 & 나가는 사람이 리더라면
         if (!moveTeam && gamerPrincipalVO.getGamerId() == gameComponent.getLeaderId()) {
