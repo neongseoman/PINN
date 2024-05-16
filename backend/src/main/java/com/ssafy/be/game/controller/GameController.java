@@ -214,7 +214,7 @@ public class GameController {
     }
 
     @PostMapping("/game/round/result")
-    public BaseResponse<?> roundResdsult(@RequestBody RoundRequestDTO roundResultRequestDTO, ServletRequest req) {
+    public BaseResponse<?> roundResult(@RequestBody RoundRequestDTO roundResultRequestDTO, ServletRequest req) {
         // 요청 보낸 사용자의 gamerId
         GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
         int gamerId = gamerPrincipalVO.getGamerId();
