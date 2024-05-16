@@ -5,8 +5,6 @@ import com.ssafy.be.common.response.BaseResponseStatus;
 import com.ssafy.be.game.model.domain.GameQuestion;
 import com.ssafy.be.game.model.dto.entity.GameQuestionDTO;
 import com.ssafy.be.game.model.repository.GameQuestionRepository;
-import com.ssafy.be.gamer.model.domain.GamerStatus;
-import com.ssafy.be.gamer.model.dto.GamerStatusDTO;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
