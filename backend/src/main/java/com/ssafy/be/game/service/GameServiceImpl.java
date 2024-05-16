@@ -2,6 +2,8 @@ package com.ssafy.be.game.service;
 
 import com.ssafy.be.common.component.*;
 import com.ssafy.be.common.exception.BaseException;
+import com.ssafy.be.common.model.domain.Game;
+import com.ssafy.be.common.model.dto.GameDTO;
 import com.ssafy.be.common.model.dto.SocketDTO;
 import com.ssafy.be.common.model.repository.GameRepository;
 import com.ssafy.be.common.response.BaseResponseStatus;
@@ -329,7 +331,7 @@ public class GameServiceImpl implements GameService {
     & RoundFinishVO 만들어서 GameManager에 담음
      */
     @Override
-    public RoundFinishVO finishRound(RoundFinishRequestDTO roundFinishRequestDTO) throws BaseException { // code: 1117
+    public void finishRound(RoundFinishRequestDTO roundFinishRequestDTO) throws BaseException { // code: 1117
         try {
             int gameId = roundFinishRequestDTO.getSenderGameId();
             GameComponent existGame = gameManager.getGames().get(gameId);
@@ -391,11 +393,9 @@ public class GameServiceImpl implements GameService {
             existGame.getRoundResults().add(teamRoundResults);
 
             // RF VO에 TRRs 담아서 리턴
-            RoundFinishVO roundFinishVO = new RoundFinishVO(roundFinishRequestDTO.getSenderNickname(), roundFinishRequestDTO.getSenderGameId(), roundFinishRequestDTO.getSenderTeamId(), teamRoundResults);
-            roundFinishVO.setCodeAndMsg(1117, roundFinishRequestDTO.getRoundNumber() + "라운드 결과가 정상 계산되었습니다.");
-
-            log.info(roundFinishVO);
-            return roundFinishVO;
+//            RoundFinishVO roundFinishVO = new RoundFinishVO(roundFinishRequestDTO.getSenderNickname(), roundFinishRequestDTO.getSenderGameId(), roundFinishRequestDTO.getSenderTeamId(), teamRoundResults);
+//            roundFinishVO.setCodeAndMsg(1117, roundFinishRequestDTO.getRoundNumber() + "라운드 결과가 정상 계산되었습니다.");
+//            log.info(roundFinishVO);
         } catch (BaseException e) {
             e.printStackTrace();
             throw new BaseException(e.getStatus(), DEVELOPER_GAMER_ID); // Socket에도 던지고 싶다면 GamerID를 주세요.
@@ -639,7 +639,7 @@ public class GameServiceImpl implements GameService {
             RoundResultVO roundResultVO = new RoundResultVO();
             roundResultVO.setGameId(roundResultRequestDTO.getGameId());
             roundResultVO.setRoundNumber(roundResultRequestDTO.getRound());
-            roundResultVO.setQuestion(existGame.getQuestions().get(roundResultRequestDTO.getRound()-1));
+            roundResultVO.setQuestion(existGame.getQuestions().get(roundResultRequestDTO.getRound() - 1));
             roundResultVO.setRoundResult(roundResult);
 
             log.info(roundResultVO);
@@ -681,7 +681,7 @@ public class GameServiceImpl implements GameService {
     }
 
 
-///////
+////////////
 
     // List<TeamRoundComponent> 를 totalScore 기준으로 내림차순 정렬
     private static void sortByTotalScore(List<TeamRoundComponent> teamRoundResults) {
