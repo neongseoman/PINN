@@ -25,6 +25,7 @@ interface PinPickResponse {
   submitLng: number
   roundNumber: number
   submitStage: number
+  colorCode: string
 }
 
 interface PinGuessResponse {
