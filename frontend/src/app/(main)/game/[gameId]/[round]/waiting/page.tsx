@@ -1,12 +1,15 @@
 'use client'
 
+import Chatting from '@/components/Chatting'
 import Timer from '@/components/Timer'
+import themeStyles from '@/components/theme.module.css'
+import useIngameStore from '@/stores/ingameStore'
 import { GameProgressInfo } from '@/types/IngameSocketTypes'
 import { Loader } from '@googlemaps/js-api-loader'
 import { Client, IFrame, IMessage } from '@stomp/stompjs'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
-import RoundResultMap from './_components/RoundResultMap'
+import RoundWaitMap from './_components/RoundWaitMap'
 import styles from './roundWaiting.module.css'
 
 export default function WaitingPage({
@@ -17,6 +20,7 @@ export default function WaitingPage({
   const [remainSeconds, setRemainSeconds] = useState<number>(30)
   const [stage, setStage] = useState<number>()
   const router = useRouter()
+  const { teamId, theme } = useIngameStore()
 
   const loader = new Loader({
     apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY as string,
@@ -27,7 +31,7 @@ export default function WaitingPage({
   const clientRef = useRef<Client>(
     new Client({
       brokerURL: process.env.NEXT_PUBLIC_SERVER_SOCKET_URL,
-      debug: function (str: string) { },
+      debug: function (str: string) {},
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
@@ -86,8 +90,18 @@ export default function WaitingPage({
           Stage {stage}
           <Timer remainSeconds={remainSeconds} />
         </div>
-        <div className={styles.mapWrapper}>
-          <RoundResultMap params={params} loader={loader} />
+        <div className={styles.contentsWrapper}>
+          <div className={styles.mapWrapper}>
+            <RoundWaitMap params={params} loader={loader} />
+          </div>
+          <div className={`${styles.chat} ${themeStyles[theme]}`}>
+            <Chatting
+              chatTitle="팀 채팅"
+              subscribeUrl={`/team/${params.gameId}/${teamId}`}
+              publishUrl="/app/team/chat"
+              gameId={params.gameId}
+            />
+          </div>
         </div>
       </div>
     </main>

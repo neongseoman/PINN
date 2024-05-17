@@ -48,3 +48,21 @@ export interface Hint {
   hintValue: string
   offerStage: number
 }
+
+export interface RoundWait {
+  message: string
+  code: 1000
+  result: {
+    gameId: number
+    teamPins: TeamPins[]
+  }
+  success: boolean
+}
+
+export interface TeamPins {
+  teamId: number
+  colorCode: string
+  guessed: boolean
+  submitLat: number
+  submitLng: number
+}
