@@ -1,8 +1,10 @@
 'use client'
 
+import useIngameStore from '@/stores/ingameStore';
 import styles from './selectOption.module.css'
 import useUserStore from '@/stores/userStore';
-import { useEffect, useState } from "react"
+import { Client, IFrame, IMessage } from '@stomp/stompjs';
+import { useEffect, useRef, useState } from "react"
 
 interface Props {
   roomId: string;
@@ -20,7 +22,7 @@ interface GameInfo {
 
 export default function Option({ roomId }: Props) {
   const { gamerId, nickname } = useUserStore()
-
+  const { teamId } = useIngameStore()
   const [gameInfo, setGameInfo] = useState<GameInfo | null>(null);
   const [selectedTheme, setSelectedTheme] = useState<string>('-');
   const [selectedRound, setSelectedRound] = useState<string>('-');
@@ -33,7 +35,49 @@ export default function Option({ roomId }: Props) {
     4: "이집트",
     5: "랜드마크"
   }
+  const themeMappingReverse: { [key: string]: number } = {
+    "랜덤": 1,
+    "한국": 2,
+    "그리스": 3,
+    "이집트": 4,
+    "랜드마크": 5
+  }
 
+  const clientRef = useRef<Client>(
+    new Client({
+      brokerURL: process.env.NEXT_PUBLIC_SERVER_SOCKET_URL,
+      debug: function (str: string) { },
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
+    }),
+  )
+
+  const subscribeRoomUrl = `/game/${roomId}`
+  const publishOptionUrl = `/app/game/room/update/${roomId}`
+
+  useEffect(() => {
+    clientRef.current.onConnect = function (_frame: IFrame) {
+      // console.log('Connected:', _frame);
+      // 메시지 구독
+      clientRef.current.subscribe(subscribeRoomUrl, async (message: IMessage) => {
+        const enterResponse = JSON.parse(message.body)
+        if (enterResponse.code !== 1001) {
+        }
+      })
+    }
+
+    clientRef.current.onStompError = function (frame: IFrame) {
+      console.log('Broker reported error: ' + frame.headers['message'])
+      console.log('Additional details: ' + frame.body)
+    }
+
+    clientRef.current.activate()
+
+    return () => {
+      clientRef.current.deactivate()
+    }
+  }, [roomId])
 
   useEffect(() => {
     const getGameInfo = async () => {
@@ -53,7 +97,6 @@ export default function Option({ roomId }: Props) {
         const responseData = await response.json()
         if (responseData.code === 1000) {
           setGameInfo(responseData.result);
-          console.log(responseData.result.themeId)
           setSelectedTheme(themeMapping[responseData.result.themeId]);
           setSelectedRound(responseData.result.roundCount.toString());
           setSelectedStage1(responseData.result.stage1Time.toString());
@@ -76,18 +119,78 @@ export default function Option({ roomId }: Props) {
 
   const handleThemeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedTheme(event.target.value);
+    clientRef.current.publish({
+      headers: {
+        Auth: localStorage.getItem('accessToken') as string,
+      },
+      destination: publishOptionUrl,
+      body: JSON.stringify({
+        senderNickname: nickname,
+        senderGameId: roomId,
+        senderTeamId: teamId,
+        themeId: themeMappingReverse[event.target.value],
+        round: selectedRound,
+        stage1: selectedStage1,
+        stage2: selectedStage2
+      })
+    })
   };
 
   const handleRoundChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedRound(event.target.value);
+    clientRef.current.publish({
+      headers: {
+        Auth: localStorage.getItem('accessToken') as string,
+      },
+      destination: publishOptionUrl,
+      body: JSON.stringify({
+        senderNickname: nickname,
+        senderGameId: roomId,
+        senderTeamId: teamId,
+        themeId: themeMappingReverse[selectedTheme],
+        round: selectedRound,
+        stage1: selectedStage1,
+        stage2: selectedStage2
+      })
+    })
   };
 
   const handleStage1Change = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedStage1(event.target.value);
+    clientRef.current.publish({
+      headers: {
+        Auth: localStorage.getItem('accessToken') as string,
+      },
+      destination: publishOptionUrl,
+      body: JSON.stringify({
+        senderNickname: nickname,
+        senderGameId: roomId,
+        senderTeamId: teamId,
+        themeId: themeMappingReverse[selectedTheme],
+        round: selectedRound,
+        stage1: selectedStage1,
+        stage2: selectedStage2
+      })
+    })
   };
 
   const handleStage2Change = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedStage2(event.target.value);
+    clientRef.current.publish({
+      headers: {
+        Auth: localStorage.getItem('accessToken') as string,
+      },
+      destination: publishOptionUrl,
+      body: JSON.stringify({
+        senderNickname: nickname,
+        senderGameId: roomId,
+        senderTeamId: teamId,
+        themeId: themeMappingReverse[selectedTheme],
+        round: selectedRound,
+        stage1: selectedStage1,
+        stage2: selectedStage2
+      })
+    })
   };
 
   const isLeader = gameInfo?.leaderId === gamerId ? true : false
