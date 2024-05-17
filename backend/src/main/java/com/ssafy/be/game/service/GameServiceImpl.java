@@ -75,6 +75,17 @@ public class GameServiceImpl implements GameService {
             // status "start"로 변경
             if (existGame.getStatus() == GameStatus.READY) {
                 existGame.setStatus(GameStatus.START);
+
+                // DB 상 game의 정보 업데이트!
+                Game gameData = gameRepository.findById(gameId).orElse(null);
+                gameData.setStartedTime(existGame.getStartedTime());
+                gameData.setLeaderId(existGame.getLeaderId());
+                gameData.setThemeId(existGame.getThemeId());
+                gameData.setRoundCount(existGame.getRoundCount());
+                gameData.setStage1Time(existGame.getStage1Time());
+                gameData.setStage2Time(existGame.getStage2Time());
+                gameRepository.save(gameData);
+
             } else {
                 throw new BaseException(BaseResponseStatus.ALREADY_START_GAME, gamerId);
             }
