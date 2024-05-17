@@ -260,7 +260,7 @@ public class GameManager {
         for (TeamComponent teamComponent : gameComponent.getTeams().values()) {
             ConcurrentHashMap<Integer, TeamGamerComponent> teamGamerComponent = teamComponent.getTeamGamers();
             // 팀 내 사람이 있다면
-            if (teamGamerComponent != null && !teamGamerComponent.isEmpty()) {
+            if (teamGamerComponent != null || !teamGamerComponent.isEmpty()) {
                 for (int i = 1; i <= 3; i++) {
                     // 팀 내 앞에서부터 존재하는 사람 찾음
                     newLeader = teamGamerComponent.getOrDefault(i, null);
