@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import RoundResultMap from './_components/RoundResultMap'
 import styles from './roundResult.module.css'
+import useIngameStore from '@/stores/ingameStore'
 
 interface RoundQuestion {
   lat: number
@@ -34,6 +35,7 @@ export default function RoundResultPage({ params }: { params: { gameId: string; 
   const [roundResult, setRoundResult] = useState<RoundResult[]>([])
   const [roundQuestion, setRoundQuestion] = useState<RoundQuestion>({ lat: 0, lng: 0 })
   const [gameInfo, setGameInfo] = useState<GameInfo>()
+  const { teamId } = useIngameStore()
   const router = useRouter()
 
   const loader = new Loader({
@@ -115,7 +117,6 @@ export default function RoundResultPage({ params }: { params: { gameId: string; 
   const ingameSubscribeUrl = `/game/sse/${params.gameId}`
 
   useEffect(() => {
-    console.log(gameInfo)
     clientRef.current.onConnect = function (_frame: IFrame) {
       // 게임 진행 구독
       clientRef.current.subscribe(ingameSubscribeUrl, (message: IMessage) => {
@@ -178,7 +179,7 @@ export default function RoundResultPage({ params }: { params: { gameId: string; 
               .sort((a, b) => a.roundRank - b.roundRank)
               .map((result) => (
                 <div key={result.teamId} className={styles.teamList}>
-                  <div>
+                  <div className={result.teamId === teamId ? styles.myTeam : ''}>
                     {result.roundRank}. TEAM {result.teamId}
                   </div>
                   <div>{result.roundScore.toLocaleString()}</div>

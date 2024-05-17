@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation'
 import React, { useRef, useState } from 'react'
 import { TiArrowSortedDown } from 'react-icons/ti'
 import styles from '../lobby.module.css'
+import { Client, IFrame, IMessage } from '@stomp/stompjs'
+import useUserStore from '@/stores/userStore'
 
 interface CreateRoomModalProps {
   hoverSound: () => void
@@ -25,17 +27,18 @@ export default function CreateRoomModal({
   const [themeId, setThemeId] = useState<number>(1)
   const router = useRouter()
   const { error } = useCustomAlert()
-  // const clientRef = useRef<Client>(
-  //   new Client({
-  //     brokerURL: process.env.NEXT_PUBLIC_SERVER_SOCKET_URL,
-  //     debug: function (str: string) {
-  //       // console.log(str)
-  //     },
-  //     reconnectDelay: 5000,
-  //     heartbeatIncoming: 4000,
-  //     heartbeatOutgoing: 4000,
-  //   }),
-  // )
+  const clientRef = useRef<Client>(
+    new Client({
+      brokerURL: process.env.NEXT_PUBLIC_SERVER_SOCKET_URL,
+      debug: function (str: string) {
+        // console.log(str)
+      },
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
+    }),
+  )
+  const { nickname } = useUserStore()
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const inputTitle = event.target.value
@@ -103,9 +106,8 @@ export default function CreateRoomModal({
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${
-              localStorage.getItem('accessToken') as string
-            }`,
+            Authorization: `Bearer ${localStorage.getItem('accessToken') as string
+              }`,
           },
           body: JSON.stringify({
             themeId: themeId,
@@ -119,33 +121,49 @@ export default function CreateRoomModal({
       )
 
       if (response.ok) {
-        // console.log('게임 생성 요청 통신 성공')
+        console.log('게임 생성 요청 통신 성공')
         const responseData = await response.json()
         if (responseData.code === 1000) {
-          // console.log('게임 생성 성공!', responseData)
+          console.log('게임 생성 성공!', responseData)
           const gameId = responseData.result.gameId
-          // clientRef.current.publish({
-          //   headers: {
-          //     Auth: localStorage.getItem('accessToken') as string,
-          //   },
-          //   destination: `/app/game/enter/${gameId}`,
-          //   body: JSON.stringify({
-          //     senderNickname: nickname,
-          //     senderGameId: gameId,
-          //   }),
-          // })
+          const subscribeRoomUrl = `/game/${gameId}`
 
-          // console.log(`${gameId}번 방으로 입장합니다`)
-          router.push(`/room/${gameId}`)
+          clientRef.current.onConnect = function (_frame: IFrame) {
+            clientRef.current.subscribe(subscribeRoomUrl, (message: IMessage) => {
+              const enterResponse = JSON.parse(message.body)
+
+              router.push(`/room/${gameId}`)
+              clientRef.current.deactivate()
+            })
+
+            clientRef.current.publish({
+              headers: {
+                Auth: localStorage.getItem('accessToken') as string,
+              },
+              destination: `/app/game/enter/${gameId}`,
+              body: JSON.stringify({
+                senderNickname: nickname,
+                senderGameId: gameId,
+              }),
+            })
+
+            console.log(`${gameId}번 방으로 입장합니다`)
+          }
+
+          clientRef.current.onStompError = function (frame: IFrame) {
+            console.log('Broker reported error: ' + frame.headers['message'])
+            console.log('Additional details: ' + frame.body)
+          }
+
+          clientRef.current.activate()
         } else {
-          // console.log('게임 생성 실패!', responseData.code)
           error(responseData.message)
         }
       } else {
-        // console.error('게임 생성 요청 통신 실패', response)
+        console.error('게임 생성 요청 통신 실패', response)
       }
     } catch (error) {
-      // console.error('에러 발생: ', error)
+      console.error('에러 발생: ', error)
     }
     clickSound()
   }
@@ -297,9 +315,8 @@ export default function CreateRoomModal({
           <p style={{ margin: '0px' }}>테마 선택</p>
           <div className={styles.themeList}>
             <div
-              className={`${styles.themeItem} ${
-                themeId === 1 ? styles.selectedTheme : ''
-              }`}
+              className={`${styles.themeItem} ${themeId === 1 ? styles.selectedTheme : ''
+                }`}
               onClick={() => handleThemeChange(1)}
             >
               <Image
@@ -313,9 +330,8 @@ export default function CreateRoomModal({
               <p className={styles.themeName}>랜덤</p>
             </div>
             <div
-              className={`${styles.themeItem} ${
-                themeId === 2 ? styles.selectedTheme : ''
-              }`}
+              className={`${styles.themeItem} ${themeId === 2 ? styles.selectedTheme : ''
+                }`}
               onClick={() => handleThemeChange(2)}
             >
               <Image
@@ -329,9 +345,8 @@ export default function CreateRoomModal({
               <p className={styles.themeName}>한국</p>
             </div>
             <div
-              className={`${styles.themeItem} ${
-                themeId === 3 ? styles.selectedTheme : ''
-              }`}
+              className={`${styles.themeItem} ${themeId === 3 ? styles.selectedTheme : ''
+                }`}
               onClick={() => handleThemeChange(3)}
             >
               <Image
@@ -345,9 +360,8 @@ export default function CreateRoomModal({
               <p className={styles.themeName}>그리스</p>
             </div>
             <div
-              className={`${styles.themeItem} ${
-                themeId === 4 ? styles.selectedTheme : ''
-              }`}
+              className={`${styles.themeItem} ${themeId === 4 ? styles.selectedTheme : ''
+                }`}
               onClick={() => handleThemeChange(4)}
             >
               <Image
@@ -361,9 +375,8 @@ export default function CreateRoomModal({
               <p className={styles.themeName}>이집트</p>
             </div>
             <div
-              className={`${styles.themeItem} ${
-                themeId === 5 ? styles.selectedTheme : ''
-              }`}
+              className={`${styles.themeItem} ${themeId === 5 ? styles.selectedTheme : ''
+                }`}
               onClick={() => handleThemeChange(5)}
             >
               <Image
