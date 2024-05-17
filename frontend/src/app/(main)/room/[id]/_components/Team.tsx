@@ -15,10 +15,10 @@ interface TeamProps {
         teamGamers: TeamGamers[] | null[]
         ready: boolean
     }
-    handleTeamDoubleClick: (teamNumber: number) => void;
+    handleTeamClick: (teamNumber: number) => void;
 }
 
-export default function Team({ team, handleTeamDoubleClick }: TeamProps) {
+export default function Team({ team, handleTeamClick }: TeamProps) {
     const { nickname } = useUserStore()
 
     // 투명도 조절
@@ -35,9 +35,9 @@ export default function Team({ team, handleTeamDoubleClick }: TeamProps) {
     const myTeam = nickname && team && team.teamGamers.some(gamer => gamer?.nickname === nickname) ? styles.myTeam : styles.team;
 
     return (
-        <div className={IsEmptyTeam ? styles.noMember : myTeam} onDoubleClick={() => {
+        <div className={IsEmptyTeam ? styles.noMember : myTeam} onClick={() => {
             if (!team.ready) { // 팀이 준비 상태가 아닐 때만 handleTeamDoubleClick 호출
-                handleTeamDoubleClick(team.teamNumber);
+                handleTeamClick(team.teamNumber);
             } else {
                 alert('이 팀은 이미 준비가 완료되었습니다.');
             }

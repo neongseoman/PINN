@@ -81,7 +81,7 @@
 .teamList {
   width: 100%;
   display: flex;
-  color: var(--Main-Yellow);
+  color: white;
   font-weight: 600;
   font-size: 1.2rem;
   justify-content: space-between;
@@ -89,4 +89,8 @@
   padding-bottom: 2%;
   padding-left: 1%;
   text-shadow: 4px 4px 6px rgba(0, 0, 0, 0.5);
+}
+
+.myTeam {
+  color: var(--Main-Yellow);
 }

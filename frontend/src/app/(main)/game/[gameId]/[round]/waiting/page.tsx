@@ -7,7 +7,7 @@ import { Client, IFrame, IMessage } from '@stomp/stompjs'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import RoundResultMap from './_components/RoundResultMap'
-import styles from './roundResult.module.css'
+import styles from './roundWaiting.module.css'
 
 export default function WaitingPage({
   params,
@@ -15,7 +15,7 @@ export default function WaitingPage({
   params: { gameId: string; round: string }
 }) {
   const [remainSeconds, setRemainSeconds] = useState<number>(30)
-  const [stage, setStage] = useState<string>()
+  const [stage, setStage] = useState<number>()
   const router = useRouter()
 
   const loader = new Loader({
@@ -58,6 +58,7 @@ export default function WaitingPage({
               return
             }
             setRemainSeconds(gameProgressResponse.leftTime)
+            setStage(gameProgressResponse.stage)
             break
         }
       })
@@ -82,6 +83,7 @@ export default function WaitingPage({
       <div className={styles.container}>
         <div className={styles.round}>라운드 {params.round}</div>
         <div className={styles.waiting}>
+          Stage {stage}
           <Timer remainSeconds={remainSeconds} />
         </div>
         <div className={styles.mapWrapper}>

@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { Dispatch, SetStateAction, useEffect, useRef } from 'react'
 import { FaQuestionCircle } from 'react-icons/fa'
 import styles from '../lobby.module.css'
+import { Client, IFrame, IMessage } from '@stomp/stompjs'
+import useUserStore from '@/stores/userStore'
 
 interface PublicRoomModalProps {
   gameId: number
@@ -23,8 +25,39 @@ export default function PublicRoomModal({
   const router = useRouter()
   const { error } = useCustomAlert()
 
+  // 소켓 연결
+  const clientRef = useRef<Client>(
+    new Client({
+      brokerURL: process.env.NEXT_PUBLIC_SERVER_SOCKET_URL,
+      debug: function (str: string) { },
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
+    }),
+  )
+  const subscribeRoomUrl = `/game/${gameId}`
+  const publishUserUrl = `/app/game/enter/${gameId}`
+  const { nickname } = useUserStore()
+
   useEffect(() => {
     showModal()
+    clientRef.current.onConnect = function (_frame: IFrame) {
+      // 메시지 구독
+      clientRef.current.subscribe(subscribeRoomUrl, async (message: IMessage) => {
+        const enterResponse = JSON.parse(message.body)
+        console.log(enterResponse)
+      });
+    }
+    clientRef.current.onStompError = function (frame: IFrame) {
+      console.log('Broker reported error: ' + frame.headers['message'])
+      console.log('Additional details: ' + frame.body)
+    }
+
+    clientRef.current.activate()
+
+    return () => {
+      clientRef.current.deactivate()
+    }
   }, [])
 
   const showModal = () => {
@@ -44,9 +77,8 @@ export default function PublicRoomModal({
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${
-              localStorage.getItem('accessToken') as string
-            }`,
+            Authorization: `Bearer ${localStorage.getItem('accessToken') as string
+              }`,
           },
           body: JSON.stringify({
             password: '',
@@ -60,6 +92,15 @@ export default function PublicRoomModal({
         if (responseData.code === 1000) {
           // console.log('공개방 입장 요청 성공!', responseData)
           // console.log(`${gameId}번 방으로 입장합니다`)
+          clientRef.current.publish({
+            headers: {
+              Auth: localStorage.getItem('accessToken') as string,
+            },
+            destination: publishUserUrl,
+            body: JSON.stringify({
+              senderNickname: nickname
+            })
+          })
           router.push(`/room/${gameId}`)
         } else {
           // console.log('공개방 입장 요청 실패!', responseData.code)
