@@ -3,9 +3,12 @@ package com.ssafy.be.room.controller;
 import com.ssafy.be.auth.jwt.JwtProvider;
 import com.ssafy.be.common.component.GameComponent;
 import com.ssafy.be.common.component.GameManager;
+import com.ssafy.be.common.component.GameStatus;
+import com.ssafy.be.common.exception.BaseException;
 import com.ssafy.be.common.model.dto.ChatDTO;
 import com.ssafy.be.common.model.dto.SocketDTO;
 import com.ssafy.be.common.response.BaseResponse;
+import com.ssafy.be.common.response.BaseResponseStatus;
 import com.ssafy.be.gamer.model.GamerPrincipalVO;
 import com.ssafy.be.lobby.model.ReadyGame;
 import com.ssafy.be.room.model.dto.MoveTeamDTO;
@@ -13,7 +16,9 @@ import com.ssafy.be.room.model.dto.RoomStatusDTO;
 import com.ssafy.be.room.model.vo.MoveTeamVO;
 import com.ssafy.be.room.model.vo.RoomStatusVO;
 import com.ssafy.be.room.model.vo.TeamStatusVO;
+
 import java.util.concurrent.ConcurrentHashMap;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +44,7 @@ public class RoomController {
     private final JwtProvider jwtProvider;
 
     @GetMapping("{gameId}")
-    public BaseResponse<?> getGame(@PathVariable Integer gameId){
+    public BaseResponse<?> getGame(@PathVariable Integer gameId) {
         ReadyGame game = gameManager.getGame(gameId);
 
         return new BaseResponse<>(game);
@@ -57,8 +62,13 @@ public class RoomController {
      * */
     @MessageMapping("/game/moveTeam/{gameId}")
     @SendTo("/game/{gameId}")
-    public MoveTeamVO moveTeam(@Payload MoveTeamDTO moveTeamDTO, @DestinationVariable Integer gameId, StompHeaderAccessor accessor){
+    public MoveTeamVO moveTeam(@Payload MoveTeamDTO moveTeamDTO, @DestinationVariable Integer gameId, StompHeaderAccessor accessor) {
         GamerPrincipalVO gamerPrincipalVO = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor);
+
+        // 게임이 START 상태인지 확인
+        if (gameManager.getGames().get(gameId).getStatus() == GameStatus.START) {
+            throw new BaseException(BaseResponseStatus.ALREADY_START_GAME, gamerPrincipalVO.getGamerId());
+        }
 
         // 일단 팀 나가기
         moveTeamDTO.setSenderGameId(gameId);
@@ -80,7 +90,7 @@ public class RoomController {
      * */
     @MessageMapping("/game/chat/{gameId}")
     @SendTo("/game/{gameId}")
-    public ChatDTO chatRoom(ChatDTO chatDTO, @DestinationVariable String gameId){
+    public ChatDTO chatRoom(ChatDTO chatDTO, @DestinationVariable String gameId) {
         ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
         // nickname 검증
 
@@ -101,19 +111,19 @@ public class RoomController {
      * */
     @MessageMapping("/game/teamStatus/{gameId}")
     @SendTo("/game/{gameId}")
-    public TeamStatusVO changeTeamStatus(SocketDTO socketDTO, @DestinationVariable int gameId, StompHeaderAccessor accessor){
+    public TeamStatusVO changeTeamStatus(SocketDTO socketDTO, @DestinationVariable int gameId, StompHeaderAccessor accessor) {
         GamerPrincipalVO gamerPrincipalVO = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor);
         ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
 
         socketDTO.setSenderGameId(gameId);
 
-        TeamStatusVO teamStatusVO =  gameManager.changeTeamStatus(socketDTO, gamerPrincipalVO);
+        TeamStatusVO teamStatusVO = gameManager.changeTeamStatus(socketDTO, gamerPrincipalVO);
         return teamStatusVO;
     }
 
     @MessageMapping("/game/room/update/{gameId}")
     @SendTo("/game/{gameId}")
-    public RoomStatusVO changeRoom(RoomStatusDTO roomStatusDTO, @DestinationVariable Integer gameId, StompHeaderAccessor accessor){
+    public RoomStatusVO changeRoom(RoomStatusDTO roomStatusDTO, @DestinationVariable Integer gameId, StompHeaderAccessor accessor) {
         GamerPrincipalVO gamerPrincipalVO = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor);
         RoomStatusVO roomStatusVO = gameManager.changeRoomStatus(roomStatusDTO);
 
