@@ -1,3 +1,4 @@
+import DefaultAction from '@/utils/DefaultAction'
 import type { Metadata } from 'next'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
@@ -21,6 +22,7 @@ export default function RootLayout({
       <body>
         {children}
         <ToastContainer />
+        <DefaultAction />
       </body>
     </html>
   )
