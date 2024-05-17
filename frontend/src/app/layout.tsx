@@ -22,7 +22,6 @@ export default function RootLayout({
       <body>
         {children}
         <ToastContainer />
-
         <DefaultAction />
       </body>
     </html>
