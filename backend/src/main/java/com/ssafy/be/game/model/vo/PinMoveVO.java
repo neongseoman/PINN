@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 public class PinMoveVO extends SocketDTO {
     // TODO: 핀 찍은 사용자 gamerId 필요한지 재검토 필요
     private int gamerId;
+    private String colorCode;
     private double submitLat;
     private double submitLng;
     private double roundNumber;
