@@ -4,6 +4,7 @@ import themeStyles from '@/components/theme.module.css'
 import useIngameStore from '@/stores/ingameStore'
 import useUserStore from '@/stores/userStore'
 import { IngameMapRespoonse } from '@/types/IngameSocketTypes'
+import { MapCenter } from '@/utils/MapPosition'
 import { Loader } from '@googlemaps/js-api-loader'
 import { Client, IFrame, IMessage } from '@stomp/stompjs'
 import { useRouter } from 'next/navigation'
@@ -139,7 +140,7 @@ export default function IngameMap({
   useEffect(() => {
     loader.importLibrary('maps').then(async () => {
       // 서울 중심
-      const position = { lat: 37.5642135, lng: 127.0016985 }
+      const position = MapCenter[theme]
       const { Map } = (await google.maps.importLibrary(
         'maps',
       )) as google.maps.MapsLibrary
@@ -148,7 +149,7 @@ export default function IngameMap({
         center: position,
         disableDefaultUI: true,
         clickableIcons: false,
-        zoom: 8,
+        zoom: 5,
       })
 
       // 지도에 특정 지점을 클릭 했을 때
