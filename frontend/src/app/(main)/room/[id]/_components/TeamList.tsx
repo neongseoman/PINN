@@ -17,15 +17,15 @@ interface TeamsProp {
         teamGamers: TeamGamers[] | null[]
         ready: boolean
     }[]
-    handleTeamDoubleClick: (teamNumber: number) => void
+    handleTeamClick: (teamNumber: number) => void
 }
 
-export default function TeamList({ teams, handleTeamDoubleClick }: TeamsProp) {
+export default function TeamList({ teams, handleTeamClick }: TeamsProp) {
 
     return (
         <div className={styles.container}>
             {teams.map((team) => (
-                <Team key={team.teamNumber} team={team} handleTeamDoubleClick={handleTeamDoubleClick} />
+                <Team key={team.teamNumber} team={team} handleTeamClick={handleTeamClick} />
             ))}
         </div>
     )

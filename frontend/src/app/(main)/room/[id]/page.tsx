@@ -112,7 +112,7 @@ export default function RoomPage({ params }: { params: { id: string } }) {
 
   const isLeader = gameInfo?.leaderId === gamerId ? true : false
   const isTeamLeader = teams.some(team =>
-    team.teamGamers.length > 0 && team.teamGamers[0]?.gamerId === gamerId)
+    team.teamGamers.length > 0 && team.teamGamers[team.teamGamers.length - 1]?.gamerId === gamerId)
   const myTeam = teams.find((team) =>
     team.teamGamers.some((gamer) => gamer?.gamerId === gamerId),
   )
@@ -185,23 +185,15 @@ export default function RoomPage({ params }: { params: { id: string } }) {
 
   // 입장
   useEffect(() => {
+    teamList()
     clientRef.current.onConnect = function (_frame: IFrame) {
-      console.log('Connected:', _frame);
-      clientRef.current.publish({
-        headers: {
-          Auth: localStorage.getItem('accessToken') as string,
-        },
-        destination: publishUserUrl,
-        body: JSON.stringify({
-          senderNickname: nickname
-        })
-      })
-
+      // console.log('Connected:', _frame);
       // 메시지 구독
       clientRef.current.subscribe(subscribeRoomUrl, async (message: IMessage) => {
-        const enterResponse = JSON.parse(message.body) as GameInfo
-        console.log(enterResponse)
-        await teamList()
+        const enterResponse = JSON.parse(message.body)
+        if (enterResponse.code !== 1001) {
+          await teamList()
+        }
       });
 
       // 시작 메시지 구독
@@ -318,7 +310,7 @@ export default function RoomPage({ params }: { params: { id: string } }) {
   }
 
   // 팀 옮기기
-  const handleTeamDoubleClick = (teamNumber: number) => {
+  const handleTeamClick = (teamNumber: number) => {
     clientRef.current.publish({
       headers: {
         Auth: localStorage.getItem('accessToken') as string,
@@ -362,7 +354,7 @@ export default function RoomPage({ params }: { params: { id: string } }) {
           <SelectOption roomId={params.id} />
           <TeamList
             teams={teams}
-            handleTeamDoubleClick={handleTeamDoubleClick}
+            handleTeamClick={handleTeamClick}
           ></TeamList>
         </div>
         <div className={styles['chat-ready-out']}>

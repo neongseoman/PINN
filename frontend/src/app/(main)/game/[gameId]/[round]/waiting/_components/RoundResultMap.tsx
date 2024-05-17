@@ -2,7 +2,7 @@
 
 import { Loader } from '@googlemaps/js-api-loader'
 import { useEffect, useRef } from 'react'
-import styles from '../roundResult.module.css'
+import styles from '../roundWaiting.module.css'
 
 
 interface RoundResult {
