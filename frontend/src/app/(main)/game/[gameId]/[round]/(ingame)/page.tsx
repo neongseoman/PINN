@@ -52,6 +52,9 @@ export default function GamePage({
   const [lat, setLat] = useState<number>()
   const [lng, setLng] = useState<number>()
 
+  // 사운드 토글
+  const [soundOn, setSoundOn] = useState<boolean>(true)
+
   //구글맵
   const loader = new Loader({
     apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY as string,
@@ -176,21 +179,35 @@ export default function GamePage({
     setChatFocus(bool)
   }
 
-  // // 이벤트 전파 방지 및 알림 메시지
-  // const onBackButtonEvent = (e: PopStateEvent) => {
-  //   e.stopPropagation()
-  //   alert('게임 진행 중에는 뒤로가기를 실행할 수 없습니다!')
-  // }
+  // 사운드
+  const hoverSound = () => {
+    const audio = new Audio('/assets/sounds/hover.wav')
+    if (soundOn) {
+      audio.play()
+    }
+  }
 
-  // // 뒤로가기 방지
-  // useEffect(() => {
-  //   window.history.pushState(null, '', window.location.pathname)
-  //   window.addEventListener('popstate', onBackButtonEvent)
-  //   return () => {
-  //     // 언마운트 시, 이벤트 리스너 제거 (메모리 누수 방지)
-  //     window.removeEventListener('popstate', onBackButtonEvent)
-  //   }
-  // }, [])
+  const clickSound = () => {
+    const audio = new Audio('/assets/sounds/click.mp3')
+    if (soundOn) {
+      audio.play()
+    }
+  }
+
+  useEffect(() => {
+    const audio = new Audio('/assets/sounds/lobby.mp3')
+    audio.loop = true
+    if (soundOn) {
+      audio.play()
+    } else {
+      audio.pause()
+    }
+
+    return () => {
+      audio.pause()
+      audio.currentTime = 0
+    }
+  }, [soundOn])
 
   return (
     <main>

@@ -12,9 +12,13 @@ export default function DefaultAction() {
   const pathname = usePathname()
   useEffect(() => {
     // 로그인이 안돼있으면 로그인 화면으로 보내기
-    if (!localStorage.getItem('accessToken') && pathname != '/') {
-      router.push('/')
-    }
+    // if (
+    //   !localStorage.getItem('accessToken') &&
+    //   pathname != '/' &&
+    //   pathname != '/login'
+    // ) {
+    //   router.push('/')
+    // }
     // 뒤로 가기 막기
     window.history.pushState(null, '', window.location.pathname)
     window.addEventListener('popstate', onBackButtonEvent)
