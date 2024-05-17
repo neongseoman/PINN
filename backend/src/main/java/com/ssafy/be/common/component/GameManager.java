@@ -189,6 +189,9 @@ public class GameManager {
         // exit하는 사용자가 속해 있던 팀의 준비 상태(isReady)를 false로 변경한다.
         teamComponent.setReady(false);
 
+        // remove gamer
+        teamGamers.remove(gamerPrincipalVO.getGamerId());
+
         // 팀을 옮기는 경우가 아님 & 나가는 사람이 리더라면
         if (!moveTeam && gamerPrincipalVO.getGamerId() == gameComponent.getLeaderId()) {
             // 새로운 리더 받아오기
@@ -229,8 +232,9 @@ public class GameManager {
                     .build();
         }
 
-        // remove gamer
-        teamGamers.remove(gamerPrincipalVO.getGamerId());
+          // remove gamer
+//        teamGamers.remove(gamerPrincipalVO.getGamerId());
+
         // 방에 아무도 없는 경우 확인
         if (checkRoomEmpty(socketDTO.getSenderGameId()) && !moveTeam)
             removeGame(socketDTO.getSenderGameId());
