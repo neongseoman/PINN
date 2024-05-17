@@ -54,7 +54,7 @@ export default function GamePage({
   const [lng, setLng] = useState<number>()
 
   // 사운드 토글
-  const [soundOn, setSoundOn] = useState<boolean>(true)
+  const [soundOn, setSoundOn] = useState<boolean>(false)
 
   //구글맵
   const loader = new Loader({
