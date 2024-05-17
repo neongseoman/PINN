@@ -267,6 +267,7 @@ public class GameServiceImpl implements GameService {
             PinMoveVO pinMoveVO = new PinMoveVO(pinMoveRequestDTO.getSenderDateTime(), pinMoveRequestDTO.getSenderNickname(), pinMoveRequestDTO.getSenderGameId(), pinMoveRequestDTO.getSenderTeamId(), pinMoveRequestDTO.getCode(), pinMoveRequestDTO.getMsg());
             pinMoveVO.setCodeAndMsg(1115, "변경한 핀 위치가 정상 제출 및 반영되었습니다.");
             pinMoveVO.setGamerId(gamerId);
+            pinMoveVO.setColorCode(submitTeamRound.getColorCode());
             pinMoveVO.setRoundNumber(pinMoveRequestDTO.getRoundNumber());
             pinMoveVO.setSubmitStage(pinMoveRequestDTO.getSubmitStage());
             pinMoveVO.setSubmitLat(pinMoveRequestDTO.getSubmitLat());
