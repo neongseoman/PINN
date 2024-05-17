@@ -129,15 +129,6 @@ export default function RoomPage({ params }: { params: { id: string } }) {
   const teamsRef = useRef(teams)
   const gameInfoRef = useRef(gameInfo)
 
-  useEffect(() => {
-    teamsRef.current = teams
-  }, [teams])
-
-  useEffect(() => {
-    gameInfoRef.current = gameInfo
-  }, [gameInfo])
-
-
   // 채팅
   const chatTitle = '전체 채팅'
   const subscribeRoomUrl = `/game/${params.id}`
@@ -183,6 +174,31 @@ export default function RoomPage({ params }: { params: { id: string } }) {
     }
   }
 
+  useEffect(() => {
+    gameInfoRef.current = gameInfo
+    teamsRef.current = teams
+  }, [gameInfo, teams])
+
+  useEffect(() => {
+    console.log(myTeam)
+    const themeMapping: { [key: number]: string } = {
+      1: "랜덤",
+      2: "한국",
+      3: "그리스",
+      4: "이집트",
+      5: "랜드마크"
+    }
+    const themeId = gameInfo?.themeId
+    if (myTeam) {
+      setTeamId(myTeam.teamNumber)
+      setTeamColor(myTeam.colorCode)
+    }
+
+    if (themeId) {
+      setTheme(themeMapping[themeId])
+    }
+  }, [teams, gameInfo])
+
   // 입장
   useEffect(() => {
     teamList()
@@ -191,6 +207,7 @@ export default function RoomPage({ params }: { params: { id: string } }) {
       // 메시지 구독
       clientRef.current.subscribe(subscribeRoomUrl, async (message: IMessage) => {
         const enterResponse = JSON.parse(message.body)
+        console.log(enterResponse)
         if (enterResponse.code !== 1001) {
           await teamList()
         }
@@ -199,31 +216,8 @@ export default function RoomPage({ params }: { params: { id: string } }) {
       // 시작 메시지 구독
       clientRef.current.subscribe(subscribeStartUrl, (message: IMessage) => {
         const gameProgressResponse = JSON.parse(message.body) as GameProgressInfo
-        const currentTeams = teamsRef.current
         const currentGameInfo = gameInfoRef.current
         switch (gameProgressResponse.code) {
-          case 1201:
-            const myTeamInfo = currentTeams.find(team => team.teamGamers.some(gamer => gamer?.gamerId === gamerId))
-            const themeMapping: { [key: number]: string } = {
-              1: "랜덤",
-              2: "한국",
-              3: "그리스",
-              4: "이집트",
-              5: "랜드마크"
-            }
-            const themeId = currentGameInfo?.themeId
-            if (myTeamInfo) {
-              const myTeamId = myTeamInfo.teamNumber
-              const myTeamColor = myTeamInfo.colorCode
-              setTeamId(myTeamId)
-              setTeamColor(myTeamColor)
-            }
-
-            if (themeId) {
-              setTheme(themeMapping[themeId])
-            }
-            break
-
           case 1210:
             const isLeader = currentGameInfo?.leaderId === gamerId ? true : false
             if (gameProgressResponse.round === 0 && isLeader) {
@@ -260,9 +254,6 @@ export default function RoomPage({ params }: { params: { id: string } }) {
     }
   }, [params.id])
 
-  useEffect(() => {
-
-  })
   function gameStart() {
     // 다른 팀이 있는지 확인
     const allOtherTeamsReady = teams
@@ -323,7 +314,6 @@ export default function RoomPage({ params }: { params: { id: string } }) {
         newTeamId: teamNumber
       }),
     })
-
     teamList()
   }
 
