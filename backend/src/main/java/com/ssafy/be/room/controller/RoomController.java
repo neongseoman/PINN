@@ -113,7 +113,12 @@ public class RoomController {
     @SendTo("/game/{gameId}")
     public TeamStatusVO changeTeamStatus(SocketDTO socketDTO, @DestinationVariable int gameId, StompHeaderAccessor accessor) {
         GamerPrincipalVO gamerPrincipalVO = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor);
-        ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
+//        ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
+
+        // 게임이 START 상태인지 확인
+        if (gameManager.getGames().get(gameId).getStatus() == GameStatus.START) {
+            throw new BaseException(BaseResponseStatus.ALREADY_START_GAME, gamerPrincipalVO.getGamerId());
+        }
 
         socketDTO.setSenderGameId(gameId);
 
@@ -125,8 +130,13 @@ public class RoomController {
     @SendTo("/game/{gameId}")
     public RoomStatusVO changeRoom(RoomStatusDTO roomStatusDTO, @DestinationVariable Integer gameId, StompHeaderAccessor accessor) {
         GamerPrincipalVO gamerPrincipalVO = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor);
-        RoomStatusVO roomStatusVO = gameManager.changeRoomStatus(roomStatusDTO);
 
+        // 게임이 START 상태인지 확인
+        if (gameManager.getGames().get(gameId).getStatus() == GameStatus.START) {
+            throw new BaseException(BaseResponseStatus.ALREADY_START_GAME, gamerPrincipalVO.getGamerId());
+        }
+
+        RoomStatusVO roomStatusVO = gameManager.changeRoomStatus(roomStatusDTO);
         return roomStatusVO;
     }
 
