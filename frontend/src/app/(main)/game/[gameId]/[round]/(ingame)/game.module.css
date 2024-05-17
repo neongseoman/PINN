@@ -119,3 +119,14 @@
   font-weight: 700;
   color: white;
 }
+
+.soundIcon {
+  cursor: pointer;
+  font-size: 60px;
+  color: white;
+  &:hover {
+    color: var(--Main-Yellow);
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+  }
+}

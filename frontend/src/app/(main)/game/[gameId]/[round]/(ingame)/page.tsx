@@ -21,6 +21,7 @@ import ThemeInfo from './_components/ThemeInfo'
 import styles from './game.module.css'
 
 import CountDown from '@public/assets/images/lotties/CountDown.json'
+import { GiSoundOff, GiSoundOn } from 'react-icons/gi'
 
 export default function GamePage({
   params,
@@ -53,7 +54,7 @@ export default function GamePage({
   const [lng, setLng] = useState<number>()
 
   // 사운드 토글
-  const [soundOn, setSoundOn] = useState<boolean>(true)
+  const [soundOn, setSoundOn] = useState<boolean>(false)
 
   //구글맵
   const loader = new Loader({
@@ -187,13 +188,6 @@ export default function GamePage({
     }
   }
 
-  const clickSound = () => {
-    const audio = new Audio('/assets/sounds/click.mp3')
-    if (soundOn) {
-      audio.play()
-    }
-  }
-
   useEffect(() => {
     const audio = new Audio('/assets/sounds/lobby.mp3')
     audio.loop = true
@@ -208,6 +202,10 @@ export default function GamePage({
       audio.currentTime = 0
     }
   }, [soundOn])
+
+  const backgroundSound = () => {
+    setSoundOn((prev) => !prev)
+  }
 
   return (
     <main>
@@ -230,11 +228,17 @@ export default function GamePage({
           stage={currentStage}
         />
         <ThemeInfo theme={theme} />
+        {soundOn ? (
+          <GiSoundOn className={styles.soundIcon} onClick={backgroundSound} />
+        ) : (
+          <GiSoundOff className={styles.soundIcon} onClick={backgroundSound} />
+        )}
       </div>
       <div
         className={`${styles.hints} ${hintPin ? '' : styles.opacity} ${
           themeStyles[theme]
         }`}
+        onMouseEnter={hoverSound}
       >
         <div className={styles.pin} onClick={() => setHintPin((prev) => !prev)}>
           {hintPin ? <LuPinOff /> : <LuPin />}
@@ -250,6 +254,7 @@ export default function GamePage({
         } ${themeStyles[theme]}`}
         onFocus={() => handleChatFocus(true)}
         onBlur={() => handleChatFocus(false)}
+        onMouseEnter={hoverSound}
       >
         <div className={styles.pin} onClick={() => setChatPin((prev) => !prev)}>
           {chatPin ? <LuPinOff /> : <LuPin />}
@@ -274,6 +279,7 @@ export default function GamePage({
           gameId={params.gameId}
           round={params.round}
           stage={currentStage}
+          soundOn={soundOn}
         />
       </div>
       <div className={styles.streetView}>

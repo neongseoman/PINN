@@ -16,6 +16,7 @@ interface IngameMapProps {
   gameId: string
   round: string
   stage: number
+  soundOn: boolean
 }
 
 interface MyGuess {
@@ -32,6 +33,7 @@ export default function IngameMap({
   gameId,
   round,
   stage,
+  soundOn,
 }: IngameMapProps) {
   const mapShowRef = useRef<HTMLDivElement | null>(null)
   const mapObjectRef = useRef<google.maps.Map | null>(null)
@@ -118,6 +120,20 @@ export default function IngameMap({
 
     // 새 커서를 리스트에 추가
     cursorListRef.current[senderNickname] = newCursor
+  }
+
+  const hoverSound = () => {
+    const audio = new Audio('/assets/sounds/hover.wav')
+    if (soundOn) {
+      audio.play()
+    }
+  }
+
+  const clickSound = () => {
+    const audio = new Audio('/assets/sounds/click.mp3')
+    if (soundOn) {
+      audio.play()
+    }
   }
   // 지도 init
   useEffect(() => {
@@ -214,6 +230,7 @@ export default function IngameMap({
   }, [gameId, round, nickname])
 
   function handleSubmitGuess() {
+    clickSound()
     if (myGuess.current) {
       clientRef.current.publish({
         headers: {
@@ -238,6 +255,7 @@ export default function IngameMap({
       <button
         onClick={handleSubmitGuess}
         className={`${styles.guess}  ${themeStyles[theme + '-inverse']}`}
+        onMouseEnter={hoverSound}
       >
         제출
       </button>
