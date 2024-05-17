@@ -1,5 +1,6 @@
 'use client'
 
+import useCustomAlert from '@/components/useCustomAlert'
 import { useRouter } from 'next/navigation'
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 import { IoIosLock } from 'react-icons/io'
@@ -21,6 +22,7 @@ export default function PrivateRoomModal({
   const dialogRef = useRef<HTMLDialogElement>(null)
   const [password, setPassword] = useState<string>('')
   const router = useRouter()
+  const { error } = useCustomAlert()
 
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(event.target.value)
@@ -67,7 +69,7 @@ export default function PrivateRoomModal({
           router.push(`/room/${gameId}`)
         } else {
           // console.log('비밀방 입장 요청 실패!', responseData.code)
-          alert(responseData.message)
+          error(responseData.message)
         }
       } else {
         // console.error('비밀방 입장 요청 통신 실패', response)

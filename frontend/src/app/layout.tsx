@@ -1,5 +1,7 @@
 import DefaultAction from '@/utils/DefaultAction'
 import type { Metadata } from 'next'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -19,6 +21,8 @@ export default function RootLayout({
     <html lang="ko-KR">
       <body>
         {children}
+        <ToastContainer />
+
         <DefaultAction />
       </body>
     </html>

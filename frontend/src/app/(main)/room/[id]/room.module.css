@@ -22,6 +22,25 @@
   flex-direction: column;
 }
 
+.roomNameWrapper {
+  height: 4%;
+  display: flex;
+}
+
+.roomName {
+  font-size: 3rem;
+  font-weight: bold;
+  font-family: 'GmarketSans';
+  color: var(--Main-Red);
+}
+
+.roomNameMent {
+  font-size: 3rem;
+  font-weight: bold;
+  font-family: 'GmarketSans';
+  color: var(--Main-Yellow);
+}
+
 .chat-ready-out {
   margin-left: 2%;
   width: 24%;

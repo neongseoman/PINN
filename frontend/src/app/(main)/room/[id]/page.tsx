@@ -2,14 +2,14 @@
 
 import styles from './room.module.css'
 
-import Chatting from '@/components/Chatting'
-import useIngameStore from '@/stores/ingameStore'
 import useUserStore from '@/stores/userStore'
+import useIngameStore from '@/stores/ingameStore'
+import Chatting from '@/components/Chatting'
 import BtnReady from './_components/BtnReady'
-import BtnReadyCancel from './_components/BtnReadyCancel'
-import BtnStart from './_components/BtnStart'
 import SelectOption from './_components/SelectOption'
 import TeamList from './_components/TeamList'
+import BtnReadyCancel from './_components/BtnReadyCancel'
+import BtnStart from './_components/BtnStart'
 // import BtnStartCancel from './_components/BtnStartCancel'
 
 import { GameProgressInfo } from '@/types/IngameSocketTypes'
@@ -17,26 +17,6 @@ import { Client, IFrame, IMessage } from '@stomp/stompjs'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import BtnWaiting from './_components/BtnWaiting'
-
-interface RoomInfo {
-  senderDateTime: string
-  senderNickname: string
-  senderGameId: number
-  senderTeamId: number
-  senderTeamNumber: number
-  code: number
-  msg: string
-}
-
-interface EnterFormat {
-  senderDateTime: string
-  senderNickname: string
-  senderGameId: number
-  senderTeamId: number
-  senderTeamNumber: number
-  code: string
-  msg: string
-}
 
 interface TeamGamers {
   colorId: number
@@ -67,7 +47,6 @@ export default function RoomPage({ params }: { params: { id: string } }) {
   const { setTeamColor, setTeamId, setTheme } = useIngameStore()
   const router = useRouter()
   const [gameInfo, setGameInfo] = useState<GameInfo>()
-  const [remainTime, setRemainTime] = useState<number>(0)
   const [teams, setTeams] = useState<Team[]>([
     {
       teamNumber: 1,
@@ -132,10 +111,8 @@ export default function RoomPage({ params }: { params: { id: string } }) {
   ])
 
   const isLeader = gameInfo?.leaderId === gamerId ? true : false
-  const isTeamLeader = teams.some(
-    (team) =>
-      team.teamGamers.length > 0 && team.teamGamers[0]?.gamerId === gamerId,
-  )
+  const isTeamLeader = teams.some(team =>
+    team.teamGamers.length > 0 && team.teamGamers[0]?.gamerId === gamerId)
   const myTeam = teams.find((team) =>
     team.teamGamers.some((gamer) => gamer?.gamerId === gamerId),
   )
@@ -143,12 +120,23 @@ export default function RoomPage({ params }: { params: { id: string } }) {
   const clientRef = useRef<Client>(
     new Client({
       brokerURL: process.env.NEXT_PUBLIC_SERVER_SOCKET_URL,
-      debug: function (str: string) {},
+      debug: function (str: string) { },
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
     }),
   )
+  const teamsRef = useRef(teams)
+  const gameInfoRef = useRef(gameInfo)
+
+  useEffect(() => {
+    teamsRef.current = teams
+  }, [teams])
+
+  useEffect(() => {
+    gameInfoRef.current = gameInfo
+  }, [gameInfo])
+
 
   // 채팅
   const chatTitle = '전체 채팅'
@@ -159,7 +147,7 @@ export default function RoomPage({ params }: { params: { id: string } }) {
   // 준비
   const publishReadyUrl = `/app/game/teamStatus/${params.id}`
   // 팀 옮기기
-  const publishMoveUrl = `/app/room/move`
+  const publishMoveUrl = `/app/game/moveTeam/${params.id}`
   // 방나가기
   const publishExitUrl = `/app/game/exit/${params.id}`
   // 시작
@@ -174,9 +162,8 @@ export default function RoomPage({ params }: { params: { id: string } }) {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${
-            localStorage.getItem('accessToken') as string
-          }`,
+          Authorization: `Bearer ${localStorage.getItem('accessToken') as string
+            }`,
         },
       },
     )
@@ -199,45 +186,40 @@ export default function RoomPage({ params }: { params: { id: string } }) {
   // 입장
   useEffect(() => {
     clientRef.current.onConnect = function (_frame: IFrame) {
-      console.log('Connected:', _frame)
+      console.log('Connected:', _frame);
       clientRef.current.publish({
         headers: {
           Auth: localStorage.getItem('accessToken') as string,
         },
         destination: publishUserUrl,
-        body: JSON.stringify({}),
+        body: JSON.stringify({
+          senderNickname: nickname
+        })
       })
 
       // 메시지 구독
-      clientRef.current.subscribe(
-        subscribeRoomUrl,
-        async (message: IMessage) => {
-          const enterResponse = JSON.parse(message.body) as GameInfo
-          console.log(enterResponse)
-
-          // 비동기 함수 호출
-          await teamList()
-        },
-      )
+      clientRef.current.subscribe(subscribeRoomUrl, async (message: IMessage) => {
+        const enterResponse = JSON.parse(message.body) as GameInfo
+        console.log(enterResponse)
+        await teamList()
+      });
 
       // 시작 메시지 구독
       clientRef.current.subscribe(subscribeStartUrl, (message: IMessage) => {
-        const gameProgressResponse = JSON.parse(
-          message.body,
-        ) as GameProgressInfo
+        const gameProgressResponse = JSON.parse(message.body) as GameProgressInfo
+        const currentTeams = teamsRef.current
+        const currentGameInfo = gameInfoRef.current
         switch (gameProgressResponse.code) {
-          case 1202:
-            const myTeamInfo = teams.find((team) =>
-              team.teamGamers.some((gamer) => gamer?.gamerId === gamerId),
-            )
+          case 1201:
+            const myTeamInfo = currentTeams.find(team => team.teamGamers.some(gamer => gamer?.gamerId === gamerId))
             const themeMapping: { [key: number]: string } = {
-              1: '랜덤',
-              2: '한국',
-              3: '그리스',
-              4: '이집트',
-              5: '랜드마크',
+              1: "랜덤",
+              2: "한국",
+              3: "그리스",
+              4: "이집트",
+              5: "랜드마크"
             }
-            const themeId = gameInfo?.themeId
+            const themeId = currentGameInfo?.themeId
             if (myTeamInfo) {
               const myTeamId = myTeamInfo.teamNumber
               const myTeamColor = myTeamInfo.colorCode
@@ -248,24 +230,26 @@ export default function RoomPage({ params }: { params: { id: string } }) {
             if (themeId) {
               setTheme(themeMapping[themeId])
             }
-
-            router.push(`/game/${params.id}/1`)
             break
 
           case 1210:
-            if (gameProgressResponse.round === 0) {
+            const isLeader = currentGameInfo?.leaderId === gamerId ? true : false
+            if (gameProgressResponse.round === 0 && isLeader) {
               clientRef.current.publish({
                 headers: {
                   Auth: localStorage.getItem('accessToken') as string,
                 },
                 destination: publishChatUrl,
                 body: JSON.stringify({
-                  senderNickname: '시스템',
+                  senderNickname: "시스템",
                   senderGameId: params.id,
                   senderTeamId: '0',
-                  content: `${gameProgressResponse.leftTime}초 뒤 게임 시작!`,
-                }),
+                  content: `${gameProgressResponse.leftTime}초 뒤 게임 시작!`
+                })
               })
+            }
+            if (gameProgressResponse.round === 0 && gameProgressResponse.leftTime === 1) {
+              router.push(`/game/${params.id}/1`)
             }
             break
         }
@@ -284,26 +268,18 @@ export default function RoomPage({ params }: { params: { id: string } }) {
     }
   }, [params.id])
 
+  useEffect(() => {
+
+  })
   function gameStart() {
     // 다른 팀이 있는지 확인
-    const otherTeamsExist = teams.some(
-      (team) =>
-        team.teamNumber !== myTeam?.teamNumber && team.teamGamers.length > 0,
-    )
+    const allOtherTeamsReady = teams
+      .filter(team => team.teamGamers.length > 0) // 비어있는 팀 제외
+      .every(team => team.ready);
 
-    // 다른 팀이 있을 때, 그 팀들이 모두 준비 상태인지 확인
-    const allOtherTeamsReady =
-      !otherTeamsExist ||
-      teams.every(
-        (team) =>
-          team.teamNumber === myTeam?.teamNumber ||
-          (team.teamGamers.length > 0 && team.ready),
-      )
-
-    console.log(allOtherTeamsReady)
     if (!allOtherTeamsReady) {
-      alert('모든 다른 팀이 준비 상태가 아닙니다. 게임을 시작할 수 없습니다.')
-      return
+      alert("모든 다른 팀이 준비 상태가 아닙니다. 게임을 시작할 수 없습니다.");
+      return;
     }
 
     const gameStartRequest = {
@@ -325,10 +301,9 @@ export default function RoomPage({ params }: { params: { id: string } }) {
       body: JSON.stringify(gameStartRequest),
     })
   }
+
   // 준비 버튼
   const gameReady = () => {
-    console.log(myTeam)
-    console.log(teams)
     clientRef.current.publish({
       headers: {
         Auth: localStorage.getItem('accessToken') as string,
@@ -337,7 +312,7 @@ export default function RoomPage({ params }: { params: { id: string } }) {
       body: JSON.stringify({
         senderNickname: nickname,
         senderGameId: params.id,
-        senderTeamId: myTeam?.teamNumber,
+        senderTeamId: myTeam?.teamNumber
       }),
     })
   }
@@ -353,9 +328,10 @@ export default function RoomPage({ params }: { params: { id: string } }) {
         senderGameId: params.id,
         senderNickname: nickname,
         oldTeamId: myTeam?.teamNumber,
-        newTeamId: teamNumber,
+        newTeamId: teamNumber
       }),
     })
+
     teamList()
   }
 
@@ -377,9 +353,12 @@ export default function RoomPage({ params }: { params: { id: string } }) {
 
   return (
     <main className={styles.background}>
-      <div></div>
       <div className={styles.container}>
         <div className={styles['option-team-container']}>
+          <div className={styles.roomNameWrapper}>
+            <div className={styles.roomName}>{gameInfo?.roomName}</div>
+            <div className={styles.roomNameMent}>방 입니다.</div>
+          </div>
           <SelectOption roomId={params.id} />
           <TeamList
             teams={teams}
@@ -397,7 +376,7 @@ export default function RoomPage({ params }: { params: { id: string } }) {
           </div>
           <div className={styles['ready-out']}>
             {isLeader ? (
-              <BtnStart gameStart={gameStart} />
+              <BtnStart gameStart={gameStart} gameReady={gameReady} />
             ) : isTeamLeader ? (
               myTeam && myTeam.ready ? (
                 <BtnReadyCancel gameReady={gameReady} />
