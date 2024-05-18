@@ -8,10 +8,7 @@ import com.ssafy.be.common.model.repository.GameRepository;
 import com.ssafy.be.common.response.BaseResponseStatus;
 import com.ssafy.be.game.model.domain.*;
 import com.ssafy.be.game.model.dto.*;
-import com.ssafy.be.game.model.dto.entity.HintTypeDTO;
-import com.ssafy.be.game.model.dto.entity.QuestionDTO;
-import com.ssafy.be.game.model.dto.entity.TeamDTO;
-import com.ssafy.be.game.model.dto.entity.TeamGamerDTO;
+import com.ssafy.be.game.model.dto.entity.*;
 import com.ssafy.be.game.model.repository.*;
 import com.ssafy.be.game.model.vo.*;
 import lombok.extern.log4j.Log4j2;
@@ -201,7 +198,7 @@ public class GameServiceImpl implements GameService {
              themeId 보고 question 배정
              */
             int themeId = existGame.getThemeId();
-            
+
             List<Question> questionDatas;
             if (themeId == RANDOM_THEME_ID) {
                 questionDatas = questionRepository.findByUsed(1); // '랜덤' 테마인 경우 모든 문제셋을 가져오기
@@ -251,12 +248,16 @@ public class GameServiceImpl implements GameService {
 
                 // 문제 완성. list에 넣기
                 questions.add(question);
+
+                // 배정된 문제 정보 DB의 GameQuestion 테이블에도 insert
+                GameQuestionDTO gameQuestionDTO = new GameQuestionDTO();
+                gameQuestionDTO.setQuestionId(question.getQuestionId());
+                gameQuestionDTO.setGameId();
+                gameQuestionDTO.setRoundNumber(question.getRound());
+                gameQuestionRepository.save(gameQuestionDTO.toEntity());
             }
             // gameComponent의 questions 최종 결정!
             existGame.setQuestions(questions);
-
-            // TODO: 배정한 questions 정보 GameAndQuestion table에 insert
-
 
             /*
              game의 라운드별 결과 저장할 roundResults 리스트 new 해서 생성
