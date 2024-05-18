@@ -30,6 +30,13 @@ export default function RoundWaitMap({
     // 타 팀 핀 위치 REST API
     loader.importLibrary('maps').then(async () => {
       const position = MapCenter[theme]
+      const allowedBounds = {
+        north: 85,   // 북쪽 경계
+        south: -85,  // 남쪽 경계
+        west: -179.9,  // 서쪽 경계
+        east: 179.9    // 동쪽 경계
+      }
+
       const { Map } = (await google.maps.importLibrary(
         'maps',
       )) as google.maps.MapsLibrary
@@ -39,6 +46,10 @@ export default function RoundWaitMap({
         disableDefaultUI: true,
         clickableIcons: false,
         zoom: 5,
+        restriction: {  // 지도 범위 제한 설정
+          latLngBounds: allowedBounds,
+          strictBounds: true,  // 지도 범위를 엄격하게 제한할지 여부
+        },
       })
 
       mapObjectRef.current = map
@@ -66,7 +77,7 @@ export default function RoundWaitMap({
   const clientRef = useRef<Client>(
     new Client({
       brokerURL: process.env.NEXT_PUBLIC_SERVER_SOCKET_URL,
-      debug: function (str: string) {},
+      debug: function (str: string) { },
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,

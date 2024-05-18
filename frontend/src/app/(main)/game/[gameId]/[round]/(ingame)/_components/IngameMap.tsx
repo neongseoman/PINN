@@ -144,12 +144,22 @@ export default function IngameMap({
       const { Map } = (await google.maps.importLibrary(
         'maps',
       )) as google.maps.MapsLibrary
+      const allowedBounds = {
+        north: 85,   // 북쪽 경계
+        south: -85,  // 남쪽 경계
+        west: -179.9,  // 서쪽 경계
+        east: 179.9    // 동쪽 경계
+      }
 
       const map = new Map(mapShowRef.current!, {
         center: position,
         disableDefaultUI: true,
         clickableIcons: false,
         zoom: 5,
+        restriction: {  // 지도 범위 제한 설정
+          latLngBounds: allowedBounds,
+          strictBounds: true,  // 지도 범위를 엄격하게 제한할지 여부
+        },
       })
 
       // 지도에 특정 지점을 클릭 했을 때
