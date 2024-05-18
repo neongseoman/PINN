@@ -37,7 +37,11 @@ export default function Team({ team, handleTeamClick }: TeamProps) {
     return (
         <div className={IsEmptyTeam ? styles.noMember : myTeam} onClick={() => {
             if (!team.ready) { // 팀이 준비 상태가 아닐 때만 handleTeamDoubleClick 호출
-                handleTeamClick(team.teamNumber);
+                if (team.teamGamers.length >= 3) {
+                    alert('이 팀은 이미 가득 찼습니다.');
+                } else {
+                    handleTeamClick(team.teamNumber);
+                }
             } else {
                 alert('이 팀은 이미 준비가 완료되었습니다.');
             }

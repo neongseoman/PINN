@@ -14,6 +14,8 @@
 
 /* 멘트 */
 .words {
+  font-family: 'GmarketSans';
+  font-weight: 400;
   height: 10%;
   font-size: 4rem;
   color: var(--Main-Yellow);
@@ -40,7 +42,8 @@
 
 /* 방나가기 버튼 */
 .button-out {
-  width: 55%;
+  font-family: 'GmarketSans';
+  width: 60%;
   height: 15%;
   color: var(--Main-Yellow);
   font-size: 2rem;
@@ -50,6 +53,11 @@
   border-radius: 8px;
   box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.5);
   cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 3%;
+  padding-right: 4%;
 }
 
 .button-out:hover {
@@ -58,7 +66,8 @@
 
 /* 계속하기 버튼 */
 .button-continue {
-  width: 55%;
+  font-family: 'GmarketSans';
+  width: 60%;
   height: 15%;
   color: var(--Main-Yellow);
   font-size: 2rem;
@@ -68,6 +77,11 @@
   border-radius: 8px;
   box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.5);
   cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 3%;
+  padding-left: 4%;
 }
 
 .button-continue:hover {

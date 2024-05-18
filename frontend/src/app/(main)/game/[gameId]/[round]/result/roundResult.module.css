@@ -92,5 +92,7 @@
 }
 
 .myTeam {
+  composes: teamList;
   color: var(--Main-Yellow);
+  border-bottom: 3px solid var(--Main-Yellow);
 }
