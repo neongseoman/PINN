@@ -3,44 +3,53 @@ package com.ssafy.be.game.service;
 import com.ssafy.be.common.component.*;
 import com.ssafy.be.common.exception.BaseException;
 import com.ssafy.be.common.model.domain.Game;
-import com.ssafy.be.common.model.dto.GameDTO;
 import com.ssafy.be.common.model.dto.SocketDTO;
 import com.ssafy.be.common.model.repository.GameRepository;
 import com.ssafy.be.common.response.BaseResponseStatus;
-import com.ssafy.be.game.model.domain.Hint;
-import com.ssafy.be.game.model.domain.HintType;
-import com.ssafy.be.game.model.domain.Question;
+import com.ssafy.be.game.model.domain.*;
 import com.ssafy.be.game.model.dto.*;
-import com.ssafy.be.game.model.dto.entity.HintTypeDTO;
-import com.ssafy.be.game.model.dto.entity.QuestionDTO;
-import com.ssafy.be.game.model.repository.HintRepository;
-import com.ssafy.be.game.model.repository.HintTypeRepository;
-import com.ssafy.be.game.model.repository.QuestionRepository;
+import com.ssafy.be.game.model.dto.entity.*;
+import com.ssafy.be.game.model.repository.*;
 import com.ssafy.be.game.model.vo.*;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static com.ssafy.be.common.Provider.ColorCode.*;
 
 @Service
 @Log4j2
 public class GameServiceImpl implements GameService {
 
-    private final GameRepository gameRepository;
+
     private final GameManager gameManager;
+
+    private final GameRepository gameRepository;
+    private final TeamRepository teamRepository;
+    private final TeamGamerRepository teamGamerRepository;
+    private final TeamRoundRepository teamRoundRepository;
+
+    private final GameQuestionRepository gameQuestionRepository;
     private final QuestionRepository questionRepository;
     private final HintRepository hintRepository;
     private final HintTypeRepository hintTypeRepository;
 
     @Autowired
-    private GameServiceImpl(GameRepository gameRepository, GameManager gameManager, QuestionRepository questionRepository, HintRepository hintRepository, HintTypeRepository hintTypeRepository) {
+    private GameServiceImpl(GameRepository gameRepository, TeamRepository teamRepository, TeamGamerRepository teamGamerRepository, TeamRoundRepository teamRoundRepository, GameQuestionRepository gameQuestionRepository, GameManager gameManager, QuestionRepository questionRepository, HintRepository hintRepository, HintTypeRepository hintTypeRepository) {
         this.gameRepository = gameRepository;
+        this.teamRepository = teamRepository;
+        this.teamGamerRepository = teamGamerRepository;
+        this.teamRoundRepository = teamRoundRepository;
+        this.gameQuestionRepository = gameQuestionRepository;
         this.gameManager = gameManager;
         this.questionRepository = questionRepository;
         this.hintRepository = hintRepository;
         this.hintTypeRepository = hintTypeRepository;
+
     }
 
     private final static int NOT_GUESSED_STAGE = 0;
@@ -48,6 +57,8 @@ public class GameServiceImpl implements GameService {
     private final static int NOT_SUBMITTED_CORD = 1000;
     private final static int MAX_ROUND_SCORE = 5000;
     private final static double STAGE2_SCORE_LIMIT_RATE = 0.7;
+    private final static int[] THEME_SCORE_PENALTY = {1, 10, 10, 10, 1};
+    private final static int RANDOM_THEME_ID = 1;
 
     /////
     // TODO: BaseException에 임시로 null 넣어둔 거 exception 종류에 맞게 수정
@@ -75,6 +86,17 @@ public class GameServiceImpl implements GameService {
             // status "start"로 변경
             if (existGame.getStatus() == GameStatus.READY) {
                 existGame.setStatus(GameStatus.START);
+
+                // DB 상 game의 정보 업데이트!
+                Game gameData = gameRepository.findById(gameId).orElse(null);
+                gameData.setStartedTime(existGame.getStartedTime());
+                gameData.setLeaderId(existGame.getLeaderId());
+                gameData.setThemeId(existGame.getThemeId());
+                gameData.setRoundCount(existGame.getRoundCount());
+                gameData.setStage1Time(existGame.getStage1Time());
+                gameData.setStage2Time(existGame.getStage2Time());
+                gameRepository.save(gameData);
+
             } else {
                 throw new BaseException(BaseResponseStatus.ALREADY_START_GAME, gamerId);
             }
@@ -96,9 +118,6 @@ public class GameServiceImpl implements GameService {
     @Override
     public GameInitVO initGame(int gamerId, GameStartRequestDTO gameInitRequestDTO) throws BaseException {
         try {
-            // TODO: 배정한 문제 GameAndQuestion table에 insert
-            // TODO: DB에 TeamGamer, Team 데이터 insert
-
             int gameId = gameInitRequestDTO.getGameId();
             GameComponent existGame = gameManager.getGames().get(gameId);
             // 존재하는 game인지 확인
@@ -118,6 +137,8 @@ public class GameServiceImpl implements GameService {
 
             /*
              team 마다 roundCount개의 teamRounds 생성
+             &
+             team, teamGamer 정보들 DB에 insert
              */
             // teamGamer를 1명 이상 보유한 경우 유효한 team으로 간주한다.
             for (int i = 1; i <= existGame.getTeamCount(); ++i) {
@@ -140,7 +161,36 @@ public class GameServiceImpl implements GameService {
                     team.setTeamRounds(teamRounds);
 //                    log.info(teamRounds);
 
-                    // TODO: 2. DB의 Team 테이블에 insert
+                    // 2. DB의 Team 테이블에 insert
+                    TeamDTO teamDTO = new TeamDTO();
+                    teamDTO.setGameId(gameId);
+                    teamDTO.setColorId(0); // TODO: 팀 번호에 따른
+                    teamDTO.setTeamNumber(team.getTeamNumber());
+                    teamDTO.setReady(team.isReady());
+                    teamDTO.setLastReadyTime(gameInitRequestDTO.getSenderDateTime());
+                    teamDTO.setFinalRank(team.getFinalRank());
+                    teamDTO.setFinalScore(team.getFinalScore());
+
+                    int savedTeamId = teamRepository.save(teamDTO.toEntity()).getTeamId(); // DB에 insert
+                    team.setTeamNumber(savedTeamId); // 일단 teamNumber 에 넣어둠
+
+                    // 3. DB의 TeamGamer 테이블에 해당 팀의 teamGamer들 insert
+                    for (TeamGamerComponent teamGamer : teamGamers.values()) {
+                        TeamGamerDTO teamGamerDTO = new TeamGamerDTO();
+                        // teamGamerNumber에 따라 color id 저장
+                        if (teamGamer.getTeamGamerNumber() == 1) {
+                            teamGamerDTO.setColorId(NEON_GREEN.getTeamNumber());
+                        } else if (teamGamer.getTeamGamerNumber() == 2) {
+                            teamGamerDTO.setColorId(NEON_PINK.getTeamNumber());
+                        } else {
+                            teamGamerDTO.setColorId(NEON_YELLOW.getTeamNumber());
+                        }
+                        teamGamerDTO.setTeamId(teamGamer.getTeamId());
+                        teamGamerDTO.setGamerId(teamGamer.getGamerId());
+
+                        teamGamerRepository.save(teamGamerDTO.toEntity()); // DB에 teamGamer 정보 insert
+                    }
+
                 }
             }
 
@@ -149,7 +199,13 @@ public class GameServiceImpl implements GameService {
              themeId 보고 question 배정
              */
             int themeId = existGame.getThemeId();
-            List<Question> questionDatas = questionRepository.findByUsedAndThemeId(1, themeId); // 사용 중이고 + themeId 일치하는 것만 가져오기
+
+            List<Question> questionDatas;
+            if (themeId == RANDOM_THEME_ID) {
+                questionDatas = questionRepository.findByUsed(1); // '랜덤' 테마인 경우 모든 문제셋을 가져오기
+            } else {
+                questionDatas = questionRepository.findByUsedAndThemeId(1, themeId); // 사용 중이고 + themeId 일치하는 것만 가져오기
+            }
 
             // 랜덤 (roundCount)개의 인덱스 선택
             List<Integer> randomIndices = getRandomIndices(questionDatas.size(), existGame.getRoundCount());
@@ -193,8 +249,15 @@ public class GameServiceImpl implements GameService {
 
                 // 문제 완성. list에 넣기
                 questions.add(question);
-            }
 
+                // 배정된 문제 정보 DB의 GameQuestion 테이블에도 insert
+                GameQuestionDTO gameQuestionDTO = new GameQuestionDTO();
+                gameQuestionDTO.setQuestionId(question.getQuestionId());
+                gameQuestionDTO.setGameId(gameId);
+                gameQuestionDTO.setRoundNumber(question.getRound());
+                gameQuestionRepository.save(gameQuestionDTO.toEntity());
+            }
+            // gameComponent의 questions 최종 결정!
             existGame.setQuestions(questions);
 
             /*
@@ -227,6 +290,8 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public PinMoveVO movePin(int gamerId, PinMoveRequestDTO pinMoveRequestDTO) throws BaseException { // code: 1115
+        log.info(pinMoveRequestDTO);
+
         try {
             int gameId = pinMoveRequestDTO.getSenderGameId();
             GameComponent existGame = gameManager.getGames().get(gameId);
@@ -257,7 +322,7 @@ public class GameServiceImpl implements GameService {
 
             int round = pinMoveRequestDTO.getRoundNumber();
             QuestionComponent answer = existGame.getQuestions().get(round - 1);
-            int submitScore = calculateScore(answer.getLat(), answer.getLng(), pinMoveRequestDTO.getSubmitLat(), pinMoveRequestDTO.getSubmitLng()); // 점수 계산
+            int submitScore = calculateScore(existGame.getThemeId(), answer.getLat(), answer.getLng(), pinMoveRequestDTO.getSubmitLat(), pinMoveRequestDTO.getSubmitLng()); // 점수 계산
             if (pinMoveRequestDTO.getSubmitStage() == 2) { // stage2에 찍은 핀인 경우: 산정된 점수 * STAGE2_SCORE_LIMIT_RATE 만큼만 획득 가능
                 submitScore *= STAGE2_SCORE_LIMIT_RATE;
             }
@@ -286,6 +351,8 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public PinGuessVO guessPin(int gamerId, PinGuessRequestDTO pinGuessRequestDTO) throws BaseException { // code: 1116
+        log.info(pinGuessRequestDTO);
+
         try {
             int gameId = pinGuessRequestDTO.getSenderGameId();
             GameComponent existGame = gameManager.getGames().get(gameId);
@@ -393,8 +460,6 @@ public class GameServiceImpl implements GameService {
                 teamRoundResults.get(i - 1).setTotalRank(i);
             }
 
-            // TODO: 모든 team의 teamRound를 DB에 insert
-
             // GameManager의 gameComponent의 roundResults에 teamRoundResults 담아서 gm이 라운드 결과 들고 있게 하기!
             existGame.getRoundResults().add(teamRoundResults);
 
@@ -415,6 +480,8 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public void finishGame(SocketDTO gameFinishRequestDTO) throws BaseException { // code: 1118
+        log.info(gameFinishRequestDTO);
+
         try {
 
             int gameId = gameFinishRequestDTO.getSenderGameId();
@@ -424,11 +491,18 @@ public class GameServiceImpl implements GameService {
             }
 
             /*
-            게임 결과 집계
+            게임 결과 집계 & DB에 게임 정보 저장
              */
 
             // finishedTime 기록
             existGame.setFinishedTime(gameFinishRequestDTO.getSenderDateTime());
+            // DB 업데이트: game의 finished_time 업데이트
+            Game gameData = gameRepository.findById(gameId).orElse(null);
+            if (gameData != null) {
+                gameData.setFinishedTime(gameFinishRequestDTO.getSenderDateTime());
+//                gameData.setFinishedTime(LocalDateTime.now());
+                gameRepository.save(gameData);
+            }
 
             // 각 teamComponent의 finalRank, finalScore 업데이트
             ConcurrentHashMap<Integer, TeamComponent> teams = existGame.getTeams();
@@ -439,12 +513,20 @@ public class GameServiceImpl implements GameService {
                     continue; // 패스
                 }
                 // 각 팀의 finalRank = 해당 팀의 '마지막 라운드' 기준 '총점' 등수
-                // 각 팀의 finalScore = '마지막 라운드' 결과 집계 시에 이미 update 완료된 상태 .. 라고 가정
-                int finalRank = team.getTeamRounds().get(roundCount).getTotalRank();
-                team.setFinalRank(finalRank);
-            }
+                // 각 팀의 finalScore = '마지막 라운드' 결과 집계 시에 이미 update 완료된 상태 .. 라고 가정 > 따로 업데이트하지 않음
+                team.setFinalRank(team.getTeamRounds().get(roundCount).getTotalRank());
 
-            // gameComponent에 gameResult 만들어 넣기
+                // TODO: 모든 팀: team 테이블에 final_score, final_rank 업데이트
+
+                // TODO: 모든 팀: team_round 테이블에 insert
+
+                for (TeamGamerComponent teamGamer : team.getTeamGamers().values()) {
+                    // TODO: 모든 플레이어: gamer의 gamer_status 테이블 insert OR update
+
+                    // TODO: 모든 플레이어: gamer_log 테이블에 insert
+                }
+
+            }
 
         } catch (BaseException e) {
             e.printStackTrace();
@@ -552,6 +634,8 @@ public class GameServiceImpl implements GameService {
             if (existGame == null) {
                 throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
             }
+
+            // TODO: 요청 보낸 사용자가 game에 속해 있는지 확인
 
             // 요청 보낸 gamer_id가 GM/game의 leader_id와 일치하는지 확인
 //            if (gamerId != existGame.getLeaderId()) {
@@ -726,10 +810,14 @@ public class GameServiceImpl implements GameService {
     }
 
     // 'answer 위치'와 'submit 위치' 사이의 거리 기반 score 계산
-    public static int calculateScore(double answerLat, double answerLng, double submitLat, double submitLng) {
-        // 최대 점수 - (정답과 핀 사이 거리)
-        int dist = (int) calculateDistance(answerLat, answerLng, submitLat, submitLng);
-        return Math.max(MAX_ROUND_SCORE - dist, 0);
+    public static int calculateScore(int themeId, double answerLat, double answerLng, double submitLat, double submitLng) {
+        // 최대 점수 - (정답과 핀 사이 거리) * (해당 테마의 distPenalty)
+        double dist = calculateDistance(answerLat, answerLng, submitLat, submitLng);
+        int scorePenalty = THEME_SCORE_PENALTY[themeId - 1];
+
+        int penalty = (int) (dist * scorePenalty);
+
+        return Math.max(MAX_ROUND_SCORE - penalty, 0);
     }
 
 }

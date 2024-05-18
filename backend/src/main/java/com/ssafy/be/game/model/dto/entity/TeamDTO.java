@@ -1,7 +1,5 @@
 package com.ssafy.be.game.model.dto.entity;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.ssafy.be.game.model.domain.Team;
 import lombok.*;
 
