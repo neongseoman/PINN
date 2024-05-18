@@ -18,6 +18,9 @@ import com.ssafy.be.lobby.model.vo.SearchVO;
 import com.ssafy.be.lobby.service.LobbyService;
 import com.ssafy.be.lobby.model.vo.ExitRoomVO;
 import jakarta.servlet.ServletRequest;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -116,6 +119,12 @@ public class LobbyController {
     public BaseResponse<?> searchRoom(){
 
         List<SearchVO> searchVO = lobbyService.searchRoom();
+        Collections.sort( searchVO, new Comparator<SearchVO>() {
+            @Override
+            public int compare(SearchVO o1, SearchVO o2) {
+                return o1.getReadyGame().getRoomCreateTime().compareTo(o2.getReadyGame().getRoomCreateTime());
+            }
+        });
 
         return new BaseResponse<>(searchVO);
     }

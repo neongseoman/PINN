@@ -177,9 +177,14 @@ public class GameManager {
         }
         // team
         TeamComponent teamComponent = gameComponent.getTeams().get(socketDTO.getSenderTeamId());
+        if (teamComponent == null) {
+            // 나가려는 팀이 없는 경우
+            throw new BaseException(NOT_EXIST_TEAM, gamerPrincipalVO.getGamerId());
+        }
         // teamGamer
         ConcurrentHashMap<Integer, TeamGamerComponent> teamGamers = teamComponent.getTeamGamers();
         if (teamGamers == null) {
+            // 나가는 사용자가 해당하는 팀에 없는 경우
             throw new BaseException(NOT_EXIST_GAMER, gamerPrincipalVO.getGamerId());
         }
         // TeamGamerComponent to ExitRoomVO
@@ -189,10 +194,15 @@ public class GameManager {
         // exit하는 사용자가 속해 있던 팀의 준비 상태(isReady)를 false로 변경한다.
         teamComponent.setReady(false);
 
-        // 팀을 옮기는 경우가 아님 & 나가는 사람이 리더라면
+        // remove gamer
+        teamGamers.remove(gamerPrincipalVO.getGamerId());
+
+        // 게임을 아예 나가는 경우 & 나가는 사람이 리더라면
         if (!moveTeam && gamerPrincipalVO.getGamerId() == gameComponent.getLeaderId()) {
+            log.info("팀장이 방을 나간다!!!!!!!!!!!!!!!!!!");
             // 새로운 리더 받아오기
             TeamGamerComponent newLeader = getNewLeader(gameComponent);
+            log.info(newLeader + " : 새로운 리더 정보");
             // 리더로 할당할 사람이 없다면
             if (newLeader == null) {
                 // 게임 삭제
@@ -229,9 +239,10 @@ public class GameManager {
                     .build();
         }
 
-        // remove gamer
-        teamGamers.remove(gamerPrincipalVO.getGamerId());
-        // 방에 아무도 없는 경우 확인
+          // remove gamer
+//        teamGamers.remove(gamerPrincipalVO.getGamerId());
+
+        // 방에 아무도 없는 경우 게임 지우기
         if (checkRoomEmpty(socketDTO.getSenderGameId()) && !moveTeam)
             removeGame(socketDTO.getSenderGameId());
 
@@ -255,22 +266,21 @@ public class GameManager {
 
     // 리더가 될 사람을 찾는 메서드
     private TeamGamerComponent getNewLeader(GameComponent gameComponent) {
-        TeamGamerComponent newLeader = null;
 
         for (TeamComponent teamComponent : gameComponent.getTeams().values()) {
-            ConcurrentHashMap<Integer, TeamGamerComponent> teamGamerComponent = teamComponent.getTeamGamers();
+            ConcurrentHashMap<Integer, TeamGamerComponent> teamGamers = teamComponent.getTeamGamers();
+//            log.info("******** teamGamers : " + teamGamers);
             // 팀 내 사람이 있다면
-            if (teamGamerComponent != null && !teamGamerComponent.isEmpty()) {
-                for (int i = 1; i <= 3; i++) {
+            if (teamGamers != null && !teamGamers.isEmpty()) {
+                for (TeamGamerComponent teamGamerComponent : teamGamers.values()) {
                     // 팀 내 앞에서부터 존재하는 사람 찾음
-                    newLeader = teamGamerComponent.getOrDefault(i, null);
-                    if (newLeader != null) {
-                        return newLeader;
+                    if (teamGamerComponent != null) {
+                        return teamGamerComponent;
                     }
                 }
             }
         }
-        return newLeader;
+        return null;
     }
 
     // 팀 옮기기위한 method
