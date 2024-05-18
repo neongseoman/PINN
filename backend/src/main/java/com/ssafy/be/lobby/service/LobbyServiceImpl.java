@@ -10,6 +10,8 @@ import com.ssafy.be.common.model.repository.GameRepository;
 import com.ssafy.be.lobby.model.dto.CreateRoomDTO;
 import com.ssafy.be.lobby.model.vo.SearchVO;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;

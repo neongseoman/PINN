@@ -266,23 +266,21 @@ public class GameManager {
 
     // 리더가 될 사람을 찾는 메서드
     private TeamGamerComponent getNewLeader(GameComponent gameComponent) {
-        TeamGamerComponent newLeader = null;
 
         for (TeamComponent teamComponent : gameComponent.getTeams().values()) {
-            ConcurrentHashMap<Integer, TeamGamerComponent> teamGamerComponent = teamComponent.getTeamGamers();
-            log.info("******** teamGamerComponent : " + teamGamerComponent);
+            ConcurrentHashMap<Integer, TeamGamerComponent> teamGamers = teamComponent.getTeamGamers();
+//            log.info("******** teamGamers : " + teamGamers);
             // 팀 내 사람이 있다면
-            if (teamGamerComponent != null && !teamGamerComponent.isEmpty()) {
-                for (int i = 1; i <= 3; i++) {
+            if (teamGamers != null && !teamGamers.isEmpty()) {
+                for (TeamGamerComponent teamGamerComponent : teamGamers.values()) {
                     // 팀 내 앞에서부터 존재하는 사람 찾음
-                    newLeader = teamGamerComponent.getOrDefault(i, null);
-                    if (newLeader != null) {
-                        return newLeader;
+                    if (teamGamerComponent != null) {
+                        return teamGamerComponent;
                     }
                 }
             }
         }
-        return newLeader;
+        return null;
     }
 
     // 팀 옮기기위한 method
