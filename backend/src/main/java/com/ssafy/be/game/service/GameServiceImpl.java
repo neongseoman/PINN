@@ -253,7 +253,7 @@ public class GameServiceImpl implements GameService {
                 // 배정된 문제 정보 DB의 GameQuestion 테이블에도 insert
                 GameQuestionDTO gameQuestionDTO = new GameQuestionDTO();
                 gameQuestionDTO.setQuestionId(question.getQuestionId());
-                gameQuestionDTO.setGameId();
+                gameQuestionDTO.setGameId(gameId);
                 gameQuestionDTO.setRoundNumber(question.getRound());
                 gameQuestionRepository.save(gameQuestionDTO.toEntity());
             }
@@ -522,7 +522,7 @@ public class GameServiceImpl implements GameService {
 
                 for (TeamGamerComponent teamGamer : team.getTeamGamers().values()) {
                     // TODO: 모든 플레이어: gamer의 gamer_status 테이블 insert OR update
-                    
+
                     // TODO: 모든 플레이어: gamer_log 테이블에 insert
                 }
 
@@ -812,10 +812,12 @@ public class GameServiceImpl implements GameService {
     // 'answer 위치'와 'submit 위치' 사이의 거리 기반 score 계산
     public static int calculateScore(int themeId, double answerLat, double answerLng, double submitLat, double submitLng) {
         // 최대 점수 - (정답과 핀 사이 거리) * (해당 테마의 distPenalty)
-        int dist = (int) calculateDistance(answerLat, answerLng, submitLat, submitLng);
+        double dist = calculateDistance(answerLat, answerLng, submitLat, submitLng);
         int scorePenalty = THEME_SCORE_PENALTY[themeId - 1];
 
-        return Math.max(MAX_ROUND_SCORE - (dist * scorePenalty), 0);
+        int penalty = (int) (dist * scorePenalty);
+
+        return Math.max(MAX_ROUND_SCORE - penalty, 0);
     }
 
 }
