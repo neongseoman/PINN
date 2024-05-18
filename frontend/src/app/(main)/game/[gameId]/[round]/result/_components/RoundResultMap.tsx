@@ -74,7 +74,11 @@ export default function RoundResultMap({ params, loader, roundResult, roundQuest
                 position: { lat: roundQuestion.lat, lng: roundQuestion.lng },
                 map: mapObjectRef.current,
                 title: '정답',
-                icon: image
+                icon: {
+                    url: image,
+                    scaledSize: new google.maps.Size(30, 30), // 마커 아이콘 크기 조정
+                    anchor: new google.maps.Point(15, 15) // 앵커 포인트 조정
+                }
             })
             const markerInfos: MarkerInfo[] = roundResult.map(result => ({
                 position: { lat: result.submitLat, lng: result.submitLng },

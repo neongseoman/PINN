@@ -15,6 +15,7 @@ interface FilteredResult {
 interface MarkerInfo {
     position: google.maps.LatLngLiteral
     title: string
+    icon: string;
 }
 
 export default function RoundResultMap({ params, loader, filteredResults }: { params: { gameId: string; }; loader: Loader; filteredResults: FilteredResult[]; }) {
@@ -38,11 +39,24 @@ export default function RoundResultMap({ params, loader, filteredResults }: { pa
 
             mapObjectRef.current = map
 
+            const image1 = `/assets/images/svg/number1.svg`
+            const image2 = `/assets/images/svg/number2.svg`
+            const image3 = `/assets/images/svg/number3.svg`
+            const image4 = `/assets/images/svg/number4.svg`
+            const image5 = `/assets/images/svg/number5.svg`
+
+            const iconMapping: { [key: number]: string } = {
+                1: image1,
+                2: image2,
+                3: image3,
+                4: image4,
+                5: image5
+            };
+
             const markerInfos: MarkerInfo[] = filteredResults.map(result => ({
                 position: { lat: result.submitLat, lng: result.submitLng },
                 title: `라운드 ${result.roundNumber}`,
-                // color: colorCode
-                // teamNumber: result.teamNumber,
+                icon: iconMapping[result.roundNumber] || '',
             }))
 
             markerInfos.forEach(markerInfo => {
@@ -51,18 +65,43 @@ export default function RoundResultMap({ params, loader, filteredResults }: { pa
                     map: mapObjectRef.current,
                     title: markerInfo.title,
                     icon: {
-                        path: google.maps.SymbolPath.CIRCLE,
-                        scale: 5,
-                        fillColor: 'red',
-                        fillOpacity: 1,
-                        strokeColor: 'black',
-                        strokeWeight: 2,
-                    },
+                        url: markerInfo.icon,
+                        scaledSize: new google.maps.Size(25, 25), // 마커 아이콘 크기 조정
+                        anchor: new google.maps.Point(15, 15) // 앵커 포인트 조정
+                    }
                 })
                 markersRef.current.push(marker)
             })
+
+            const lineSymbol = {
+                path: "M 0,-1 0,1",
+                strokeOpacity: 1,
+                scale: 3,
+            };
+
+            // 라운드 순서대로 선 그리기
+            const polylinePath = filteredResults.map(result => ({
+                lat: result.submitLat,
+                lng: result.submitLng
+            }));
+
+            const line = new google.maps.Polyline({
+                path: polylinePath,
+                map: mapObjectRef.current,
+                strokeOpacity: 0,
+                icons: [
+                    {
+                        icon: lineSymbol,
+                        offset: "0",
+                        repeat: "15px",
+                    },
+                ],
+            });
+
         })
     }, [filteredResults])
+
+
 
     return (
         <>
