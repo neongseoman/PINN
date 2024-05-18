@@ -4,6 +4,8 @@ import useIngameStore from '@/stores/ingameStore'
 import { useEffect, useState } from 'react'
 import styles from './result2.module.css'
 import { useRouter } from 'next/navigation'
+import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
+import { MdKeyboardDoubleArrowRight } from "react-icons/md";
 
 interface RoundResult {
   teamId: number
@@ -89,25 +91,31 @@ export default function ResultPage2({ params }: { params: { gameId: string; } })
     router.push('/lobby')
   }
 
-  const rankMapping: { [key: number]: string } = {
-    1: "1등! 오늘 저녁은 치킨이닭",
-    2: "2등! 진정한 패배자는 준우승이다.",
-    3: "3등! ",
-    4: "4등!!",
-    5: "5등!",
-    6: "6등!",
-    7: "7등!",
-    8: "8등!",
-    9: "9등!",
-    10: "10등!",
+  const backto = () => {
+    router.push(`/game/${params.gameId}/end/1`)
   }
+
+  const rankMapping: { [key: number]: string } = {
+    1: "1등! 오늘 저녁은 치킨이닭!",
+    2: "2등! '진정한 패배자는 준우승이다.'",
+    3: "3등! 여행 좀 다녀보신 분",
+    4: "4등! 선택과목 지리 하신 분",
+    5: "5등! 그래도 평균 이상!",
+    6: "6등! 아쉽게 평균 이하...",
+    7: "7등! 분발하셔야겠어요",
+    8: "8등! 여행 컨텐츠 좀 보셔야겠어요",
+    9: "9등! 길치라는 소리 많이 듣죠?",
+    10: "10등! 좀 밖에도 나가고 좀 해라",
+  }
+  const myTeam = teams.find(team => team.teamNumber === teamNum);
+  console.log(teams)
 
   return (
     <main className={styles.background}>
-      <div className={styles.words}>?????????</div>
+      <div className={styles.words}>{rankMapping[myTeam!.rank]}</div>
       <div className={styles.container}>
         <div className={styles.button}>
-          {/* <button className={styles['button-out']} onClick={() => outToLobby()}>&lt;&minus; 방나가기</button> */}
+          <button className={styles['button-out']} onClick={() => backto()}><MdKeyboardDoubleArrowLeft size={40} /> 뒤로가기</button>
         </div>
         <div className={styles['rank-container']}>
           {/* 1 ~ 10  단순 등수*/}
@@ -130,7 +138,10 @@ export default function ResultPage2({ params }: { params: { gameId: string; } })
           </div>
         </div>
         <div className={styles.button}>
-          <button className={styles['button-continue']} onClick={() => outToLobby()} >로비로 &minus;&gt;</button>
+          <button className={styles['button-continue']} onClick={() => outToLobby()} >
+            로비가기
+            <MdKeyboardDoubleArrowRight size={40} />
+          </button>
         </div>
       </div>
     </main >
