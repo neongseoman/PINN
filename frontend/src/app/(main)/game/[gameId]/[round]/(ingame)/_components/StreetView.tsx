@@ -19,6 +19,7 @@ export default function StreetView({ lat, lng, loader }: StreetViewProps) {
         position: { lat, lng },
         disableDefaultUI: true,
         linksControl: true,
+        addressControl: false,
       })
     })
   }, [lat, lng])
