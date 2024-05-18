@@ -88,7 +88,7 @@ export default function Option({ roomId }: Props) {
     clientRef.current.onConnect = function (_frame: IFrame) {
       clientRef.current.subscribe(subscribeRoomUrl, async (message: IMessage) => {
         const enterResponse = JSON.parse(message.body)
-        if (enterResponse.code === 1027) {
+        if (enterResponse.code === 1027 || enterResponse.code === 1012) {
           getGameInfo()
         }
       })
