@@ -38,6 +38,7 @@ export default function GamePage({
 
   // 스테이지 넘김 애니메이션
   const [countDown, setCountDown] = useState<boolean>(false)
+  const [stageTwoAni, setStageTwoAni] = useState<boolean>(false)
 
   // 힌트
   const [hints, setHints] = useState<Hint[] | null>(null)
@@ -135,9 +136,13 @@ export default function GamePage({
 
             break
           case 1203:
-            // 스테이지 2 스타트
             // 스테이지 2 렌더링
             stageTwoRender()
+            // 스테이지 2 애니메이션
+            setStageTwoAni(true)
+            setTimeout(() => {
+              setStageTwoAni(false)
+            }, 600)
             break
           case 1204:
             // 스테이지 2 끝
@@ -211,7 +216,9 @@ export default function GamePage({
     <main>
       {countDown && (
         <div className={styles.lottieAnimation}>
-          <div className={styles.lottieTitle}>현재 스테이지 종료까지</div>
+          <div className={`${styles.lottieTitle} ${themeStyles[theme]}`}>
+            현재 스테이지 종료까지
+          </div>
           <LottieAnimation
             animationData={CountDown}
             play={countDown}
@@ -235,9 +242,9 @@ export default function GamePage({
         )}
       </div>
       <div
-        className={`${styles.hints} ${hintPin ? '' : styles.opacity} ${
-          themeStyles[theme]
-        }`}
+        className={`${styles.hints} ${
+          hintPin || stageTwoAni ? '' : styles.opacity
+        } ${themeStyles[theme]} ${stageTwoAni ? styles.stageTwoWrapper : ''}`}
         onMouseEnter={hoverSound}
       >
         <div className={styles.pin} onClick={() => setHintPin((prev) => !prev)}>
