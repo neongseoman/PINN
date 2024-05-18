@@ -9,19 +9,18 @@ import { Hint, RoundInit, StageTwoInit } from '@/types/IngameRestTypes'
 import { GameProgressInfo } from '@/types/IngameSocketTypes'
 import { getRoundInfo, getStageTwoHint } from '@/utils/IngameApi'
 import { Loader } from '@googlemaps/js-api-loader'
+import CountDown from '@public/assets/images/lotties/CountDown.json'
 import { Client, IFrame, IMessage } from '@stomp/stompjs'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
-import { LuPin, LuPinOff } from 'react-icons/lu'
+import { FaEye, FaEyeSlash } from 'react-icons/fa6'
+import { GiSoundOff, GiSoundOn } from 'react-icons/gi'
 import GameInfo from './_components/GameInfo'
 import Hints from './_components/Hints'
 import IngameMap from './_components/IngameMap'
 import StreetView from './_components/StreetView'
 import ThemeInfo from './_components/ThemeInfo'
 import styles from './game.module.css'
-
-import CountDown from '@public/assets/images/lotties/CountDown.json'
-import { GiSoundOff, GiSoundOn } from 'react-icons/gi'
 
 export default function GamePage({
   params,
@@ -248,7 +247,7 @@ export default function GamePage({
         onMouseEnter={hoverSound}
       >
         <div className={styles.pin} onClick={() => setHintPin((prev) => !prev)}>
-          {hintPin ? <LuPinOff /> : <LuPin />}
+          {!hintPin ? <FaEyeSlash /> : <FaEye />}
         </div>
         <Hints hints={hints} />
       </div>
@@ -264,7 +263,7 @@ export default function GamePage({
         onMouseEnter={hoverSound}
       >
         <div className={styles.pin} onClick={() => setChatPin((prev) => !prev)}>
-          {chatPin ? <LuPinOff /> : <LuPin />}
+          {!chatPin ? <FaEyeSlash /> : <FaEye />}
         </div>
         <Chatting
           chatTitle={chatTitle}
@@ -278,7 +277,7 @@ export default function GamePage({
           className={`${styles.pin} ${styles.mapPin}`}
           onClick={() => setMapPin((prev) => !prev)}
         >
-          {mapPin ? <LuPinOff /> : <LuPin />}
+          {!mapPin ? <FaEyeSlash /> : <FaEye />}
         </div>
         <IngameMap
           theme={theme}
