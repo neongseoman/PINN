@@ -62,6 +62,7 @@
   right: 2vw;
   z-index: 2;
   border-radius: 8px;
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
 }
 
 .infos {
@@ -117,7 +118,11 @@
   font-size: x-large;
   text-wrap: nowrap;
   font-weight: 700;
-  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 15px;
+  border-radius: 8px;
 }
 
 .soundIcon {
@@ -129,4 +134,9 @@
     transform: scale(1.05);
     transition: transform 0.3s ease;
   }
+}
+
+.stageTwoWrapper {
+  transform: scale(1.1);
+  transition: transform 0.3s ease-in-out;
 }
