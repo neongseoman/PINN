@@ -108,7 +108,6 @@ export default function ResultPage2({ params }: { params: { gameId: string; } })
     10: "10등! 좀 밖에도 나가고 좀 해라",
   }
   const myTeam = teams.find(team => team.teamNumber === teamNum);
-  console.log(teams)
 
   return (
     <main className={styles.background}>
