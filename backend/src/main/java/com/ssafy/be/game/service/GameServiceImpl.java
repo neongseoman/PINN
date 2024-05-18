@@ -60,6 +60,7 @@ public class GameServiceImpl implements GameService {
     private final static int MAX_ROUND_SCORE = 5000;
     private final static double STAGE2_SCORE_LIMIT_RATE = 0.7;
     private final static int[] THEME_SCORE_PENALTY = {1, 10, 10, 10, 1};
+    private final static int RANDOM_THEME_ID = 1;
 
     /////
     // TODO: BaseException에 임시로 null 넣어둔 거 exception 종류에 맞게 수정
@@ -200,7 +201,13 @@ public class GameServiceImpl implements GameService {
              themeId 보고 question 배정
              */
             int themeId = existGame.getThemeId();
-            List<Question> questionDatas = questionRepository.findByUsedAndThemeId(1, themeId); // 사용 중이고 + themeId 일치하는 것만 가져오기
+            
+            List<Question> questionDatas;
+            if (themeId == RANDOM_THEME_ID) {
+                questionDatas = questionRepository.findByUsed(1); // '랜덤' 테마인 경우 모든 문제셋을 가져오기
+            } else {
+                questionDatas = questionRepository.findByUsedAndThemeId(1, themeId); // 사용 중이고 + themeId 일치하는 것만 가져오기
+            }
 
             // 랜덤 (roundCount)개의 인덱스 선택
             List<Integer> randomIndices = getRandomIndices(questionDatas.size(), existGame.getRoundCount());
