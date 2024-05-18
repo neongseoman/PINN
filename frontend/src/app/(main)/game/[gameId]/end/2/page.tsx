@@ -64,7 +64,7 @@ export default function ResultPage2({
           const lastRoundResults = responseData.result.roundResults.slice(-1)[0]
           const sortedTeams = lastRoundResults
             .map((r: RoundResult) => ({
-              rank: r.roundRank,
+              rank: r.totalRank,
               teamNumber: r.teamId,
               score: r.totalScore,
               teamColor: r.colorCode,
