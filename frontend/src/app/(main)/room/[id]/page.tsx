@@ -112,7 +112,7 @@ export default function RoomPage({ params }: { params: { id: string } }) {
 
   const isLeader = gameInfo?.leaderId === gamerId ? true : false
   const isTeamLeader = teams.some(team =>
-    team.teamGamers.length > 0 && team.teamGamers[team.teamGamers.length - 1]?.gamerId === gamerId)
+    team.teamGamers.length > 0 && team.teamGamers[0]?.gamerId === gamerId)
   const myTeam = teams.find((team) =>
     team.teamGamers.some((gamer) => gamer?.gamerId === gamerId),
   )

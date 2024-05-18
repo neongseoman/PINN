@@ -178,8 +178,8 @@ export default function RoundResultPage({ params }: { params: { gameId: string; 
             {roundResult
               .sort((a, b) => a.roundRank - b.roundRank)
               .map((result) => (
-                <div key={result.teamId} className={styles.teamList}>
-                  <div className={result.teamId === teamId ? styles.myTeam : ''}>
+                <div key={result.teamId} className={result.teamId === teamId ? styles.myTeam : styles.teamList}>
+                  <div>
                     {result.roundRank}. TEAM {result.teamId}
                   </div>
                   <div>{result.roundScore.toLocaleString()}</div>
