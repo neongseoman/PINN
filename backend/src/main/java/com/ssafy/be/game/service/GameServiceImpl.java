@@ -15,6 +15,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -459,8 +460,6 @@ public class GameServiceImpl implements GameService {
                 teamRoundResults.get(i - 1).setTotalRank(i);
             }
 
-            // TODO: 모든 team의 teamRound를 DB에 insert
-
             // GameManager의 gameComponent의 roundResults에 teamRoundResults 담아서 gm이 라운드 결과 들고 있게 하기!
             existGame.getRoundResults().add(teamRoundResults);
 
@@ -481,6 +480,8 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public void finishGame(SocketDTO gameFinishRequestDTO) throws BaseException { // code: 1118
+        log.info(gameFinishRequestDTO);
+
         try {
 
             int gameId = gameFinishRequestDTO.getSenderGameId();
@@ -490,11 +491,18 @@ public class GameServiceImpl implements GameService {
             }
 
             /*
-            게임 결과 집계
+            게임 결과 집계 & DB에 게임 정보 저장
              */
 
             // finishedTime 기록
             existGame.setFinishedTime(gameFinishRequestDTO.getSenderDateTime());
+            // DB 업데이트: game의 finished_time 업데이트
+            Game gameData = gameRepository.findById(gameId).orElse(null);
+            if (gameData != null) {
+                gameData.setFinishedTime(gameFinishRequestDTO.getSenderDateTime());
+//                gameData.setFinishedTime(LocalDateTime.now());
+                gameRepository.save(gameData);
+            }
 
             // 각 teamComponent의 finalRank, finalScore 업데이트
             ConcurrentHashMap<Integer, TeamComponent> teams = existGame.getTeams();
@@ -505,12 +513,20 @@ public class GameServiceImpl implements GameService {
                     continue; // 패스
                 }
                 // 각 팀의 finalRank = 해당 팀의 '마지막 라운드' 기준 '총점' 등수
-                // 각 팀의 finalScore = '마지막 라운드' 결과 집계 시에 이미 update 완료된 상태 .. 라고 가정
-                int finalRank = team.getTeamRounds().get(roundCount).getTotalRank();
-                team.setFinalRank(finalRank);
-            }
+                // 각 팀의 finalScore = '마지막 라운드' 결과 집계 시에 이미 update 완료된 상태 .. 라고 가정 > 따로 업데이트하지 않음
+                team.setFinalRank(team.getTeamRounds().get(roundCount).getTotalRank());
 
-            // gameComponent에 gameResult 만들어 넣기
+                // TODO: 모든 팀: team 테이블에 final_score, final_rank 업데이트
+
+                // TODO: 모든 팀: team_round 테이블에 insert
+
+                for (TeamGamerComponent teamGamer : team.getTeamGamers().values()) {
+                    // TODO: 모든 플레이어: gamer의 gamer_status 테이블 insert OR update
+                    
+                    // TODO: 모든 플레이어: gamer_log 테이블에 insert
+                }
+
+            }
 
         } catch (BaseException e) {
             e.printStackTrace();
