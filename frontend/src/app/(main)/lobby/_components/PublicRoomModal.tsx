@@ -45,12 +45,12 @@ export default function PublicRoomModal({
       // 메시지 구독
       clientRef.current.subscribe(subscribeRoomUrl, async (message: IMessage) => {
         const enterResponse = JSON.parse(message.body)
-        console.log(enterResponse)
+        // console.log(enterResponse)
       });
     }
     clientRef.current.onStompError = function (frame: IFrame) {
-      console.log('Broker reported error: ' + frame.headers['message'])
-      console.log('Additional details: ' + frame.body)
+      // console.log('Broker reported error: ' + frame.headers['message'])
+      // console.log('Additional details: ' + frame.body)
     }
 
     clientRef.current.activate()

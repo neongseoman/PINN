@@ -121,10 +121,10 @@ export default function CreateRoomModal({
       )
 
       if (response.ok) {
-        console.log('게임 생성 요청 통신 성공')
+        // console.log('게임 생성 요청 통신 성공')
         const responseData = await response.json()
         if (responseData.code === 1000) {
-          console.log('게임 생성 성공!', responseData)
+          // console.log('게임 생성 성공!', responseData)
           const gameId = responseData.result.gameId
           const subscribeRoomUrl = `/game/${gameId}`
 
@@ -147,12 +147,12 @@ export default function CreateRoomModal({
               }),
             })
 
-            console.log(`${gameId}번 방으로 입장합니다`)
+            // console.log(`${gameId}번 방으로 입장합니다`)
           }
 
           clientRef.current.onStompError = function (frame: IFrame) {
-            console.log('Broker reported error: ' + frame.headers['message'])
-            console.log('Additional details: ' + frame.body)
+            // console.log('Broker reported error: ' + frame.headers['message'])
+            // console.log('Additional details: ' + frame.body)
           }
 
           clientRef.current.activate()
@@ -160,10 +160,10 @@ export default function CreateRoomModal({
           error(responseData.message)
         }
       } else {
-        console.error('게임 생성 요청 통신 실패', response)
+        // console.error('게임 생성 요청 통신 실패', response)
       }
     } catch (error) {
-      console.error('에러 발생: ', error)
+      // console.error('에러 발생: ', error)
     }
     clickSound()
   }

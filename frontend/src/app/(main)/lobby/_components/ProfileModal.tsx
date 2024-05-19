@@ -57,27 +57,27 @@ export default function ProfileModal({
         )
 
         if (response.ok) {
-          console.log('닉네임 변경 통신 성공')
+          // console.log('닉네임 변경 통신 성공')
           const responseData = await response.json()
           if (responseData.code === 1000) {
-            console.log('닉네임 변경 성공!', responseData)
+            // console.log('닉네임 변경 성공!', responseData)
             setNickname(newNickname)
             closeModal()
           } else {
-            console.log('닉네임 변경 실패!', responseData.code)
+            // console.log('닉네임 변경 실패!', responseData.code)
             error(responseData.message)
           }
         } else {
-          console.error('닉네임 변경 통신 실패', response)
+          // console.error('닉네임 변경 통신 실패', response)
         }
       } catch (error) {
-        console.error('에러 발생: ', error)
+        // console.error('에러 발생: ', error)
       }
     }
 
     clickSound()
-    console.log(`nickname: ${nickname}`)
-    console.log(`newNickname: ${newNickname}`)
+    // console.log(`nickname: ${nickname}`)
+    // console.log(`newNickname: ${newNickname}`)
   }
 
   return (
