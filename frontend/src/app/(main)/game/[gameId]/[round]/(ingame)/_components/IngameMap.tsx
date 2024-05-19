@@ -145,10 +145,10 @@ export default function IngameMap({
         'maps',
       )) as google.maps.MapsLibrary
       const allowedBounds = {
-        north: 85,   // 북쪽 경계
-        south: -85,  // 남쪽 경계
-        west: -179.9,  // 서쪽 경계
-        east: 179.9    // 동쪽 경계
+        north: 85, // 북쪽 경계
+        south: -85, // 남쪽 경계
+        west: -179.9, // 서쪽 경계
+        east: 179.9, // 동쪽 경계
       }
 
       const map = new Map(mapShowRef.current!, {
@@ -156,9 +156,10 @@ export default function IngameMap({
         disableDefaultUI: true,
         clickableIcons: false,
         zoom: 5,
-        restriction: {  // 지도 범위 제한 설정
+        restriction: {
+          // 지도 범위 제한 설정
           latLngBounds: allowedBounds,
-          strictBounds: true,  // 지도 범위를 엄격하게 제한할지 여부
+          strictBounds: true, // 지도 범위를 엄격하게 제한할지 여부
         },
       })
 
@@ -252,10 +253,8 @@ export default function IngameMap({
           senderNickname: nickname,
           senderGameId: gameId,
           senderTeamId: teamId,
-          submitLat: myGuess.current.lat,
-          submitLng: myGuess.current.lng,
           roundNumber: round,
-          submitStage: stage,
+          guessStage: stage,
         }),
       })
     }
