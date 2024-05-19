@@ -445,13 +445,19 @@ public class GameServiceImpl implements GameService {
 
                 // TRR VO 채우기
                 if (!teamRound.isGuessed()) { // guess 안 한 팀인 경우
-                    // teamRound의 submitTime, submitStage를 '라운드 종료' 시점으로 업데이트
-                    teamRound.setSubmitTime(roundFinishRequestDTO.getSenderDateTime());
-                    teamRound.setSubmitStage(NOT_GUESSED_STAGE); // TODO: guess 안 한 팀의 submitStage 어떻게 처리할 것인지 결정해야 함
+                    // stage1에 마지막 핀 찍고 guess 안 누른 팀 > stage2 기준 점수로 감점해야 함.
+                    if (teamRound.getSubmitStage() == 1) {
+                        teamRound.setRoundScore((int) (teamRound.getRoundScore() * STAGE2_SCORE_LIMIT_RATE));
+                    }
 
-                    if (teamRound.getSubmitLat() == NOT_SUBMITTED_CORD || teamRound.getSubmitLng() == NOT_SUBMITTED_CORD) { // 핀 한 번도 안 찍고 guess도 안 한 팀인 경우
+                    // 핀 한 번도 안 찍고 guess도 안 한 팀 > 0점
+                    if (teamRound.getSubmitLat() == NOT_SUBMITTED_CORD || teamRound.getSubmitLng() == NOT_SUBMITTED_CORD) {
                         teamRound.setRoundScore(0); // 0점 부여
                     }
+
+                    // teamRound의 submitTime, submitStage를 '라운드 종료' 시점으로 업데이트
+                    teamRound.setSubmitTime(roundFinishRequestDTO.getSenderDateTime());
+                    teamRound.setSubmitStage(NOT_GUESSED_STAGE);
                 }
                 team.setFinalScore(team.getFinalScore() + teamRound.getRoundScore()); // team의 획득 총점 업데이트
                 teamRound.setTotalScore(team.getFinalScore()); // 현 라운드까지의 총점 업데이트
