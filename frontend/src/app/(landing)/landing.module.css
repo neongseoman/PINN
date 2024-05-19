@@ -1,93 +1,84 @@
 .landing {
-  background-image: url('/assets/images/LandingImageTop.jpg'),
-    url('/assets/images/LandingImageBottom.jpg');
-  background-repeat: no-repeat, no-repeat;
-  background-position: top center, bottom center;
+  background-image: url('/assets/images/BackgroundImage.jpg');
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-/* top */
-.name {
-  color: var(--Main-Yellow);
-  font-size: 80px;
-  font-weight: bold;
-  margin: 120px 0px 20px 0px;
-}
-
 .logo {
-  height: 100px;
-  margin: 0px 0px 80px 0px;
+  width: 400px;
+  margin: 50px 0px 40px 0px;
 }
 
 .login {
-  background: none;
-  border: none;
-}
-
-.login:hover {
-  cursor: pointer;
-}
-
-.scroll {
-  color: rgb(255, 255, 255, 0.3);
-  font-size: 100px;
-  margin-top: 50px;
-  transition: transform 0.3s ease;
-  background: none;
-  border: none;
-  margin-bottom: 70px;
+  width: 500px;
+  margin-top: 40px;
   &:hover {
-    transform: translateY(10px);
     cursor: pointer;
-    color: rgba(255, 255, 255, 0.7);
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
   }
 }
 
-/* bottom */
 .guide {
-  width: 100%;
+  width: 60%;
+  height: 600px;
+  padding: 40px;
+  background-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
   display: flex;
-  justify-content: space-evenly;
-  color: white;
-  font-size: 24px;
-  margin: 135px 0px;
+  flex-direction: column;
 }
 
 .guide1 {
   height: 250px;
-  margin-top: 30px;
 }
 
 .guide2 {
   height: 250px;
 }
 
-.left {
-  width: 500px;
-  height: 500px;
+.top {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: var(--Main-Navy);
-  border-radius: 30px;
-  box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.5);
 }
 
-.right {
-  width: 500px;
-  height: 500px;
+.bottom {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: var(--Main-Navy);
-  border-radius: 30px;
-  box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.5);
+  margin-top: 30px;
+}
+
+.textWrapper {
+  width: 80%;
+  margin-left: 20px;
+  display: flex;
+  flex-direction: column;
+  color: var(--Main-Navy);
+}
+
+.textTitle {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 28px;
 }
 
 .text {
-  margin-bottom: 5px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+.textCenter {
+  align-self: center;
+  margin-top: 50px;
+  font-size: 14px;
 }
