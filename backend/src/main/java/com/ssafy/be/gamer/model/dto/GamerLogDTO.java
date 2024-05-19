@@ -15,7 +15,7 @@ public class GamerLogDTO {
     private int gamerId;
     private int gameId;
     private int teamId;
-    private int rank;
+    private int totalRank;
     private String teamColor;
     private int isRoomLeader;
     private int isTeamLeader;
@@ -28,7 +28,7 @@ public class GamerLogDTO {
         this.gamerId = gamerLog.getGamerId();
         this.gameId = gamerLog.getGameId();
         this.teamId = gamerLog.getTeamId();
-        this.rank = gamerLog.getRank();
+        this.totalRank = gamerLog.getTotalRank();
         this.teamColor = gamerLog.getTeamColor();
         this.isRoomLeader = gamerLog.getIsRoomLeader();
         this.isTeamLeader = gamerLog.getIsTeamLeader();
@@ -42,7 +42,7 @@ public class GamerLogDTO {
                 .gamerId(this.gamerId)
                 .gameId(this.gameId)
                 .teamId(this.teamId)
-                .rank(this.rank)
+                .totalRank(this.totalRank)
                 .teamColor(this.teamColor)
                 .isRoomLeader(this.isRoomLeader)
                 .isTeamLeader(this.isTeamLeader)

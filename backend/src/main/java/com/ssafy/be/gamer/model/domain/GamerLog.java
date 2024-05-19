@@ -24,10 +24,10 @@ public class GamerLog {
     private int gamerId;
     private int gameId;
     private int teamId;
-    private int rank;
-    private String teamColor;
+    private int totalRank;
     private int isRoomLeader;
     private int isTeamLeader; // 이거 근데 필요한가?ㅋㅋ
+    private String teamColor;
     @CreationTimestamp
     private LocalDateTime createdDate;
     @UpdateTimestamp

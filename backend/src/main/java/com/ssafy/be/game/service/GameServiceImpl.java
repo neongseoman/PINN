@@ -16,6 +16,8 @@ import com.ssafy.be.gamer.model.dto.GamerLogDTO;
 import com.ssafy.be.gamer.model.dto.GamerStatusDTO;
 import com.ssafy.be.gamer.repository.GamerLogRepository;
 import com.ssafy.be.gamer.repository.GamerStatusRepository;
+import com.ssafy.be.gamer.service.GamerLogServiceImpl;
+import com.ssafy.be.gamer.service.GamerStatusService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +45,8 @@ public class GameServiceImpl implements GameService {
     private final HintRepository hintRepository;
     private final HintTypeRepository hintTypeRepository;
 
+//    private final GamerStatusService gamerStatusService;
+//    private final GamerLogService gamerLogService;
     private final GamerStatusRepository gamerStatusRepository;
     private final GamerLogRepository gamerLogRepository;
 
@@ -59,7 +63,8 @@ public class GameServiceImpl implements GameService {
         this.hintTypeRepository = hintTypeRepository;
         this.gamerStatusRepository = gamerStatusRepository;
         this.gamerLogRepository = gamerLogRepository;
-
+//        this.gamerStatusService = gamerStatusService;
+//        this.gamerLogService = gamerLogService;
     }
 
     private final static int NOT_GUESSED_STAGE = 0;
@@ -440,13 +445,19 @@ public class GameServiceImpl implements GameService {
 
                 // TRR VO 채우기
                 if (!teamRound.isGuessed()) { // guess 안 한 팀인 경우
-                    // teamRound의 submitTime, submitStage를 '라운드 종료' 시점으로 업데이트
-                    teamRound.setSubmitTime(roundFinishRequestDTO.getSenderDateTime());
-                    teamRound.setSubmitStage(NOT_GUESSED_STAGE); // TODO: guess 안 한 팀의 submitStage 어떻게 처리할 것인지 결정해야 함
+                    // stage1에 마지막 핀 찍고 guess 안 누른 팀 > stage2 기준 점수로 감점해야 함.
+                    if (teamRound.getSubmitStage() == 1) {
+                        teamRound.setRoundScore((int) (teamRound.getRoundScore() * STAGE2_SCORE_LIMIT_RATE));
+                    }
 
-                    if (teamRound.getSubmitLat() == NOT_SUBMITTED_CORD || teamRound.getSubmitLng() == NOT_SUBMITTED_CORD) { // 핀 한 번도 안 찍고 guess도 안 한 팀인 경우
+                    // 핀 한 번도 안 찍고 guess도 안 한 팀 > 0점
+                    if (teamRound.getSubmitLat() == NOT_SUBMITTED_CORD || teamRound.getSubmitLng() == NOT_SUBMITTED_CORD) {
                         teamRound.setRoundScore(0); // 0점 부여
                     }
+
+                    // teamRound의 submitTime, submitStage를 '라운드 종료' 시점으로 업데이트
+                    teamRound.setSubmitTime(roundFinishRequestDTO.getSenderDateTime());
+                    teamRound.setSubmitStage(NOT_GUESSED_STAGE);
                 }
                 team.setFinalScore(team.getFinalScore() + teamRound.getRoundScore()); // team의 획득 총점 업데이트
                 teamRound.setTotalScore(team.getFinalScore()); // 현 라운드까지의 총점 업데이트
@@ -573,7 +584,7 @@ public class GameServiceImpl implements GameService {
                     gamerLogDTO.setGamerId(teamGamer.getGamerId());
                     gamerLogDTO.setGameId(team.getGameId());
                     gamerLogDTO.setTeamId(team.getTeamNumber());
-                    gamerLogDTO.setRank(team.getFinalRank());
+                    gamerLogDTO.setTotalRank(team.getFinalRank());
                     gamerLogDTO.setTeamColor(team.getColorCode());
                     if (existGame.getLeaderId() == teamGamer.getGamerId()) {
                         gamerLogDTO.setIsRoomLeader(1);
