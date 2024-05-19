@@ -11,12 +11,12 @@
 }
 
 .logo {
-  width: 400px;
+  width: 200px;
   margin: 50px 0px 40px 0px;
 }
 
 .login {
-  width: 500px;
+  width: 300px;
   margin-top: 40px;
   &:hover {
     cursor: pointer;
@@ -26,7 +26,7 @@
 }
 
 .guide {
-  width: 60%;
+  width: 70%;
   height: 600px;
   padding: 40px;
   background-color: rgba(255, 255, 255, 0.8);
