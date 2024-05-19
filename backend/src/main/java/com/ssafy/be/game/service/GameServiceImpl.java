@@ -11,6 +11,11 @@ import com.ssafy.be.game.model.dto.*;
 import com.ssafy.be.game.model.dto.entity.*;
 import com.ssafy.be.game.model.repository.*;
 import com.ssafy.be.game.model.vo.*;
+import com.ssafy.be.gamer.model.domain.GamerStatus;
+import com.ssafy.be.gamer.model.dto.GamerLogDTO;
+import com.ssafy.be.gamer.model.dto.GamerStatusDTO;
+import com.ssafy.be.gamer.repository.GamerLogRepository;
+import com.ssafy.be.gamer.repository.GamerStatusRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,8 +43,11 @@ public class GameServiceImpl implements GameService {
     private final HintRepository hintRepository;
     private final HintTypeRepository hintTypeRepository;
 
+    private final GamerStatusRepository gamerStatusRepository;
+    private final GamerLogRepository gamerLogRepository;
+
     @Autowired
-    private GameServiceImpl(GameRepository gameRepository, TeamRepository teamRepository, TeamGamerRepository teamGamerRepository, TeamRoundRepository teamRoundRepository, GameQuestionRepository gameQuestionRepository, GameManager gameManager, QuestionRepository questionRepository, HintRepository hintRepository, HintTypeRepository hintTypeRepository) {
+    private GameServiceImpl(GameRepository gameRepository, TeamRepository teamRepository, TeamGamerRepository teamGamerRepository, TeamRoundRepository teamRoundRepository, GameQuestionRepository gameQuestionRepository, GameManager gameManager, QuestionRepository questionRepository, HintRepository hintRepository, HintTypeRepository hintTypeRepository, GamerStatusRepository gamerStatusRepository, GamerLogRepository gamerLogRepository) {
         this.gameRepository = gameRepository;
         this.teamRepository = teamRepository;
         this.teamGamerRepository = teamGamerRepository;
@@ -49,6 +57,8 @@ public class GameServiceImpl implements GameService {
         this.questionRepository = questionRepository;
         this.hintRepository = hintRepository;
         this.hintTypeRepository = hintTypeRepository;
+        this.gamerStatusRepository = gamerStatusRepository;
+        this.gamerLogRepository = gamerLogRepository;
 
     }
 
@@ -164,7 +174,7 @@ public class GameServiceImpl implements GameService {
                     // 2. DB의 Team 테이블에 insert
                     TeamDTO teamDTO = new TeamDTO();
                     teamDTO.setGameId(gameId);
-                    teamDTO.setColorId(0); // TODO: 팀 번호에 따른
+                    teamDTO.setColorId(team.getTeamNumber());
                     teamDTO.setTeamNumber(team.getTeamNumber());
                     teamDTO.setReady(team.isReady());
                     teamDTO.setLastReadyTime(gameInitRequestDTO.getSenderDateTime());
@@ -185,7 +195,7 @@ public class GameServiceImpl implements GameService {
                         } else {
                             teamGamerDTO.setColorId(NEON_YELLOW.getTeamNumber());
                         }
-                        teamGamerDTO.setTeamId(teamGamer.getTeamId());
+                        teamGamerDTO.setTeamId(team.getTeamNumber());
                         teamGamerDTO.setGamerId(teamGamer.getGamerId());
 
                         teamGamerRepository.save(teamGamerDTO.toEntity()); // DB에 teamGamer 정보 insert
@@ -516,16 +526,63 @@ public class GameServiceImpl implements GameService {
                 // 각 팀의 finalScore = '마지막 라운드' 결과 집계 시에 이미 update 완료된 상태 .. 라고 가정 > 따로 업데이트하지 않음
                 team.setFinalRank(team.getTeamRounds().get(roundCount).getTotalRank());
 
-                // TODO: 모든 팀: team 테이블에 final_score, final_rank 업데이트
-
-                // TODO: 모든 팀: team_round 테이블에 insert
-
-                for (TeamGamerComponent teamGamer : team.getTeamGamers().values()) {
-                    // TODO: 모든 플레이어: gamer의 gamer_status 테이블 insert OR update
-
-                    // TODO: 모든 플레이어: gamer_log 테이블에 insert
+                // 모든 팀: team 테이블에 final_score, final_rank 업데이트
+                Team teamData = teamRepository.findById(team.getTeamNumber()).orElse(null);
+                if (teamData != null) {
+                    teamData.setFinalScore(team.getFinalScore());
+                    teamData.setFinalRank(team.getFinalRank());
+                    teamRepository.save(teamData);
                 }
 
+                // 모든 팀: team_round 테이블에 insert
+                for (TeamRoundComponent teamRound : team.getTeamRounds().values()) {
+                    TeamRoundDTO teamRoundDTO = new TeamRoundDTO();
+                    teamRoundDTO.setTeamId(team.getTeamNumber());
+                    teamRoundDTO.setRoundNumber(teamRound.getRoundNumber());
+                    teamRoundDTO.setRoundScore(teamRound.getRoundScore());
+                    teamRoundDTO.setSubmitStage(teamRound.getSubmitStage());
+                    teamRoundDTO.setSubmitTime(teamRound.getSubmitTime());
+                    teamRoundDTO.setSubmitLat(teamRound.getSubmitLat()); // 미제출한 경우 NOT_SUBMITTED_CORD 값으로 들어감
+                    teamRoundDTO.setSubmitLng(teamRound.getSubmitLng()); // 미제출한 경우 NOT_SUBMITTED_CORD 값으로 들어감
+                    teamRoundRepository.save(teamRoundDTO.toEntity());
+                }
+
+                for (TeamGamerComponent teamGamer : team.getTeamGamers().values()) {
+                    // 모든 플레이어: gamer의 gamer_status 테이블 insert OR update
+                    GamerStatus existGamerStatus = gamerStatusRepository.findById(teamGamer.getGamerId()).orElse(null);
+                    if (existGamerStatus == null) { // 최초 플레이인 경우: insert
+                        GamerStatusDTO gamerStatusDTO = new GamerStatusDTO();
+                        gamerStatusDTO.setGamerId(teamGamer.getGamerId());
+                        gamerStatusDTO.setPlayCount(1);
+                        if (team.getFinalRank() == 1) { // 1등한 팀의 구성원인 경우
+                            gamerStatusDTO.setWinCount(1);
+                        } else { // 2~10등 팀의 구성원인 경우
+                            gamerStatusDTO.setWinCount(0);
+                        }
+                        gamerStatusRepository.save(gamerStatusDTO.toEntity());
+                    } else { // 플레이 이력 있는 경우: update
+                        existGamerStatus.setPlayCount(existGamerStatus.getPlayCount() + 1);
+                        if (team.getFinalRank() == 1) { // 1등한 팀의 구성원인 경우에만 wincount++
+                            existGamerStatus.setWinCount(existGamerStatus.getWinCount() + 1);
+                        }
+                        gamerStatusRepository.save(existGamerStatus);
+                    }
+
+                    // 모든 플레이어: gamer_log 테이블에 insert
+                    GamerLogDTO gamerLogDTO = new GamerLogDTO();
+                    gamerLogDTO.setGamerId(teamGamer.getGamerId());
+                    gamerLogDTO.setGameId(team.getGameId());
+                    gamerLogDTO.setTeamId(team.getTeamNumber());
+                    gamerLogDTO.setRank(team.getFinalRank());
+                    gamerLogDTO.setTeamColor(team.getColorCode());
+                    if (existGame.getLeaderId() == teamGamer.getGamerId()) {
+                        gamerLogDTO.setIsRoomLeader(1);
+                    } else {
+                        gamerLogDTO.setIsRoomLeader(0);
+                    }
+                    gamerLogDTO.setIsTeamLeader(0); // TODO: 일단 무조건 0으로 넣어~
+                    gamerLogRepository.save(gamerLogDTO.toEntity());
+                }
             }
 
         } catch (BaseException e) {
@@ -662,7 +719,7 @@ public class GameServiceImpl implements GameService {
             stage2InitVO.setStage(2);
             stage2InitVO.setHints(question.getHints());
 
-            log.info(stage2InitVO);
+//            log.info(stage2InitVO); // 로그 너무 많아~!
             return stage2InitVO;
         } catch (BaseException e) {
             e.printStackTrace();
