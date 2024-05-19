@@ -150,6 +150,7 @@ export default function LobbyPage() {
             className={styles.logo}
             src="/assets/images/logo.png"
             alt="로고"
+            onClick={reload}
           />
           {soundOn ? (
             <GiSoundOn className={styles.soundIcon} onClick={backgroundSound} />
