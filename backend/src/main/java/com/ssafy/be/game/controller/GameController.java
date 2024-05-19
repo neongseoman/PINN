@@ -6,6 +6,7 @@ import com.ssafy.be.common.component.GameComponent;
 import com.ssafy.be.common.component.GameManager;
 import com.ssafy.be.common.exception.BaseException;
 import com.ssafy.be.common.model.dto.ChatDTO;
+import com.ssafy.be.common.model.dto.SocketDTO;
 import com.ssafy.be.common.response.BaseResponse;
 import com.ssafy.be.common.response.BaseResponseStatus;
 import com.ssafy.be.game.model.dto.*;
@@ -80,6 +81,8 @@ public class GameController {
                     // 마지막 결과를 `CompletableFuture<Void>`로 변환
                     return scheduleProvider.scheduleFuture(gameId, gameExistLimitTime);
                 }).thenRun(() -> {
+                    gameService.finishGame(new SocketDTO(gameStartRequestDTO.getSenderNickname(), gameId, gameStartRequestDTO.getSenderTeamId()));
+
                     log.info("{} Game is dead at {}", gameId, LocalDateTime.now());
                     gameManager.removeGame(gameId);
                 }).exceptionally(ex -> {
