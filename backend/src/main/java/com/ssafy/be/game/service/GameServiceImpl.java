@@ -16,6 +16,8 @@ import com.ssafy.be.gamer.model.dto.GamerLogDTO;
 import com.ssafy.be.gamer.model.dto.GamerStatusDTO;
 import com.ssafy.be.gamer.repository.GamerLogRepository;
 import com.ssafy.be.gamer.repository.GamerStatusRepository;
+import com.ssafy.be.gamer.service.GamerLogServiceImpl;
+import com.ssafy.be.gamer.service.GamerStatusService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +45,8 @@ public class GameServiceImpl implements GameService {
     private final HintRepository hintRepository;
     private final HintTypeRepository hintTypeRepository;
 
+//    private final GamerStatusService gamerStatusService;
+//    private final GamerLogService gamerLogService;
     private final GamerStatusRepository gamerStatusRepository;
     private final GamerLogRepository gamerLogRepository;
 
@@ -59,7 +63,8 @@ public class GameServiceImpl implements GameService {
         this.hintTypeRepository = hintTypeRepository;
         this.gamerStatusRepository = gamerStatusRepository;
         this.gamerLogRepository = gamerLogRepository;
-
+//        this.gamerStatusService = gamerStatusService;
+//        this.gamerLogService = gamerLogService;
     }
 
     private final static int NOT_GUESSED_STAGE = 0;
@@ -573,7 +578,7 @@ public class GameServiceImpl implements GameService {
                     gamerLogDTO.setGamerId(teamGamer.getGamerId());
                     gamerLogDTO.setGameId(team.getGameId());
                     gamerLogDTO.setTeamId(team.getTeamNumber());
-                    gamerLogDTO.setRank(team.getFinalRank());
+                    gamerLogDTO.setTotalRank(team.getFinalRank());
                     gamerLogDTO.setTeamColor(team.getColorCode());
                     if (existGame.getLeaderId() == teamGamer.getGamerId()) {
                         gamerLogDTO.setIsRoomLeader(1);

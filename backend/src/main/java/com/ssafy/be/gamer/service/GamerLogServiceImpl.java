@@ -46,7 +46,7 @@ public class GamerLogServiceImpl implements GamerLogService {
             existGamerLog.setGamerId(gamerLogDTO.getGamerId());
             existGamerLog.setGameId(gamerLogDTO.getGameId());
             existGamerLog.setTeamId(gamerLogDTO.getTeamId());
-            existGamerLog.setRank(gamerLogDTO.getRank());
+            existGamerLog.setTotalRank(gamerLogDTO.getTotalRank());
             existGamerLog.setTeamColor(gamerLogDTO.getTeamColor());
             existGamerLog.setIsRoomLeader(gamerLogDTO.getIsRoomLeader());
             existGamerLog.setIsTeamLeader(gamerLogDTO.getIsTeamLeader());
