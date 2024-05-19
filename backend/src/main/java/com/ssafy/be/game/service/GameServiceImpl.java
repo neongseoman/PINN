@@ -164,7 +164,7 @@ public class GameServiceImpl implements GameService {
                     // 2. DB의 Team 테이블에 insert
                     TeamDTO teamDTO = new TeamDTO();
                     teamDTO.setGameId(gameId);
-                    teamDTO.setColorId(0); // TODO: 팀 번호에 따른
+                    teamDTO.setColorId(team.getTeamNumber());
                     teamDTO.setTeamNumber(team.getTeamNumber());
                     teamDTO.setReady(team.isReady());
                     teamDTO.setLastReadyTime(gameInitRequestDTO.getSenderDateTime());
@@ -185,7 +185,7 @@ public class GameServiceImpl implements GameService {
                         } else {
                             teamGamerDTO.setColorId(NEON_YELLOW.getTeamNumber());
                         }
-                        teamGamerDTO.setTeamId(teamGamer.getTeamId());
+                        teamGamerDTO.setTeamId(team.getTeamNumber());
                         teamGamerDTO.setGamerId(teamGamer.getGamerId());
 
                         teamGamerRepository.save(teamGamerDTO.toEntity()); // DB에 teamGamer 정보 insert
