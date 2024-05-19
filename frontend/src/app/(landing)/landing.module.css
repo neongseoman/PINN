@@ -37,11 +37,11 @@
 }
 
 .guide1 {
-  height: 250px;
+  height: 200px;
 }
 
 .guide2 {
-  height: 250px;
+  height: 200px;
 }
 
 .top {
@@ -68,17 +68,17 @@
 .textTitle {
   margin-top: 10px;
   margin-bottom: 10px;
-  font-size: 28px;
+  font-size: 22px;
 }
 
 .text {
   margin-top: 10px;
   margin-bottom: 10px;
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .textCenter {
   align-self: center;
   margin-top: 50px;
-  font-size: 14px;
+  font-size: 12px;
 }
