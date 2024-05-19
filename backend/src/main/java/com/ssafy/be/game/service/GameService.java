@@ -16,7 +16,7 @@ public interface GameService {
 
     void finishRound(RoundFinishRequestDTO roundFinishRequestDTO) throws BaseException;
 
-    void finishGame(SocketDTO gameFinishRequestDTO) throws BaseException; // not implemented
+    void finishGame(SocketDTO gameFinishRequestDTO) throws BaseException;
 
     /*
     for Socket
@@ -34,7 +34,7 @@ public interface GameService {
 
     Stage2InitVO findStage2Info(int gamerId, RoundRequestDTO stage2InitRequestDTO) throws BaseException;
 
-    RoundGuessedVO getCurPinsInfo(int gamerId, RoundRequestDTO roundGuessedRequestDTO) throws BaseException; // not implemented
+    RoundGuessedVO getCurPinsInfo(int gamerId, RoundRequestDTO roundGuessedRequestDTO) throws BaseException;
 
     RoundResultVO getRoundResult(int gamerId, RoundRequestDTO roundFinishRequestDTO) throws BaseException;
 
