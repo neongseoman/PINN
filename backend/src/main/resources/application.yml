@@ -1,0 +1,81 @@
+spring:
+  application:
+    name: be
+  datasource:
+    url: ${MYSQL_URL}
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: ${MYSQL_CONNCTION}
+
+  data:
+    redis:  # Redis
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+    mongodb: # mongo
+        host: ${MONGO_HOST}
+        port: ${MONGO_PORT}
+        username: ${MONGO_ROOT_NAME}
+        password: ${MONGO_ROOT_PASS}
+        uri: ${MONGO_URI}
+  cache:
+    type: redis
+  jpa:
+    #    show-sql: true
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: true
+        use_sql_comments: true
+        highlight_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: update
+
+
+server:
+  port: 8081
+  ssl:
+    enabled: false
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+
+jwt:
+  kakao:
+    secret_key: ${KAKAO_JWT_KEY}
+    access:
+      expiration: 6000000000 # 100 분
+    refresh:
+      expiration: 86400000 # 240 시간
+
+
+oauth2:
+  client:
+    kakao:
+      client_id: ${KAKAO_CLIENT_ID} # REST API 키
+      client_secret: ${KAKAO_CLIENT_SECRET} # Client Secret 키
+      redirect_uri: ${KAKAO_REDIRECT_URI}
+      local_redirect_uri: ${KAKAO_CLIENT_REDIRECT_URI}
+      server_redirect_uri: ${KAKAO_SERVER_REDIRECT_URI}
+      client-name: kakao
+      authorization-grant-type: authorization_code
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+
+weather_map:
+  url : ${WEATHER_STATISTICAL_URL}
+  api : ${WEATHER_STATISTICAL_API}
+
+game:
+  remove: ${GAME_EXIST_LIMIT_TIME}
+
+logging:
+  config: classpath:log4j2.xml
