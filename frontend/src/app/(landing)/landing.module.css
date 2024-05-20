@@ -1,0 +1,5 @@
+.green {
+  background-color: var(--Main-Green);
+  color: var(--Main-Yellow);
+  height: 100px;
+}
