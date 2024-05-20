@@ -1,5 +1,84 @@
-.green {
-  background-color: var(--Main-Green);
-  color: var(--Main-Yellow);
-  height: 100px;
+.landing {
+  background-image: url('/assets/images/BackgroundImage.jpg');
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logo {
+  width: 200px;
+  margin: 50px 0px 40px 0px;
+}
+
+.login {
+  width: 300px;
+  margin-top: 40px;
+  &:hover {
+    cursor: pointer;
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+  }
+}
+
+.guide {
+  width: 70%;
+  height: 520px;
+  padding: 40px;
+  background-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.guide1 {
+  height: 200px;
+}
+
+.guide2 {
+  height: 200px;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bottom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.textWrapper {
+  width: 80%;
+  margin-left: 20px;
+  display: flex;
+  flex-direction: column;
+  color: var(--Main-Navy);
+}
+
+.textTitle {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 22px;
+}
+
+.text {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.textCenter {
+  align-self: center;
+  margin-top: 50px;
+  font-size: 12px;
 }

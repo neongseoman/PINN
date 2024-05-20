@@ -1,0 +1,59 @@
+.랜덤 {
+  color: var(--Main-Yellow);
+  background-color: var(--Main-Navy);
+  border-color: solid var(--Main-Yellow);
+}
+
+.한국 {
+  color: var(--Main-Yellow);
+  background-color: var(--Theme-Korea);
+  border-color: solid var(--Main-Yellow);
+}
+
+.이집트 {
+  color: var(--Main-Brown);
+  background-color: var(--Theme-Egypt);
+  border-color: solid var(--Main-Brown);
+}
+
+.그리스 {
+  color: var(--Main-Navy);
+  background-color: var(--Theme-Greece);
+  border-color: solid var(--Main-Navy);
+}
+
+.랜드마크 {
+  color: var(--Main-Yellow);
+  background-color: var(--Theme-Landmark);
+  border-color: solid var(--Main-Yellow);
+}
+
+.랜덤-inverse {
+  color: var(--Main-Navy);
+  background-color: var(--Main-Yellow);
+  border-color: solid var(--Main-Navy);
+}
+
+.한국-inverse {
+  color: var(--Theme-Korea);
+  background-color: var(--Main-Yellow);
+  border-color: solid var(--Theme-Korea);
+}
+
+.이집트-inverse {
+  color: var(--Theme-Egypt);
+  background-color: var(--Main-Brown);
+  border-color: solid var(--Theme-Egypt);
+}
+
+.그리스-inverse {
+  color: var(--Theme-Greece);
+  background-color: var(--Main-Navy);
+  border-color: solid var(--Theme-Greece);
+}
+
+.랜드마크-inverse {
+  color: var(--Theme-Landmark);
+  background-color: var(--Main-Yellow);
+  border-color: solid var(--Theme-Landmark);
+}

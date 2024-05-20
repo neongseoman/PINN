@@ -1,0 +1,97 @@
+.chatTitle {
+  height: 10%;
+  font-size: large;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: solid;
+  border-width: 0px 0px 1px 0px;
+}
+
+.chatList {
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  height: 80%;
+  color: black;
+  padding: 8px 8px 0 8px;
+  box-sizing: border-box;
+}
+
+.chatList::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chatList::-webkit-scrollbar-track {
+  background: rgba(119, 107, 93, 0.1);
+}
+.chatList::-webkit-scrollbar-thumb {
+  background: rgba(119, 107, 93, 0.7);
+  border-radius: 4px;
+}
+.chatList::-webkit-scrollbar-thumb:hover {
+  background: rgba(119, 107, 93, 0.7);
+}
+
+.chatContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-right: 40px;
+  margin-bottom: 16px;
+}
+
+.myChatContainer {
+  composes: chatContainer;
+  align-self: flex-end;
+  align-items: flex-end;
+  margin-right: 0;
+  margin-left: 40px;
+}
+
+.chatSender {
+  color: white;
+  font-size: smaller;
+  margin-bottom: 2px;
+}
+
+.chatContent {
+  border-radius: 8px;
+  background-color: white;
+  width: fit-content;
+  padding: 8px;
+  word-break: break-all;
+}
+
+.myChatContent {
+  composes: chatContent;
+  align-self: flex-end;
+  background-color: var(--Main-Yellow);
+}
+
+.send {
+  height: 10%;
+  width: 100%;
+  position: relative;
+  bottom: 0;
+  display: flex;
+  font-size: 24px;
+  border-top: solid white 1px;
+}
+
+.send input {
+  flex-grow: 1;
+  background-color: rgb(255, 255, 255, 0);
+  border: 0;
+  padding-left: 8px;
+  color: inherit;
+  outline: none;
+}
+
+.send div {
+  width: 10%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}

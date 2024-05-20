@@ -1,0 +1,142 @@
+.opacity {
+  opacity: 0.2;
+  transition: opacity 0.3s ease;
+}
+.opacity:hover {
+  opacity: 1;
+}
+
+.chat {
+  position: fixed;
+  bottom: 4vh;
+  left: 2vw;
+  height: 360px;
+  width: 320px;
+  z-index: 2;
+  transition: transform 0.3s ease, height 0.3s ease;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.pin {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: larger;
+  padding: 6px;
+  z-index: 10;
+}
+
+.mapPin {
+  background-color: white;
+  border-radius: 50%;
+  height: 20px;
+  aspect-ratio: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 10px;
+  right: 10px;
+}
+
+.map {
+  position: fixed;
+  bottom: 4vh;
+  right: 2vw;
+  height: 240px;
+  width: 320px;
+  transition: all 0.3s ease;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+}
+
+.map:hover {
+  height: 360px;
+  width: 480px;
+}
+
+.hints {
+  position: fixed;
+  top: 4vh;
+  right: 2vw;
+  z-index: 2;
+  border-radius: 8px;
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.infos {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2;
+}
+
+.timer {
+  position: fixed;
+  top: 12vh;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  border-radius: 20px;
+}
+
+.streetView {
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  background-color: beige;
+  z-index: var(--z-down);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: xx-large;
+  font-weight: 700;
+}
+
+.lottieAnimation {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  height: 200px;
+  z-index: 4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  pointer-events: none;
+}
+
+.lottieTitle {
+  font-size: x-large;
+  text-wrap: nowrap;
+  font-weight: 700;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 15px;
+  border-radius: 8px;
+}
+
+.soundIcon {
+  cursor: pointer;
+  font-size: 60px;
+  color: white;
+  &:hover {
+    color: var(--Main-Yellow);
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+  }
+}
+
+.stageTwoWrapper {
+  transform: scale(1.1);
+  transition: transform 0.3s ease-in-out;
+}

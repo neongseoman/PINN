@@ -1,0 +1,174 @@
+.background {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background-image: url('/assets/images/BackgroundImage.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 0;
+}
+
+/* 멘트 */
+.words {
+  font-family: 'GmarketSans';
+  font-weight: 400;
+  height: 10%;
+  font-size: 4rem;
+  color: var(--Main-Yellow);
+  margin-bottom: 2%;
+  text-shadow: 4px 4px 6px rgba(0, 0, 0, 0.5);
+}
+
+/* 최상위 컨테이너 */
+.container {
+  width: 100%;
+  height: 75%;
+  display: flex;
+  justify-content: space-around;
+}
+
+/* 양옆 버튼 */
+.button {
+  width: 25%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+/* 방나가기 버튼 */
+.button-out {
+  font-family: 'GmarketSans';
+  width: 60%;
+  height: 15%;
+  color: var(--Main-Yellow);
+  font-size: 2rem;
+  font-weight: bold;
+  background-color: var(--Main-Red);
+  border: 0;
+  border-radius: 8px;
+  box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 3%;
+  padding-right: 4%;
+}
+
+.button-out:hover {
+  transform: scale(1.1);
+}
+
+/* 계속하기 버튼 */
+.button-continue {
+  font-family: 'GmarketSans';
+  width: 60%;
+  height: 15%;
+  color: var(--Main-Yellow);
+  font-size: 2rem;
+  font-weight: bold;
+  background-color: var(--Main-Green);
+  border: 0;
+  border-radius: 8px;
+  box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 3%;
+  padding-left: 4%;
+}
+
+.button-continue:hover {
+  transform: scale(1.1);
+}
+
+/* 랭크 컨테이너 */
+.rank-container {
+  width: 50%;
+  height: 100%;
+  background-color: rgba(29, 50, 64, 0.8);
+  display: flex;
+  position: relative;
+  z-index: 0;
+  box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* 등수 숫자 컨테이너 */
+.numbers {
+  width: 7.5%;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+}
+
+/* 등수 숫자 */
+.number {
+  width: 100%;
+  height: 10%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-weight: bold;
+  font-size: 1.7rem;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+  background-color: var(--Main-Navy);
+}
+
+.myNumber {
+  composes: number;
+  background-color: var(--Main-Yellow);
+}
+
+/* 팀-점수-막대 컨테이너 */
+.rank {
+  width: 92.5%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* 팀-점수 */
+.team {
+  height: 10%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0% 3%;
+}
+
+.teamResult {
+  font-family: 'GmarketSans';
+  font-size: 1.7rem;
+  font-weight: 600;
+  color: white;
+}
+
+.myTeamResult {
+  composes: teamResult;
+  color: var(--Main-Yellow);
+}
+
+/* 막대기 컨트롤 */
+@keyframes slideIn {
+  from {
+    transform: translateX(-8%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.bar {
+  height: 10%;
+  z-index: -1;
+  left: 0;
+  position: absolute;
+  box-shadow: 4px 4px 6px rgba(0, 0, 0, 0.5);
+  animation: slideIn 2s ease forwards;
+}
