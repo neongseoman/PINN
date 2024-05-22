@@ -190,6 +190,7 @@
 - 사용자는 설정 화면에서 알림 빈도를 조절하고, 개인정보 보호 수준을 설정합니다.
 
 ## 아키텍처 다이어그램
+(exec/PINN Archetecture 2.drawio.png)
 
 ## ERD
 
