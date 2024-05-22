@@ -32,12 +32,10 @@ public class OAuth2Controller {
     private long ACCESS_TOKEN_EXPIRE_TIME;
     @Value("${jwt.kakao.refresh.expiration}")
     private long REFRESH_TOKEN_EXPIRE_TIME;
-//    http://www.pinn.kr/api/oauth/code/kakao/local
+
     @GetMapping("/code/kakao/local")
     public BaseResponse getAuthCodeToLocal(HttpServletRequest req, HttpServletResponse res, @RequestParam("code") String code) throws IOException {
-//        for (Cookie cookie : req.getCookies()) {
-//            log.info(cookie.getName() + " : " + cookie.getValue());
-//        }
+
         Map<String, String> token = new HashMap();
         log.debug("getAuthCode : " + code);
         String kakaoAccessToken = oAuth2Service.getAccessTokenFromlocal(code);
@@ -63,16 +61,13 @@ public class OAuth2Controller {
         res.setHeader("Set-Cookie", rcookie.toString());
         res.addHeader("auth",acookie.toString());
         res.sendRedirect("http://localhost:3000/login?code=" + acookie.toString());
-//        res.sendRedirect("http://localhost:3000/lobby?code=" + acookie.toString());
 
         return new BaseResponse(BaseResponseStatus.SUCCESS, token); // 테스트
     }
 
     @GetMapping("/code/kakao/server")
     public BaseResponse getAuthCodeToServer(HttpServletRequest req, HttpServletResponse res, @RequestParam("code") String code) throws IOException {
-//        for (Cookie cookie : req.getCookies()) {
-//            log.info(cookie.getName() + " : " + cookie.getValue());
-//        }
+
         Map<String, String> token = new HashMap();
         log.debug("getAuthCode : " + code);
         String kakaoAccessToken = oAuth2Service.getAccessTokenFromServer(code);
@@ -97,7 +92,6 @@ public class OAuth2Controller {
 
         res.setHeader("Set-Cookie", rcookie.toString());
         res.addHeader("auth",acookie.toString());
-//        res.sendRedirect("http://pinn.kr/lobby?code=" + acookie.toString());
         res.sendRedirect("http://pinn.kr/login?code=" + acookie.toString());
 
         return new BaseResponse(BaseResponseStatus.SUCCESS, token); // 테스트
@@ -105,9 +99,7 @@ public class OAuth2Controller {
 
     @GetMapping("/code/kakao/test")
     public BaseResponse getAuthCodeToTest(HttpServletRequest req, HttpServletResponse res, @RequestParam("code") String code) throws IOException {
-//        for (Cookie cookie : req.getCookies()) {
-//            log.info(cookie.getName() + " : " + cookie.getValue());
-//        }
+
         Map<String, String> token = new HashMap();
         log.debug("getAuthCode : " + code);
         String kakaoAccessToken = oAuth2Service.getAccessTokenFromTest(code,kakaoOAuthConfig.redirect_uri());
@@ -132,7 +124,6 @@ public class OAuth2Controller {
 
         res.setHeader("Set-Cookie", rcookie.toString());
         res.addHeader("auth",acookie.toString());
-//        res.sendRedirect("http://localhost:3000/lobby?code=" + acookie.toString());
         res.sendRedirect("http://localhost:3000/login?code=" + acookie.toString());
 
         return new BaseResponse(BaseResponseStatus.SUCCESS, token); // 테스트
