@@ -49,7 +49,6 @@ public class JwtProvider {
     public String generateRefreshToken(GamerDTO gamerDTO) {
         JwtPayload jwtPayload = new JwtPayload(new Date(), REFRESH_TOKEN_EXPIRE_TIME, gamerDTO.getNickname(), gamerDTO.getGamerId());
         String refreshToken = generateToken(jwtPayload);
-        saveRefreshTokenToRedis(refreshToken, gamerDTO.getGamerId());
         return refreshToken;
     }
 
@@ -60,10 +59,10 @@ public class JwtProvider {
 
         return Jwts.builder()
                 .issuer("moonjar")
-                .subject("user identity") //발급 받는 사용자
+                .subject("user identity")
                 .claims(claims)
-                .issuedAt(jwtPayload.getIssuedAt()) // 발급한 날짜
-                .expiration(jwtPayload.getExpiresAt()) // 만료시간J.claims(claims)
+                .issuedAt(jwtPayload.getIssuedAt())
+                .expiration(jwtPayload.getExpiresAt())
                 .signWith(key)
                 .compact();
     }
@@ -84,10 +83,6 @@ public class JwtProvider {
         }
     }
 
-    public void saveRefreshTokenToRedis(String refreshToken,int gamerId) {
-//        GamerInfoVO refreshTokenDTO = new GamerInfoVO(refreshToken,gamerId,REFRESH_TOKEN_EXPIRE_TIME);
-//        gamerLoginRedisRepository.save(refreshTokenDTO);
-    }
 
     public Claims validateToken(String accessToken) throws ExpiredJwtException {
         log.debug(accessToken);

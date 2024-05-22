@@ -14,12 +14,11 @@ import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 @RequiredArgsConstructor
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer  {
-    private final StompErrorHandler stompErrorHandler;
     private final StompInboundMessageInterceptor stompInboundMessageInterceptor;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/game","/team","/guess", "/user"); // sub
+        config.enableSimpleBroker("/game","/team","/guess", "/user");
         config.setApplicationDestinationPrefixes("/app");
     }
 
@@ -27,11 +26,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer  {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         String endPoint = "/game";
         registry.addEndpoint(endPoint).setAllowedOriginPatterns("*");
-//        registry.setErrorHandler(stompErrorHandler);
     }
 
-    // 들어오는 메세지나 나가는 메세지의 구독자, 발행자의 상태를 확인하는 시큐리티 작업이 필요할 것 같다.
-    // 추후 개발을 할 수 있다면.
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(stompInboundMessageInterceptor);

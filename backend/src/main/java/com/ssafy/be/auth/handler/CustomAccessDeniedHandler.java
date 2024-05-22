@@ -16,6 +16,6 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException {
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED); // 401 상태 코드 전송
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
     }
 }
