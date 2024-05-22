@@ -20,10 +20,10 @@
 
 <table>
   <tr>
-        <td align="center" width="16%">
-            <a href="https://github.com/#"><img width="75%" src="#"/></a>
+         <td align="center" width="16%">
+            <a href="https://github.com/neongseoman"><img width="75%" src="https://avatars.githubusercontent.com/u/47319362?v=4"/></a>
             <br />
-            <a href="https://github.com/#">박근수</a>
+            <a href="https://github.com/neongseoman">박근수</a>
         </td>
         <td align="center" width="16%">
             <a href="https://github.com/#"><img width="75%" src="#"/></a>
@@ -52,9 +52,9 @@
         </td>
       <tr>
         <td align="center">    
-          <div><b>팀장</b></div>
-          <div>ㅁㄴㅇㄹ</div>
-          <div>ㅁㄴㅇㄹ</div>
+          <div><b>팀장, 백엔드</b></div>
+          <div>비동기 스케줄링</div>
+          <div>OAuth 로그인</div>
         </td>
         </td>
         <td align="center">
