@@ -74,7 +74,6 @@ public class RoomController {
         moveTeamDTO.setSenderGameId(gameId);
         moveTeamDTO.setSenderTeamId(moveTeamDTO.getOldTeamId());
         gameManager.exitRoom(moveTeamDTO, gamerPrincipalVO, true);
-//        gameManager.exitTeam(moveTeamDTO, gamerPrincipalVO);
         // 새로운 팀에 할당
         MoveTeamVO moveTeamVO = gameManager.enterSpecificTeam(moveTeamDTO, gamerPrincipalVO);
 
@@ -94,10 +93,7 @@ public class RoomController {
         ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
         // nickname 검증
 
-//        System.out.println(chatDTO);
-
         // 방 채팅, 팀 채팅
-        // code & msg 삽입
         chatDTO.setCodeAndMsg(1001, "방 채팅이 성공적으로 보내졌습니다.");
 
         return chatDTO;
@@ -113,7 +109,6 @@ public class RoomController {
     @SendTo("/game/{gameId}")
     public TeamStatusVO changeTeamStatus(SocketDTO socketDTO, @DestinationVariable int gameId, StompHeaderAccessor accessor) {
         GamerPrincipalVO gamerPrincipalVO = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor);
-//        ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
 
         // 게임이 START 상태인지 확인
         if (gameManager.getGames().get(gameId).getStatus() == GameStatus.START) {

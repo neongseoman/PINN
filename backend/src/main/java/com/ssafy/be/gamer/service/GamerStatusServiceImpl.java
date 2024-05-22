@@ -21,15 +21,10 @@ public class GamerStatusServiceImpl implements GamerStatusService {
         this.gamerStatusRepository = gamerStatusRepository;
     }
 
-    /////
-
-
     @Override
     public int createGamerStatus(GamerStatusDTO gamerStatusDTO) throws BaseException {
         try {
-            // TODO:
             // GamerStatus create하는 경우 항상 count값 0, 0일 것이므로, 굳이 DTO로 안 받아도 될 수도 있음.
-            // 이 부분 생각해 보기.
             GamerStatus gamerStatus = gamerStatusDTO.toEntity();
             return gamerStatusRepository.save(gamerStatus).getGamerId();
         } catch (BaseException e) {
@@ -45,7 +40,6 @@ public class GamerStatusServiceImpl implements GamerStatusService {
             GamerStatus existGamerStatus = gamerStatusRepository.findById(gamerStatusDTO.getGamerId()).orElse(null);
             if (existGamerStatus == null) throw new BaseException(BaseResponseStatus.OOPS);
 
-//            existGamerStatus.setGamerId(gamerStatusDTO.getGamerId()); // id 변경하는 행위. 일단 주석 처리
             existGamerStatus.setPlayCount(gamerStatusDTO.getPlayCount());
             existGamerStatus.setWinCount(gamerStatusDTO.getWinCount());
 

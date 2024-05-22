@@ -37,12 +37,4 @@ public class GamerController {
         return new BaseResponse(BaseResponseStatus.SUCCESS);
     }
 
-
-    // 이미지를 굳이 보여줘야할까?
-//    @PostMapping("/image")
-//    public BaseResponse updateUserImage(ServletRequest req){
-//        GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
-//
-//        return new BaseResponse(BaseResponseStatus.SUCCESS);
-//    }
 }

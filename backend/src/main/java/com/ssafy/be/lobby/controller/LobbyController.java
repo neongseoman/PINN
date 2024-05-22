@@ -67,8 +67,6 @@ public class LobbyController {
         // TODO : leader_id 수정
         GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
         createRoomDTO.setLeader_id(gamerPrincipalVO.getGamerId());
-        log.debug(gamerPrincipalVO);
-        log.debug("createRoomDTO : {}", createRoomDTO);
         // 생성된 초기 게임 설정을 DB에 저장
         GameComponent savedGame = lobbyService.createRoom(createRoomDTO);
         // 게임 내 팀 객체를 생성
@@ -89,12 +87,9 @@ public class LobbyController {
     public BaseResponse<?> enterRoom(@PathVariable Integer gameId, @RequestBody(required = false) HashMap<String,String> body, ServletRequest req){
         // gamer_id, 즉 방을 생성한 방리더의 '검증된' id 추출하여 game에 삽입
         GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
-        log.debug(gamerPrincipalVO.getGamerId());
 
         // 존재하는 게임인지, 비밀번호 맞는지,
-//        log.info("client Password : " + body.get("password"));
         return gameManager.isGame(gameId, body.get("password"));
-
     }
 
 
@@ -106,7 +101,6 @@ public class LobbyController {
      */
     @GetMapping("checkGameManager")
     public BaseResponse<?> checkGameManager(){
-//        System.out.println(gameManager.getGames());
         return new BaseResponse<>(BaseResponseStatus.ENTER_SUCCESS, gameManager.getGames());
     }
 
@@ -122,7 +116,7 @@ public class LobbyController {
         Collections.sort( searchVO, new Comparator<SearchVO>() {
             @Override
             public int compare(SearchVO o1, SearchVO o2) {
-                return o1.getReadyGame().getRoomCreateTime().compareTo(o2.getReadyGame().getRoomCreateTime());
+                return o2.getReadyGame().getRoomCreateTime().compareTo(o1.getReadyGame().getRoomCreateTime());
             }
         });
 
@@ -133,7 +127,6 @@ public class LobbyController {
     public BaseResponse<?> enterFastestRoom(ServletRequest req, @RequestBody QuickEnterDTO enterDTO){
         GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
         gamerPrincipalVO.setNickname(enterDTO.getSenderNickname());
-        log.debug("빠른 시작 컨트롤러 : {}", gamerPrincipalVO.getGamerId());
         EnterRoomVO enterRoomVO = gameManager.findFastestStartRoom(gamerPrincipalVO);
 
         return new BaseResponse<>(enterRoomVO);
@@ -153,7 +146,6 @@ public class LobbyController {
     public EnterRoomVO enterRoom(@Payload SocketDTO socketDTO, @DestinationVariable Integer gameId, StompHeaderAccessor accessor){
         GamerPrincipalVO gamerPrincipalVO = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor);
         gamerPrincipalVO.setNickname(socketDTO.getSenderNickname());
-        log.debug(gamerPrincipalVO.getGamerId());
         // 게임이 없는 경우 Exception
         ConcurrentHashMap<Integer, GameComponent> games = gameManager.getGames();
         if (games == null){
@@ -172,7 +164,6 @@ public class LobbyController {
                 .code(1002)
                 .msg(gameId + " 방에 " + teamGamerComponent.getTeamId() + "팀 " + teamGamerComponent.getTeamGamerNumber() + "번째로 " + gamerPrincipalVO.getNickname() + "님이 들어왔습니다.")
                 .build();
-        log.debug(enterRoomVO);
 
         return enterRoomVO;
     }
