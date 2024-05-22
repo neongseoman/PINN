@@ -64,7 +64,7 @@
             <div>ㅁㄴㅇㄹ</div>
         </td>
         <td align="center">
-            <div><b>백엔드</b></div>
+            <div><b>백엔드, 인프라</b></div>
             <div>ㅁㄴㅇㄹ</div>
             <div>ㅁㄴㅇㄹ</div>
         </td>
@@ -191,5 +191,227 @@
 ![아키텍처 다이어그램](exec/PINN Archetecture 2.drawio.png)
 
 ## ERD
+
+![image.png](readme/ERD.png)
+
+<details>
+<summary>DDL</summary>
+<div markdown="1">
+
+``` SQL
+CREATE TABLE `gamer` (
+	`gamer_id`	int	NOT NULL	DEFAULT auto_increment,
+	`nickname`	varchar(20)	NULL,
+	`email`	varchar(100)	NULL,
+	`is_deleted`	tinyint(1)	NULL,
+	`created_date`	timestamp	NULL,
+	`updated_date`	timestamp	NULL,
+	`image_url`	varchar(256)	NULL,
+	`oauth_provider`	varchar(20)	NULL,
+	`provider_id`	VARCHAR(255)	NULL	COMMENT 'OAuth 제공자가 주는 ID'
+);
+
+CREATE TABLE `game` (
+	`game_id`	int	NOT NULL	DEFAULT AUTO_INCREMENT,
+	`theme_id`	int	NOT NULL	DEFAULT AUTO_INCREMENT,
+	`leader_id`	int	NOT NULL	DEFAULT auto_increment,
+	`room_name`	varchar(20)	NULL,
+	`round_count`	tinyint	NULL	COMMENT '게임 내 실행될 라운드 개수',
+	`stage1_time`	int	NULL	COMMENT '스테이지1 길이(단위: 초) 게임 세팅값',
+	`stage2_time`	int	NULL	COMMENT '스테이지2 길이(단위: 초) 게임 세팅값',
+	`room_create_time`	timestamp	NULL,
+	`started_time`	timestamp	NULL	COMMENT '게임 시작 시간',
+	`finished_time`	timestamp	NULL	COMMENT '=게임 종료 시간',
+	`has_password`	tinyint(1)	NULL	COMMENT '0/1'
+);
+
+CREATE TABLE `team` (
+	`team_id`	int	NOT NULL	DEFAULT AI,
+	`game_id`	int	NOT NULL,
+	`color_id`	int	NOT NULL,
+	`team_number`	int	NULL	COMMENT '1~10으로 구분됨',
+	`is_ready`	tinyint	NULL,
+	`last_ready_time`	timestamp	NULL	COMMENT '마지막으로 준비완료 한 시점',
+	`final_rank`	tinyint	NULL,
+	`final_score`	int	NULL,
+	`created_date`	timestamp	NULL,
+	`updated_date`	timestamp	NULL
+);
+
+CREATE TABLE `question` (
+	`question_id`	int	NOT NULL,
+	`theme_id`	int	NOT NULL	DEFAULT AUTO_INCREMENT	COMMENT '테마 id',
+	`question_name`	VARCHAR(255)	NULL,
+	`lat`	double	NULL	COMMENT '위도',
+	`lng`	double	NULL	COMMENT '경도',
+	`use_or_not`	tinyint(1)	NULL	COMMENT '해당 문제가 출제되는지 여부',
+	`created_date`	timestamp	NULL,
+	`updated_date`	timestamp	NULL
+);
+
+CREATE TABLE `theme` (
+	`theme_id`	int	NOT NULL	DEFAULT AUTO_INCREMENT,
+	`theme_name`	varchar(20)	NOT NULL	COMMENT '테마명(global,  )',
+	`created_date`	timestamp	NULL,
+	`updated_date`	timestamp	NULL
+);
+
+CREATE TABLE `gamer_log` (
+	`gamer_log_id`	bigint	NOT NULL	DEFAULT auto_increment,
+	`gamer_id`	int	NOT NULL	DEFAULT auto_increment,
+	`game_id`	int	NOT NULL,
+	`team_id`	int	NULL,
+	`total_rank`	int	NULL,
+	`team_color`	varchar(10)	NULL,
+	`is_room_leader`	tinyint	NULL,
+	`is_team_leader`	tinyint	NULL,
+	`created_date`	timestamp	NULL,
+	`updated_date`	timestamp	NULL
+);
+
+CREATE TABLE `team_round` (
+	`team_round_id`	bigint	NOT NULL	DEFAULT AI,
+	`team_id`	int	NOT NULL	DEFAULT AI,
+	`round_number`	tinyint	NULL	COMMENT '1번 라운드, 2번 라운드 등 라운드 번호',
+	`round_score`	int	NULL	COMMENT '1라운드 제출 시최대 5000, 2라운드 제출 시 3000',
+	`submit_stage`	int	NULL	COMMENT 'Guess한 스테이지',
+	`submit_time`	timestamp	NULL,
+	`submit_lat`	double	NULL,
+	`submit_lng`	double	NULL,
+	`created_date`	timestamp	NULL,
+	`updated_date`	timestamp	NULL
+);
+
+CREATE TABLE `hint` (
+	`hint_id`	int	NOT NULL	DEFAULT AI,
+	`question_id`	int	NOT NULL,
+	`hint_type_id`	int	NOT NULL,
+	`hint_value`	varchar(100)	NULL,
+	`offer_stage`	tinyint(2)	NULL	COMMENT '1/2',
+	`use_or_not`	tinyint(1)	NULL	COMMENT '해당 힌트가 제공되는지 여부',
+	`created_date`	timestamp	NULL,
+	`updated_date`	timestamp	NULL
+);
+
+CREATE TABLE `team-gamer` (
+	`team_gamer_id`	bigint	NOT NULL,
+	`team_id`	int	NOT NULL	DEFAULT AI,
+	`color_id`	int	NOT NULL,
+	`gamer_id`	int	NOT NULL	DEFAULT auto_increment,
+	`created_date`	timestamp	NULL
+);
+
+CREATE TABLE `game-question` (
+	`game_question_id`	int	NOT NULL	DEFAULT AI,
+	`game_id`	int	NOT NULL	DEFAULT AUTO_INCREMENT,
+	`question_id`	int	NOT NULL,
+	`round_number`	tinyint	NULL,
+	`created_date`	timestamp	NULL
+);
+
+CREATE TABLE `gamer_status` (
+	`gamer_id`	int	NOT NULL	DEFAULT auto_increment,
+	`play_count`	int	NULL	DEFAULT 0,
+	`win_count`	int	NULL	DEFAULT 0
+);
+
+CREATE TABLE `hint_type` (
+	`hint_type_id`	int	NOT NULL,
+	`hint_type_name`	varchar(10)	NULL	COMMENT '연교차, 고도 ...',
+	`created_date`	timestamp	NULL,
+	`updated_time`	timestamp	NULL
+);
+
+CREATE TABLE `nickname_adjective` (
+	`nickname_adjective_id`	VARCHAR(255)	NOT NULL,
+	`adjective`	varchar(10)	NULL,
+	`created_date`	timestamp	NULL,
+	`updated_date`	timestamp	NULL
+);
+
+CREATE TABLE `nickname_noun` (
+	`nickname_noun_id`	VARCHAR(255)	NOT NULL,
+	`noun`	VARCHAR(255)	NULL,
+	`created_date`	timestamp	NULL,
+	`updated_date`	timestamp	NULL
+);
+
+CREATE TABLE `color` (
+	`color_id`	int	NOT NULL,
+	`color_code`	char(25)	NULL
+);
+
+ALTER TABLE `gamer` ADD CONSTRAINT `PK_GAMER` PRIMARY KEY (
+	`gamer_id`
+);
+
+ALTER TABLE `game` ADD CONSTRAINT `PK_GAME` PRIMARY KEY (
+	`game_id`
+);
+
+ALTER TABLE `team` ADD CONSTRAINT `PK_TEAM` PRIMARY KEY (
+	`team_id`
+);
+
+ALTER TABLE `question` ADD CONSTRAINT `PK_QUESTION` PRIMARY KEY (
+	`question_id`
+);
+
+ALTER TABLE `theme` ADD CONSTRAINT `PK_THEME` PRIMARY KEY (
+	`theme_id`
+);
+
+ALTER TABLE `gamer_log` ADD CONSTRAINT `PK_GAMER_LOG` PRIMARY KEY (
+	`gamer_log_id`
+);
+
+ALTER TABLE `team_round` ADD CONSTRAINT `PK_TEAM_ROUND` PRIMARY KEY (
+	`team_round_id`
+);
+
+ALTER TABLE `hint` ADD CONSTRAINT `PK_HINT` PRIMARY KEY (
+	`hint_id`
+);
+
+ALTER TABLE `team-gamer` ADD CONSTRAINT `PK_TEAM-GAMER` PRIMARY KEY (
+	`team_gamer_id`
+);
+
+ALTER TABLE `game-question` ADD CONSTRAINT `PK_GAME-QUESTION` PRIMARY KEY (
+	`game_question_id`
+);
+
+ALTER TABLE `gamer_status` ADD CONSTRAINT `PK_GAMER_STATUS` PRIMARY KEY (
+	`gamer_id`
+);
+
+ALTER TABLE `hint_type` ADD CONSTRAINT `PK_HINT_TYPE` PRIMARY KEY (
+	`hint_type_id`
+);
+
+ALTER TABLE `nickname_adjective` ADD CONSTRAINT `PK_NICKNAME_ADJECTIVE` PRIMARY KEY (
+	`nickname_adjective_id`
+);
+
+ALTER TABLE `nickname_noun` ADD CONSTRAINT `PK_NICKNAME_NOUN` PRIMARY KEY (
+	`nickname_noun_id`
+);
+
+ALTER TABLE `color` ADD CONSTRAINT `PK_COLOR` PRIMARY KEY (
+	`color_id`
+);
+
+ALTER TABLE `gamer_status` ADD CONSTRAINT `FK_gamer_TO_gamer_status_1` FOREIGN KEY (
+	`gamer_id`
+)
+REFERENCES `gamer` (
+	`gamer_id`
+);
+
+
+```
+
+</div>
+</details>
 
 ## 디렉토리 구조
