@@ -1,7 +1,11 @@
-#  PINN
+#  🌎 PINN 📍
 
- 스트릿 뷰를 보고 팀원들과 이 장소가 어디인지 맞추는 게임입니다. 팀원들과 같이할 때 팀원들이 어디를 추측하고 있는지 마우스 위치 공유를 통해서 알 수 있고 먼저 예측한 장소를 제출할 경우 다른 팀들의 플레이를 관찰할 수 있습니다.
-  문제는 한국, 그리스, 이집트, 랜드마크, 랜덤 중의 방장이 고른 테마로 출제됩니다.
+- 전 세계의 다양한 장소를 배경으로 즐기는, Google StreetView 기반 온라인 위치 추측 게임 “**PINN”**
+- ‘랜덤’, ‘한국’, ‘그리스’, ‘이집트’, ‘랜드마크’의 5가지 테마 중 하나를 선택해 플레이할 수 있습니다.
+- 각 게임은 여러 개의 라운드로 구성되고, 하나의 라운드는 2개의 스테이지로 구분됩니다.
+- 팀원들과 핀을 공유하며, 스트릿 뷰와 힌트를 바탕으로 정답 위치를 추측하세요.
+- 각 라운드의 점수를 종합하여 최종 순위가 결정됩니다.
+- 최종 1위 팀이 되어, 보물을 차지하세요.
 
 ## 목차
 
@@ -32,9 +36,9 @@
             <a href="https://github.com/#">김다인</a>
         </td>
         <td align="center" width="16%">
-            <a href="https://github.com/#"><img width="75%" src="#"/></a>
+            <a href="https://github.com/kseenyoung"><img width="75%" src="readme/샐리.png"/></a>
             <br />
-            <a href="https://github.com/#">김신영</a>
+            <a href="https://github.com/kseenyoung">김신영</a>
         </td>
         <td align="center" width="16%">
             <a href="https://github.com/#"><img width="75%" src="#"/></a>
@@ -60,8 +64,8 @@
         </td>
         <td align="center">
             <div><b>백엔드, 인프라</b></div>
-            <div>ㅁㄴㅇㄹ</div>
-            <div>ㅁㄴㅇㄹ</div>
+            <div>Jenkins를 활용한 CI/CD</div>
+            <div>Room, Lobby 서버 담당</div>
         </td>
         <td align="center">
             <div><b>백엔드, 인프라</b></div>
