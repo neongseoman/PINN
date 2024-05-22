@@ -2,8 +2,6 @@ package com.ssafy.be.game.model.dto.entity;
 
 import com.ssafy.be.game.model.domain.Hint;
 import lombok.*;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 import java.time.LocalDateTime;
 
@@ -42,8 +40,6 @@ public class HintDTO {
                 .hintValue(this.hintValue)
                 .offerStage(this.offerStage)
                 .used(this.used)
-//                .createdDate(this.createdDate)
-//                .updatedDate(this.updatedDate)
                 .build();
     }
 }

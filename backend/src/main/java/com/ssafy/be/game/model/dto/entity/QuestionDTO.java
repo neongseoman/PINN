@@ -1,9 +1,7 @@
 package com.ssafy.be.game.model.dto.entity;
+
 import com.ssafy.be.game.model.domain.Question;
 import lombok.*;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
-
 import java.time.LocalDateTime;
 
 @Getter
@@ -41,8 +39,6 @@ public class QuestionDTO {
                 .lat(this.lat)
                 .lng(this.lng)
                 .used(this.used)
-//                .createdDate(this.createdDate)
-//                .updatedDate(this.updatedDate)
                 .build();
     }
 }

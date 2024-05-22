@@ -14,7 +14,6 @@ public class TeamGamerDTO {
     private Long teamGamerId;
     private int teamId;
     private int colorId;
-//    private String colorCode;
     private int gamerId;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
@@ -24,7 +23,6 @@ public class TeamGamerDTO {
         this.teamGamerId = teamGamer.getTeamGamerId();
         this.teamId = teamGamer.getTeamId();
         this.colorId = teamGamer.getColorId();
-//        this.colorCode = teamGamer.getColorCode();
         this.gamerId = teamGamer.getGamerId();
         this.createdDate = teamGamer.getCreatedDate();
         this.updatedDate = teamGamer.getUpdatedDate();
@@ -35,10 +33,7 @@ public class TeamGamerDTO {
                 .teamGamerId(this.teamGamerId)
                 .teamId(this.teamId)
                 .colorId(this.colorId)
-//                .colorCode(this.colorCode)
                 .gamerId(this.gamerId)
-//                .createdDate(this.createdDate)
-//                .updatedDate(this.updatedDate)
                 .build();
     }
 }

@@ -9,7 +9,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class CursorDTO extends SocketDTO {
-    private double lat; // 입력을 몰라서 일단 lat, lng로 해놓음; 필요 시 수정.
+    private double lat;
     private double lng;
 
     public CursorDTO(String senderNickname, int senderGameId, int senderTeamId, double lat, double lng) {

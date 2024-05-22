@@ -2,8 +2,6 @@ package com.ssafy.be.game.model.dto.entity;
 
 import com.ssafy.be.game.model.domain.Theme;
 import lombok.*;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 import java.time.LocalDateTime;
 
@@ -30,8 +28,6 @@ public class ThemeDTO {
         return Theme.builder()
                 .themeId(this.themeId)
                 .themeName(this.themeName)
-//                .createdDate(this.createdDate)
-//                .updatedDate(this.updatedDate)
                 .build();
     }
 }

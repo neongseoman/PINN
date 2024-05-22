@@ -41,9 +41,6 @@ public class GameController {
 
     @Value("${game.remove}")
     private int gameExistLimitTime;
-    /////
-    // TODO: 한 게임에 대해 중복 요청 검증 처리 필요
-
 
     /*
     Socket
@@ -62,9 +59,6 @@ public class GameController {
         GameStartVO gameStartVO = gameService.startGame(gamerId, gameStartRequestDTO);
         GameInitVO gameInitVO = gameService.initGame(gamerId, gameStartRequestDTO);
         int currentRound = 0;
-
-
-        // round가 늘어난다면 이걸 늘리면 될 것 같음.
 
         scheduleProvider.startGame(gameInitVO.getGameId(), currentRound)
                 .thenCompose(v -> {
@@ -118,10 +112,8 @@ public class GameController {
     public void teamChat(ChatDTO chatDTO, StompHeaderAccessor accessor) {
         int gamerId = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor).getGamerId();
 
-        // TODO: service layer에서 gamerId 기반 권한 체크
+        // service layer에서 gamerId 기반 권한 체크
         chatDTO.setCodeAndMsg(1119, "팀 채팅이 성공적으로 보내졌습니다.");
-
-        log.info(chatDTO);
 
         // `/team/{gameId}/{teamId}`를 구독 중인 모든 사용자에게 publish
         sendingOperations.convertAndSend("/team/" + chatDTO.getSenderGameId() + "/" + chatDTO.getSenderTeamId(), chatDTO);
@@ -131,34 +123,12 @@ public class GameController {
     public void teamCursor(CursorDTO cursorDTO, StompHeaderAccessor accessor) {
         int gamerId = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor).getGamerId();
 
-        // TODO: service layer에서 gamerId 기반 권한 체크
+        // service layer에서 gamerId 기반 권한 체크
         cursorDTO.setCodeAndMsg(1120, "팀 내에 커서 위치가 성공적으로 전송됐습니다.");
-
-//        log.info(cursorDTO);
 
         // `/team/{gameId}/{teamId}`를 구독 중인 모든 사용자에게 publish
         sendingOperations.convertAndSend("/team/" + cursorDTO.getSenderGameId() + "/" + cursorDTO.getSenderTeamId(), cursorDTO);
     }
-
-//    @MessageMapping("/game/round/finish")
-//    public void finishRound(RoundFinishRequestDTO roundFinishRequestDTO, StompHeaderAccessor accessor) {
-//        int gamerId = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor).getGamerId();
-//
-//        RoundFinishVO roundFinishVO = gameService.finishRound(roundFinishRequestDTO);
-//
-//        // '/game/{gameId}'를 구독 중인 모든 사용자에게 publish
-//        sendingOperations.convertAndSend("/game/" + roundFinishVO.getSenderGameId(), roundFinishVO);
-//    }
-
-//    @MessageMapping("/game/finish")
-//    public void finishGame(SocketDTO gameFinishRequestDTO, StompHeaderAccessor accessor) {
-//        int gamerId = jwtProvider.getGamerPrincipalVOByMessageHeader(accessor).getGamerId();
-//
-//        GameFinishVO gameFinishVO = gameService.finishGame(gameFinishRequestDTO);
-//
-//        // '/game/{gameId}'를 구독 중인 모든 사용자에게 publish
-//        sendingOperations.convertAndSend("/game/" + gameFinishRequestDTO.getSenderGameId(), gameFinishVO);
-//    }
 
     ////////////////////////////////////////////
 
@@ -181,8 +151,6 @@ public class GameController {
 
     @PostMapping("/game/round/init") // 라운드 시작(문제의 lat, lng + stage1 hint)
     public BaseResponse<?> initStage1(@RequestBody RoundRequestDTO roundRequestDTO, ServletRequest req) {
-//        log.info(roundRequestDTO);
-
         // 요청 보낸 사용자의 gamerId
         GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
         int gamerId = gamerPrincipalVO.getGamerId();
@@ -194,8 +162,6 @@ public class GameController {
 
     @PostMapping("/game/round/stage2/init") // stage2 hint
     public BaseResponse<?> initStage2(@RequestBody RoundRequestDTO stage2InitRequestDTO, ServletRequest req) {
-//        log.info(stage2InitRequestDTO);
-
         // 요청 보낸 사용자의 gamerId
         GamerPrincipalVO gamerPrincipalVO = (GamerPrincipalVO) req.getAttribute("gamerPrincipal");
         int gamerId = gamerPrincipalVO.getGamerId();

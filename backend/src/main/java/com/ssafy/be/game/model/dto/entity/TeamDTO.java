@@ -46,8 +46,6 @@ public class TeamDTO {
                 .lastReadyTime(this.lastReadyTime)
                 .finalRank(this.finalRank)
                 .finalScore(this.finalScore)
-//                .createdDate(this.createdDate)
-//                .updatedDate(this.updatedDate)
                 .build();
     }
 }

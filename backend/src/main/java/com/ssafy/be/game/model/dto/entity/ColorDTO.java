@@ -1,7 +1,5 @@
 package com.ssafy.be.game.model.dto.entity;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.ssafy.be.game.model.domain.Color;
 import lombok.*;
 
@@ -30,8 +28,6 @@ public class ColorDTO {
         return Color.builder()
                 .colorId(this.colorId)
                 .colorCode(this.colorCode)
-//                .createdDate(this.createdDate)
-//                .updatedDate(this.updatedDate)
                 .build();
     }
 }

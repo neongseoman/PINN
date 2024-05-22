@@ -1,12 +1,8 @@
 package com.ssafy.be.game.model.vo;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.ssafy.be.common.component.HintComponent;
-import com.ssafy.be.common.model.dto.SocketDTO;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter

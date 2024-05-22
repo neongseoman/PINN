@@ -46,8 +46,6 @@ public class TeamRoundDTO {
                 .submitTime(this.submitTime)
                 .submitLat(this.submitLat)
                 .submitLng(this.submitLng)
-//                .createdDate(this.createdDate)
-//                .updatedDate(this.updatedDate)
                 .build();
     }
 }

@@ -37,7 +37,6 @@ public class GameQuestionServiceImpl implements GameQuestionService {
         }
     }
 
-    // updatedDate도 없는 테이블이므로, 이론상 호출될 일 없는 메서드이긴 함.
     @Override
     public int updateGameQuestion(GameQuestionDTO gameQuestionDTO) throws BaseException {
         try {

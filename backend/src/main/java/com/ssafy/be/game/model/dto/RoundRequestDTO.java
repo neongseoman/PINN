@@ -7,15 +7,7 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-//@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class RoundRequestDTO /*extends SocketDTO*/ {
-
+public class RoundRequestDTO {
     private int gameId;
     private int round;
-
-//    public RoundRequestDTO(String senderNickname, int senderGameId, int senderTeamId, int gameId, int round) {
-//        super(senderNickname, senderGameId, senderTeamId);
-//        this.gameId = gameId;
-//        this.round = round;
-//    }
 }

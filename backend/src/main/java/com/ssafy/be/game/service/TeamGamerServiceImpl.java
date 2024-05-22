@@ -46,7 +46,6 @@ public class TeamGamerServiceImpl implements TeamGamerService {
             existTeamGamer.setTeamId(teamGamerDTO.getTeamId());
             existTeamGamer.setGamerId(teamGamerDTO.getGamerId());
             existTeamGamer.setColorId(teamGamerDTO.getColorId());
-//            existTeamGamer.setColorCode(teamGamerDTO.getColorCode());
 
             return teamGamerRepository.save(existTeamGamer).getTeamGamerId();
         } catch (BaseException e) {
@@ -150,20 +149,4 @@ public class TeamGamerServiceImpl implements TeamGamerService {
             throw new BaseException(BaseResponseStatus.OOPS);
         }
     }
-
-//    @Override
-//    public List<TeamGamerDTO> getAllTeamGamerByColorCode(String colorCode) throws BaseException {
-//        try {
-//            List<TeamGamer> teamGamerList = teamGamerRepository.findAllByColorCode(colorCode);
-//            List<TeamGamerDTO> teamGamerDTOList = new ArrayList<>();
-//            for (TeamGamer teamGamer : teamGamerList) {
-//                teamGamerDTOList.add(new TeamGamerDTO(teamGamer));
-//            }
-//            return teamGamerDTOList;
-//        } catch (BaseException e) {
-//            throw new BaseException(e.getStatus());
-//        } catch (Exception e) {
-//            throw new BaseException(BaseResponseStatus.OOPS);
-//        }
-//    }
 }

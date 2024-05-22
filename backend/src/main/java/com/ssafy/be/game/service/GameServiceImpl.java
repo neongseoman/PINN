@@ -16,13 +16,10 @@ import com.ssafy.be.gamer.model.dto.GamerLogDTO;
 import com.ssafy.be.gamer.model.dto.GamerStatusDTO;
 import com.ssafy.be.gamer.repository.GamerLogRepository;
 import com.ssafy.be.gamer.repository.GamerStatusRepository;
-import com.ssafy.be.gamer.service.GamerLogServiceImpl;
-import com.ssafy.be.gamer.service.GamerStatusService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -45,8 +42,6 @@ public class GameServiceImpl implements GameService {
     private final HintRepository hintRepository;
     private final HintTypeRepository hintTypeRepository;
 
-//    private final GamerStatusService gamerStatusService;
-//    private final GamerLogService gamerLogService;
     private final GamerStatusRepository gamerStatusRepository;
     private final GamerLogRepository gamerLogRepository;
 
@@ -63,9 +58,9 @@ public class GameServiceImpl implements GameService {
         this.hintTypeRepository = hintTypeRepository;
         this.gamerStatusRepository = gamerStatusRepository;
         this.gamerLogRepository = gamerLogRepository;
-//        this.gamerStatusService = gamerStatusService;
-//        this.gamerLogService = gamerLogService;
     }
+
+    //////////
 
     private final static int NOT_GUESSED_STAGE = 0;
     private final static int DEVELOPER_GAMER_ID = 0;
@@ -75,8 +70,7 @@ public class GameServiceImpl implements GameService {
     private final static int[] THEME_SCORE_PENALTY = {1, 10, 10, 10, 1};
     private final static int RANDOM_THEME_ID = 1;
 
-    /////
-    // TODO: BaseException에 임시로 null 넣어둔 거 exception 종류에 맞게 수정
+    //////////
 
     @Override
     public GameStartVO startGame(int gamerId, GameStartRequestDTO gameStartRequestDTO) throws BaseException {
@@ -86,11 +80,6 @@ public class GameServiceImpl implements GameService {
             if (existGame == null) {
                 throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME, gamerId);
             }
-
-            // 요청 보낸 gamer_id가 GM/game의 leader_id와 일치하는지 확인
-//            if (gamerId != existGame.getLeaderId()) {
-//                throw new BaseException(BaseResponseStatus.OOPS);
-//            }
 
             GameStartVO gameStartVO = new GameStartVO(gameStartRequestDTO.getSenderDateTime(), gameStartRequestDTO.getSenderNickname(), gameStartRequestDTO.getSenderGameId(), gameStartRequestDTO.getSenderTeamId(), gameStartRequestDTO.getCode(), gameStartRequestDTO.getMsg());
             gameStartVO.setCodeAndMsg(1111, "게임이 정상 시작되었습니다.");
@@ -117,15 +106,10 @@ public class GameServiceImpl implements GameService {
             }
 
             gameStartVO.setGameId(existGame.getGameId());
-
-//            log.info(gameStartRequestDTO);
             return gameStartVO;
         } catch (BaseException e) {
-//            log.error("Socket Error");
-            e.printStackTrace();
-            throw new BaseException(e.getStatus(), gamerId); // Socket에도 던지고 싶다면 GamerID를 주세요.
+            throw new BaseException(e.getStatus(), gamerId);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new BaseException(BaseResponseStatus.OOPS, gamerId);
         }
     }
@@ -145,21 +129,15 @@ public class GameServiceImpl implements GameService {
                 throw new BaseException(BaseResponseStatus.NOT_STARTED_GAME, gamerId);
             }
 
-            // 요청 보낸 gamer_id가 GM/game의 leader_id와 일치하는지 확인
-//            if (gamerId != existGame.getLeaderId()) {
-//                throw new BaseException(BaseResponseStatus.OOPS);
-//            }
-
             /*
              team 마다 roundCount개의 teamRounds 생성
-             &
-             team, teamGamer 정보들 DB에 insert
+             & team, teamGamer 정보들 DB에 insert
              */
+
             // teamGamer를 1명 이상 보유한 경우 유효한 team으로 간주한다.
             for (int i = 1; i <= existGame.getTeamCount(); ++i) {
                 TeamComponent team = existGame.getTeams().get(i);
                 ConcurrentHashMap<Integer, TeamGamerComponent> teamGamers = team.getTeamGamers();
-//                log.info(team);
                 if (teamGamers != null && !teamGamers.isEmpty()) { // 유효한 팀인 경우
                     // 1. TeamRounds 생성
                     ConcurrentHashMap<Integer, TeamRoundComponent> teamRounds = new ConcurrentHashMap<>();
@@ -174,7 +152,6 @@ public class GameServiceImpl implements GameService {
                         teamRounds.put(j, teamRound);
                     }
                     team.setTeamRounds(teamRounds);
-//                    log.info(teamRounds);
 
                     // 2. DB의 Team 테이블에 insert
                     TeamDTO teamDTO = new TeamDTO();
@@ -239,7 +216,7 @@ public class GameServiceImpl implements GameService {
                     // hintTypeId 바탕으로 hintTypeName 받아오기
                     HintType existHintType = hintTypeRepository.findById(hintData.getHintTypeId()).orElse(null);
                     if (existHintType == null) {
-                        throw new BaseException(BaseResponseStatus.OOPS, gamerId); // TODO: exception 타입 정의
+                        throw new BaseException(BaseResponseStatus.OOPS, gamerId);
                     }
                     HintTypeDTO hintTypeDTO = new HintTypeDTO(existHintType);
 
@@ -280,9 +257,7 @@ public class GameServiceImpl implements GameService {
              */
             existGame.setRoundResults(new LinkedList<>());
 
-            // TODO: 필요 없는 작업. 리팩터링 필요.
             GameInitVO gameInitVO = new GameInitVO();
-            // game의 정보 중 필요한 것들을 gIRD에 담아서 return
             gameInitVO.setGameId(existGame.getGameId());
             gameInitVO.setRoomName(existGame.getRoomName());
             gameInitVO.setLeaderId(existGame.getLeaderId());
@@ -294,19 +269,14 @@ public class GameServiceImpl implements GameService {
             return gameInitVO;
 
         } catch (BaseException e) {
-//            log.error("Socket Error");
-            e.printStackTrace();
-            throw new BaseException(e.getStatus(), gamerId); // Socket에도 던지고 싶다면 GamerID를 주세요.
+            throw new BaseException(e.getStatus(), gamerId);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new BaseException(BaseResponseStatus.OOPS, gamerId);
         }
     }
 
     @Override
     public PinMoveVO movePin(int gamerId, PinMoveRequestDTO pinMoveRequestDTO) throws BaseException { // code: 1115
-        log.info(pinMoveRequestDTO);
-
         try {
             int gameId = pinMoveRequestDTO.getSenderGameId();
             GameComponent existGame = gameManager.getGames().get(gameId);
@@ -314,12 +284,12 @@ public class GameServiceImpl implements GameService {
                 throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME, gamerId);
             }
 
-            // TODO: 요청자가 해당 팀의 팀원인지 확인
+            // 요청자가 해당 팀의 팀원인지 확인
 
             // gameManager/team/teamRound에 정보 업데이트
             ConcurrentHashMap<Integer, TeamRoundComponent> teamRounds = existGame.getTeams().get(pinMoveRequestDTO.getSenderTeamId()).getTeamRounds();
             if (teamRounds == null) {
-                throw new BaseException(BaseResponseStatus.OOPS, gamerId); // TODO: exception 타입 정의
+                throw new BaseException(BaseResponseStatus.OOPS, gamerId);
             }
             TeamRoundComponent submitTeamRound = teamRounds.get(pinMoveRequestDTO.getRoundNumber());
 
@@ -334,7 +304,6 @@ public class GameServiceImpl implements GameService {
             submitTeamRound.setSubmitLng(pinMoveRequestDTO.getSubmitLng());
 
             // 입력된 lat, lng 기반 score 계산 + submitTeamRound에 저장
-
             int round = pinMoveRequestDTO.getRoundNumber();
             QuestionComponent answer = existGame.getQuestions().get(round - 1);
             int submitScore = calculateScore(existGame.getThemeId(), answer.getLat(), answer.getLng(), pinMoveRequestDTO.getSubmitLat(), pinMoveRequestDTO.getSubmitLng()); // 점수 계산
@@ -352,22 +321,16 @@ public class GameServiceImpl implements GameService {
             pinMoveVO.setSubmitStage(pinMoveRequestDTO.getSubmitStage());
             pinMoveVO.setSubmitLat(pinMoveRequestDTO.getSubmitLat());
             pinMoveVO.setSubmitLng(pinMoveRequestDTO.getSubmitLng());
-
-            log.info(pinMoveVO);
             return pinMoveVO;
         } catch (BaseException e) {
-            e.printStackTrace();
-            throw new BaseException(e.getStatus(), gamerId); // Socket에도 던지고 싶다면 GamerID를 주세요.
+            throw new BaseException(e.getStatus(), gamerId);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new BaseException(BaseResponseStatus.OOPS, gamerId);
         }
     }
 
     @Override
     public PinGuessVO guessPin(int gamerId, PinGuessRequestDTO pinGuessRequestDTO) throws BaseException { // code: 1116
-        log.info(pinGuessRequestDTO);
-
         try {
             int gameId = pinGuessRequestDTO.getSenderGameId();
             GameComponent existGame = gameManager.getGames().get(gameId);
@@ -375,12 +338,12 @@ public class GameServiceImpl implements GameService {
                 throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME, gamerId);
             }
 
-            // TODO: gamerId가 senderTeamId 팀의 구성원인지 확인
+            // gamerId가 senderTeamId 팀의 구성원인지 확인
 
             // senderTeamId 팀이 roundNumber 라운드에 한 번이라도 핀 찍은 적 있는지 확인
             ConcurrentHashMap<Integer, TeamRoundComponent> teamRounds = existGame.getTeams().get(pinGuessRequestDTO.getSenderTeamId()).getTeamRounds();
             if (teamRounds == null) {
-                throw new BaseException(BaseResponseStatus.OOPS, gamerId); // TODO: exception 타입 정의
+                throw new BaseException(BaseResponseStatus.OOPS, gamerId);
             }
             TeamRoundComponent guessTeamRound = teamRounds.get(pinGuessRequestDTO.getRoundNumber());
             // 이미 guess한 팀 아닌지 확인
@@ -401,14 +364,10 @@ public class GameServiceImpl implements GameService {
             // 정상적으로 guess 완료 > pinGuessVO 생성하여 정보 담아 return
             PinGuessVO pinGuessVO = new PinGuessVO(pinGuessRequestDTO.getSenderDateTime(), pinGuessRequestDTO.getSenderNickname(), pinGuessRequestDTO.getSenderGameId(), pinGuessRequestDTO.getSenderTeamId(), pinGuessRequestDTO.getCode(), pinGuessRequestDTO.getMsg());
             pinGuessVO.setCodeAndMsg(1116, "소속 팀의 현재 라운드 Guess가 완료되었습니다.");
-
-            log.info(pinGuessVO);
             return pinGuessVO;
         } catch (BaseException e) {
-            e.printStackTrace();
-            throw new BaseException(e.getStatus(), gamerId); // Socket에도 던지고 싶다면 GamerID를 주세요.
+            throw new BaseException(e.getStatus(), gamerId);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new BaseException(BaseResponseStatus.OOPS, gamerId);
         }
 
@@ -483,16 +442,9 @@ public class GameServiceImpl implements GameService {
 
             // GameManager의 gameComponent의 roundResults에 teamRoundResults 담아서 gm이 라운드 결과 들고 있게 하기!
             existGame.getRoundResults().add(teamRoundResults);
-
-            // RF VO에 TRRs 담아서 리턴
-//            RoundFinishVO roundFinishVO = new RoundFinishVO(roundFinishRequestDTO.getSenderNickname(), roundFinishRequestDTO.getSenderGameId(), roundFinishRequestDTO.getSenderTeamId(), teamRoundResults);
-//            roundFinishVO.setCodeAndMsg(1117, roundFinishRequestDTO.getRoundNumber() + "라운드 결과가 정상 계산되었습니다.");
-//            log.info(roundFinishVO);
         } catch (BaseException e) {
-            e.printStackTrace();
-            throw new BaseException(e.getStatus(), DEVELOPER_GAMER_ID); // Socket에도 던지고 싶다면 GamerID를 주세요.
+            throw new BaseException(e.getStatus(), DEVELOPER_GAMER_ID);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new BaseException(BaseResponseStatus.OOPS, DEVELOPER_GAMER_ID);
         }
 
@@ -501,10 +453,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public void finishGame(SocketDTO gameFinishRequestDTO) throws BaseException { // code: 1118
-        log.info(gameFinishRequestDTO);
-
         try {
-
             int gameId = gameFinishRequestDTO.getSenderGameId();
             GameComponent existGame = gameManager.getGames().get(gameId);
             if (existGame == null) { // 존재하는 게임인지 확인
@@ -521,7 +470,6 @@ public class GameServiceImpl implements GameService {
             Game gameData = gameRepository.findById(gameId).orElse(null);
             if (gameData != null) {
                 gameData.setFinishedTime(gameFinishRequestDTO.getSenderDateTime());
-//                gameData.setFinishedTime(LocalDateTime.now());
                 gameRepository.save(gameData);
             }
 
@@ -591,16 +539,13 @@ public class GameServiceImpl implements GameService {
                     } else {
                         gamerLogDTO.setIsRoomLeader(0);
                     }
-                    gamerLogDTO.setIsTeamLeader(0); // TODO: 일단 무조건 0으로 넣어~
+                    gamerLogDTO.setIsTeamLeader(0);
                     gamerLogRepository.save(gamerLogDTO.toEntity());
                 }
             }
-
         } catch (BaseException e) {
-            e.printStackTrace();
-            throw new BaseException(e.getStatus(), DEVELOPER_GAMER_ID); // Socket에도 던지고 싶다면 GamerID를 주세요.
+            throw new BaseException(e.getStatus(), DEVELOPER_GAMER_ID);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new BaseException(BaseResponseStatus.OOPS, DEVELOPER_GAMER_ID);
         }
     }
@@ -610,32 +555,27 @@ public class GameServiceImpl implements GameService {
     @Override
     public GameInitVO getGameInfo(int gamerId, int gameId) throws BaseException {
         try {
-
             GameComponent existGame = gameManager.getGames().get(gameId);
             if (existGame == null) { // 존재하는 게임인지 확인
                 throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
             }
 
-            // TODO: gamerId가 gameId에 해당하는 게임에 속한 사용자인지 확인
+            // gamerId가 gameId에 해당하는 게임에 속한 사용자인지 확인
 
             // game의 정보 중 필요한 것들을 GI VO에 담아서 return
             GameInitVO gameInitVO = new GameInitVO();
             gameInitVO.setGameId(existGame.getGameId());
             gameInitVO.setRoomName(existGame.getRoomName());
-            gameInitVO.setLeaderId(existGame.getLeaderId()); // 방장 gamerId가 필요한가?
+            gameInitVO.setLeaderId(existGame.getLeaderId());
             gameInitVO.setRoundCount(existGame.getRoundCount());
             gameInitVO.setThemeId(existGame.getThemeId());
             gameInitVO.setStage1Time(existGame.getStage1Time());
             gameInitVO.setStage2Time(existGame.getStage2Time());
             gameInitVO.setStartedTime(existGame.getStartedTime());
-
-            log.info(gameInitVO);
             return gameInitVO;
         } catch (BaseException e) {
-            e.printStackTrace();
             throw new BaseException(e.getStatus());
         } catch (Exception e) {
-            e.printStackTrace();
             throw new BaseException(BaseResponseStatus.OOPS);
         }
     }
@@ -645,18 +585,13 @@ public class GameServiceImpl implements GameService {
 
         try {
             // 해당 라운드의 문제 + 스테이지1에 해당하는 힌트 return
-
             int gameId = roundRequestDTO.getGameId();
             GameComponent existGame = gameManager.getGames().get(gameId);
             if (existGame == null) {
                 throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
             }
 
-            // TODO: 요청 보낸 gamerId 사용자가 game에 속해 있는지 확인
-            // 요청 보낸 gamer_id가 GM/game의 leader_id와 일치하는지 확인
-//            if (gamerId != existGame.getLeaderId()) {
-//                throw new BaseException(BaseResponseStatus.OOPS);
-//            }
+            // 요청 보낸 gamerId 사용자가 game에 속해 있는지 확인
 
             int round = roundRequestDTO.getRound();
             QuestionComponent question = existGame.getQuestions().get(round - 1);
@@ -669,11 +604,7 @@ public class GameServiceImpl implements GameService {
                 }
             }
 
-//            RoundInitVO roundInitVO = new RoundInitVO(roundRequestDTO.getSenderDateTime(), roundRequestDTO.getSenderNickname(), roundRequestDTO.getSenderGameId(), roundRequestDTO.getSenderTeamId(), -1, null);
-//            roundInitVO.setCodeAndMsg(1113, "라운드 초기 정보를 받아오는 데에 성공했습니다.");
-
             RoundInitVO roundInitVO = new RoundInitVO();
-            // 문제 정보 + 문제의 스테이지1 힌트 정보 담아 보내기 ..
             roundInitVO.setGameId(existGame.getGameId());
             roundInitVO.setRound(round);
             roundInitVO.setQuestionId(question.getQuestionId());
@@ -681,21 +612,16 @@ public class GameServiceImpl implements GameService {
             roundInitVO.setLat(question.getLat());
             roundInitVO.setLng(question.getLng());
             roundInitVO.setHints(stage1Hints);
-
-            log.info(roundInitVO);
             return roundInitVO;
         } catch (BaseException e) {
-            e.printStackTrace();
-            throw new BaseException(e.getStatus()); // Socket에도 던지고 싶다면 GamerID를 주세요.
+            throw new BaseException(e.getStatus());
         } catch (Exception e) {
-            e.printStackTrace();
             throw new BaseException(BaseResponseStatus.OOPS);
         }
     }
 
     @Override
     public Stage2InitVO findStage2Info(int gamerId, RoundRequestDTO stage2InitRequestDTO) throws BaseException {
-
         try {
             int gameId = stage2InitRequestDTO.getGameId();
             GameComponent existGame = gameManager.getGames().get(gameId);
@@ -703,40 +629,21 @@ public class GameServiceImpl implements GameService {
                 throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
             }
 
-            // TODO: 요청 보낸 사용자가 game에 속해 있는지 확인
+            // 요청 보낸 사용자가 game에 속해 있는지 확인
 
-            // 요청 보낸 gamer_id가 GM/game의 leader_id와 일치하는지 확인
-//            if (gamerId != existGame.getLeaderId()) {
-//                throw new BaseException(BaseResponseStatus.OOPS); // TODO: EXCEPTION TYPE 정의
-//            }
-
-//            Stage2InitVO stage2InitVO = new Stage2InitVO(stage2InitRequestDTO.getSenderDateTime(), stage2InitRequestDTO.getSenderNickname(), stage2InitRequestDTO.getSenderGameId(), stage2InitRequestDTO.getSenderTeamId(), stage2InitRequestDTO.getCode(), stage2InitRequestDTO.getMsg());
-//            stage2InitVO.setCodeAndMsg(1114, "stage2 추가 힌트를 받아오는 데에 성공했습니다.");
             Stage2InitVO stage2InitVO = new Stage2InitVO();
 
             int round = stage2InitRequestDTO.getRound();
             QuestionComponent question = existGame.getQuestions().get(round - 1);
 
-            // stage2 힌트만 골라내기
-//            List<HintComponent> stage2Hints = new ArrayList<>();
-//            for (HintComponent hint : question.getHints()) {
-//                if (hint.getOfferStage() == 2) {
-//                    stage2Hints.add(hint);
-//                }
-//            }
-
             stage2InitVO.setGameId(gameId);
             stage2InitVO.setRound(round);
             stage2InitVO.setStage(2);
             stage2InitVO.setHints(question.getHints());
-
-//            log.info(stage2InitVO); // 로그 너무 많아~!
             return stage2InitVO;
         } catch (BaseException e) {
-            e.printStackTrace();
-            throw new BaseException(e.getStatus()); // Socket에도 던지고 싶다면 GamerID를 주세요.
+            throw new BaseException(e.getStatus());
         } catch (Exception e) {
-            e.printStackTrace();
             throw new BaseException(BaseResponseStatus.OOPS);
         }
     }
@@ -750,7 +657,7 @@ public class GameServiceImpl implements GameService {
                 throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
             }
 
-            // TODO: gamerId가 속한 team이 해당 라운드에 guessed 상태인지 확인
+            // gamerId가 속한 team이 해당 라운드에 guessed 상태인지 확인
 
             RoundGuessedVO roundGuessedVO = new RoundGuessedVO();
             List<TeamPinDTO> teamPins = new ArrayList<>();
@@ -768,15 +675,10 @@ public class GameServiceImpl implements GameService {
 
             roundGuessedVO.setGameId(roundGuessedRequestDTO.getGameId());
             roundGuessedVO.setTeamPins(teamPins);
-
-            log.info(roundGuessedVO);
             return roundGuessedVO;
-
         } catch (BaseException e) {
-            e.printStackTrace();
             throw new BaseException(e.getStatus());
         } catch (Exception e) {
-            e.printStackTrace();
             throw new BaseException(BaseResponseStatus.OOPS);
         }
     }
@@ -790,23 +692,18 @@ public class GameServiceImpl implements GameService {
                 throw new BaseException(BaseResponseStatus.NOT_EXIST_GAME);
             }
 
-            // TODO: gamerId가 game 구성원인지 확인
+            // gamerId가 game 구성원인지 확인
 
             List<TeamRoundComponent> roundResult = existGame.getRoundResults().get(roundResultRequestDTO.getRound() - 1);
-
             RoundResultVO roundResultVO = new RoundResultVO();
             roundResultVO.setGameId(roundResultRequestDTO.getGameId());
             roundResultVO.setRoundNumber(roundResultRequestDTO.getRound());
             roundResultVO.setQuestion(existGame.getQuestions().get(roundResultRequestDTO.getRound() - 1));
             roundResultVO.setRoundResult(roundResult);
-
-            log.info(roundResultVO);
             return roundResultVO;
         } catch (BaseException e) {
-            e.printStackTrace();
-            throw new BaseException(e.getStatus()); // Socket에도 던지고 싶다면 GamerID를 주세요.
+            throw new BaseException(e.getStatus());
         } catch (Exception e) {
-            e.printStackTrace();
             throw new BaseException(BaseResponseStatus.OOPS);
         }
     }
@@ -825,15 +722,10 @@ public class GameServiceImpl implements GameService {
             gameResultVO.setTeamId(gameResultRequestDTO.getTeamId());
             gameResultVO.setRoundResults(existGame.getRoundResults());
             gameResultVO.setQuestions(existGame.getQuestions());
-//            gameResultVO.setGameResult();
-
-            log.info(gameResultVO);
             return gameResultVO;
         } catch (BaseException e) {
-            e.printStackTrace();
-            throw new BaseException(e.getStatus()); // Socket에도 던지고 싶다면 GamerID를 주세요.
+            throw new BaseException(e.getStatus());
         } catch (Exception e) {
-            e.printStackTrace();
             throw new BaseException(BaseResponseStatus.OOPS);
         }
     }
@@ -860,7 +752,6 @@ public class GameServiceImpl implements GameService {
                 randomIndices.add(randomIndex);
             }
         }
-
         return randomIndices;
     }
 
