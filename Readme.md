@@ -51,7 +51,7 @@
             <a href="https://github.com/sje08250">손지은</a>
         </td>
         <td align="center" width="16%">
-            <a href="https://github.com/JDomynic"><img width="75%" src="readme\고양이.jpg"/></a>
+            <a href="https://github.com/JDomynic"><img width="75%" src="readme/고양이.jpg"/></a>
             <br />
             <a href="https://github.com/JDomynic">진창현</a>
         </td>
