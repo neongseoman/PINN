@@ -73,9 +73,9 @@
             <div>Room, Lobby 서버 담당</div>
         </td>
         <td align="center">
-            <div><b>프론트엔드</b></div>
-          <div>Ingame page</div>
-          <div>Waiting page</div>
+            <div><b>프론트엔드 팀장</b></div>
+          <div>Google Map API</div>
+          <div>STOMP.js 기반 소켓 연결</div>
         </td>
         <td align="center">
             <div><b>프론트엔드</b></div>
@@ -100,6 +100,9 @@
 <img src ="https://img.shields.io/badge/typescript-3178C6.svg?&style=for-the-badge&logo=typescript&logoColor=white"/>
 <img src ="https://img.shields.io/badge/yarn-2C8EBB.svg?&style=for-the-badge&logo=yarn&logoColor=white"/>
 <img src="https://img.shields.io/badge/node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white">
+<img src="https://img.shields.io/badge/CSS Modules-000000?style=for-the-badge&logo=cssmodules&logoColor=white">
+<img src="https://img.shields.io/badge/zustand-000000?style=for-the-badge&logoColor=white">
+<img src="https://img.shields.io/badge/google maps-4285F4?style=for-the-badge&logo=googlemaps&logoColor=white">
 
 </div>
 
