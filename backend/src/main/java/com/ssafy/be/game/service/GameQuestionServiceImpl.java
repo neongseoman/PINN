@@ -3,7 +3,7 @@ package com.ssafy.be.game.service;
 import com.ssafy.be.common.exception.BaseException;
 import com.ssafy.be.common.response.BaseResponseStatus;
 import com.ssafy.be.game.model.domain.GameQuestion;
-import com.ssafy.be.game.model.dto.entity.GameQuestionDTO;
+import com.ssafy.be.game.model.dto.entitys.GameQuestionDTO;
 import com.ssafy.be.game.model.repository.GameQuestionRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -3,7 +3,7 @@ package com.ssafy.be.game.service;
 import com.ssafy.be.common.exception.BaseException;
 import com.ssafy.be.common.response.BaseResponseStatus;
 import com.ssafy.be.game.model.domain.TeamRound;
-import com.ssafy.be.game.model.dto.entity.TeamRoundDTO;
+import com.ssafy.be.game.model.dto.entitys.TeamRoundDTO;
 import com.ssafy.be.game.model.repository.TeamRoundRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;

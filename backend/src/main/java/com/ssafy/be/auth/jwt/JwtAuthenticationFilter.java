@@ -1,10 +1,6 @@
 package com.ssafy.be.auth.jwt;
 
 import com.ssafy.be.gamer.model.GamerPrincipalVO;
-import com.ssafy.be.gamer.repository.GamerLoginRedisRepository;
-import com.ssafy.be.gamer.repository.GamerRepository;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

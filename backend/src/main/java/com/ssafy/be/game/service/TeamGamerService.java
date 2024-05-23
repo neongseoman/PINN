@@ -1,8 +1,7 @@
 package com.ssafy.be.game.service;
 
 import com.ssafy.be.common.exception.BaseException;
-import com.ssafy.be.game.model.dto.entity.TeamGamerDTO;
-import org.hibernate.id.insert.GetGeneratedKeysDelegate;
+import com.ssafy.be.game.model.dto.entitys.TeamGamerDTO;
 
 import java.util.List;
 

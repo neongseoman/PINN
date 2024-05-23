@@ -2,7 +2,7 @@ package com.ssafy.be.oauth2.service;
 
 import com.ssafy.be.common.Provider.NickNameProvider;
 import com.ssafy.be.gamer.model.GamerDTO;
-import com.ssafy.be.gamer.repository.GamerRepository;
+import com.ssafy.be.gamer.model.repository.GamerRepository;
 import com.ssafy.be.oauth2.dto.KakaoOAuthConfig;
 import com.ssafy.be.oauth2.dto.KakaoUserDTO;
 import com.ssafy.be.oauth2.dto.OAuthType;

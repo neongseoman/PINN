@@ -1,4 +1,4 @@
-package com.ssafy.be.game.model.dto.entity;
+package com.ssafy.be.game.model.dto.entitys;
 
 import com.ssafy.be.game.model.domain.Theme;
 import lombok.*;

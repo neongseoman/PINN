@@ -5,7 +5,7 @@ import com.ssafy.be.common.exception.BaseException;
 import com.ssafy.be.common.response.BaseResponseStatus;
 import com.ssafy.be.gamer.model.GamerDTO;
 import com.ssafy.be.gamer.model.GamerPrincipalVO;
-import com.ssafy.be.gamer.repository.GamerLoginRedisRepository;
+import com.ssafy.be.gamer.model.repository.GamerLoginRedisRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,4 +1,4 @@
-package com.ssafy.be.gamer.repository;
+package com.ssafy.be.gamer.model.repository;
 
 import com.ssafy.be.gamer.model.GamerInfoVO;
 import org.springframework.data.repository.CrudRepository;

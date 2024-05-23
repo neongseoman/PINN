@@ -2,7 +2,7 @@ package com.ssafy.be.gamer.service;
 
 import com.ssafy.be.gamer.model.GamerDTO;
 import com.ssafy.be.gamer.model.dto.NicknameRequestDTO;
-import com.ssafy.be.gamer.repository.GamerRepository;
+import com.ssafy.be.gamer.model.repository.GamerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;

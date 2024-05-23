@@ -4,7 +4,7 @@ import com.ssafy.be.common.exception.BaseException;
 import com.ssafy.be.common.response.BaseResponseStatus;
 import com.ssafy.be.gamer.model.domain.GamerLog;
 import com.ssafy.be.gamer.model.dto.GamerLogDTO;
-import com.ssafy.be.gamer.repository.GamerLogRepository;
+import com.ssafy.be.gamer.model.repository.GamerLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

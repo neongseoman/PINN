@@ -1,7 +1,7 @@
 package com.ssafy.be.game.service;
 
 import com.ssafy.be.common.exception.BaseException;
-import com.ssafy.be.game.model.dto.entity.TeamDTO;
+import com.ssafy.be.game.model.dto.entitys.TeamDTO;
 
 import java.util.List;
 
