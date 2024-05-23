@@ -58,8 +58,8 @@
       <tr>
         <td align="center">    
           <div><b>팀장, 백엔드</b></div>
-          <div>비동기 스케줄링</div>
-          <div>OAuth 로그인</div>
+          <div>비동기 스케줄링, MongoDB 설정</div>
+          <div>OAuth 및 시큐리티</div>
         </td>
         </td>
         <td align="center">
