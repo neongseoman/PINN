@@ -1,4 +1,4 @@
-#  🌎 PINN 📍
+# 🌎 PINN 📍
 
 - 전 세계의 다양한 장소를 배경으로 즐기는, Google StreetView 기반 온라인 위치 추측 게임 “**PINN”**
 - ‘랜덤’, ‘한국’, ‘그리스’, ‘이집트’, ‘랜드마크’의 5가지 테마 중 하나를 선택해 플레이할 수 있습니다.
@@ -31,9 +31,9 @@
             <a href="https://github.com/neongseoman">박근수</a>
         </td>
         <td align="center" width="16%">
-            <a href="https://github.com/#"><img width="75%" src="#"/></a>
+            <a href="https://github.com/dynene"><img width="75%" src="readme/hcwr2.jpg"/></a>
             <br />
-            <a href="https://github.com/#">김다인</a>
+            <a href="https://github.com/dynene">김다인</a>
         </td>
         <td align="center" width="16%">
             <a href="https://github.com/kseenyoung"><img width="75%" src="readme/샐리.png"/></a>
@@ -41,19 +41,19 @@
             <a href="https://github.com/kseenyoung">김신영</a>
         </td>
         <td align="center" width="16%">
-            <a href="https://github.com/#"><img width="75%" src="#"/></a>
+            <a href="https://github.com/gimjiyong"><img width="75%" src="readme/노란목도리담비1.jpg"/></a>
             <br />
-            <a href="https://github.com/#">김지용</a>
+            <a href="https://github.com/gimjiyong">김지용</a>
         </td>
         <td align="center" width="16%">
-            <a href="https://github.com/#"><img width="75%" src="#"/></a>
+            <a href="https://github.com/sje08250"><img width="75%" src="readme/사진.jpg"/></a>
             <br />
-            <a href="https://github.com/#">손지은</a>
+            <a href="https://github.com/sje08250">손지은</a>
         </td>
         <td align="center" width="16%">
-            <a href="https://github.com/#"><img width="75%" src="#"/></a>
+            <a href="https://github.com/JDomynic"><img width="75%" src="readme\고양이.jpg"/></a>
             <br />
-            <a href="https://github.com/#">진창현</a>
+            <a href="https://github.com/JDomynic">진창현</a>
         </td>
       <tr>
         <td align="center">    
@@ -64,8 +64,8 @@
         </td>
         <td align="center">
             <div><b>백엔드, 인프라</b></div>
-            <div>ㅁㄴㅇㄹ</div>
-            <div>ㅁㄴㅇㄹ</div>
+            <div>Nginx, Grafana, Prometheus</div>
+            <div>인게임 진행 로직, Game 관련 API</div>
         </td>
 		<td align="center">
             <div><b>백엔드, 인프라</b></div>
@@ -74,16 +74,18 @@
         </td>
         <td align="center">
             <div><b>프론트엔드</b></div>
-          <div>ㅁㄴㅇㄹ</div>
+          <div>Ingame page</div>
+          <div>Waiting page</div>
         </td>
         <td align="center">
             <div><b>프론트엔드</b></div>
-          <div>ㅁㄴㅇㄹ</div>
-          <div>ㅁㄴㅇㄹ</div>
+          <div>Landing page</div>
+          <div>Lobby page</div>
         </td>
         <td align="center">
           <div><b>프론트엔드</b></div>
-          <div>ㅁㄴㅇㄹ</div>
+          <div>Room page</div>
+          <div>Result page</div>
         </td>
       </tr>
   </tr>
@@ -152,8 +154,9 @@ PINN 서비스의 각 화면에 대한 자세한 설명.
 로비 화면에서는 사용자가 게임 수행을 위한 다양한 기능을 수행할 수 있습니다.
 
 **주요 기능:**
+
 - 게임(방) 생성 하기
-![방 생성하기](readme/로비방생성.gif)
+  ![방 생성하기](readme/로비방생성.gif)
 - 게임 입장하기
 - 닉네임 바꾸기
 - 빠른 시작
@@ -171,16 +174,18 @@ PINN 서비스의 각 화면에 대한 자세한 설명.
 ![대기방](readme/대기방.gif)
 
 **설명:**
+
 - 모든 팀이 준비되면, 방장이 게임을 시작할 수 있습니다.
 - 방장은 언제든 게임의 테마, 라운드 수, 스테이지1 시간, 스테이지2 시간을 변경할 수 있습니다.
 - 게임 시작 전까지, 게임의 구성원들과 채팅으로 이야기를 나눠 보세요.
 - 다른 팀 영역을 클릭하여, 소속 팀을 옮길 수 있습니다.
-    - `준비 완료` 팀에 인원 변동이 생기는 경우, 팀은 `준비중` 상태로 돌아가게 됩니다.
-    - `준비 완료` 상태인 팀으로는 이동할 수 없습니다.
-    - 한 팀 당 최대 인원은 3명입니다.
+  - `준비 완료` 팀에 인원 변동이 생기는 경우, 팀은 `준비중` 상태로 돌아가게 됩니다.
+  - `준비 완료` 상태인 팀으로는 이동할 수 없습니다.
+  - 한 팀 당 최대 인원은 3명입니다.
 - 나가기 버튼을 통해, 로비로 돌아갈 수 있습니다.
 
 **주요 기능:**
+
 - 게임 시작
 - 팀 준비 완료
 - 참가자들과 채팅
@@ -192,30 +197,30 @@ PINN 서비스의 각 화면에 대한 자세한 설명.
 ![마우스공유](readme/마우스공유.gif)
 
 **설명:**
+
 - 테마에 따라 인게임 색상 테마도 함께 달라집니다. 테마의 분위기에 맞게 플레이해 보세요.
 - 왼쪽 상단에서 현재 라운드/현재 스테이지/테마 정보를 확인할 수 있습니다.
 - 화면의 상단 중앙에 현재 스테이지의 남은 시간이 표시됩니다.
 - 우측 상단에서, 현재 라운드의 정답과 관련된 힌트를 확인할 수 있습니다.
-    - 스테이지2로 전환될 때, 힌트가 추가로 지급됩니다. 대신, 획득 가능한 최대 점수는 감소하게 됩니다.
+  - 스테이지2로 전환될 때, 힌트가 추가로 지급됩니다. 대신, 획득 가능한 최대 점수는 감소하게 됩니다.
 - 좌측 하단의 채팅을 통해, 팀원들과 대화를 나누고 자신의 추측을 공유할 수 있습니다.
 - 우측 하단의 지도에서, 클릭을 통해 팀원들과 협업하여 예측한 장소에 핀을 찍습니다.
-    - 팀원들의 현재 마우스 커서 위치를 실시간으로 확인할 수 있습니다.
-    - 하나의 팀은 하나의 핀을 공유합니다.
-    - 예측을 마친 팀은 “제출” 버튼을 통해 현재 라운드의 최종 정답을 제출하게 됩니다.
+  - 팀원들의 현재 마우스 커서 위치를 실시간으로 확인할 수 있습니다.
+  - 하나의 팀은 하나의 핀을 공유합니다.
+  - 예측을 마친 팀은 “제출” 버튼을 통해 현재 라운드의 최종 정답을 제출하게 됩니다.
 - 각 요소별 오른쪽 상단에 위치한 👁 눈 모양 아이콘을 클릭하여, 해당 요소가 화면에 항상 표시되도록 설정할 수 있습니다.
-
 
 **주요 기능:**
 
 - 팀 멤버 간 핀 공유
 - 팀 멤버 간 마우스 위치 공유
 
-
 ### 라운드 대기방
 
 ![대기방핀공유](readme/대기방핀공유.gif)
 
 **설명:**
+
 - 라운드의 정답을 최종 제출한 팀은 라운드 대기방으로 이동합니다.
 - 다른 팀들이 최종 제출한 핀 정보와 함께, 아직 답을 제출하지 않은 팀의 핀 위치가 실시간으로 바뀌는 것을 지켜볼 수 있습니다.
 - 팀원들과 채팅을 통해 대화를 나누며, 현재 라운드의 결과 발표를 기다리게 됩니다.
@@ -225,6 +230,7 @@ PINN 서비스의 각 화면에 대한 자세한 설명.
 ![라운드결과](readme/라운드결과.gif)
 
 **설명:**
+
 - 스테이지 1과 스테이지 2에 할당된 시간이 모두 종료된 경우, 각 팀이 현재 라운드에서 획득한 점수와, 그를 바탕으로 한 팀별 순위가 공개됩니다.
 - 정답 위치, 각 팀이 제출한 핀의 위치, 그 핀들이 정답으로부터 얼마나 떨어져 있는지를 확인할 수 있습니다.
 - 한 눈에 알아보기 쉽도록, 사용자가 속한 팀은 노란색으로 강조되어 표시됩니다.
@@ -234,6 +240,7 @@ PINN 서비스의 각 화면에 대한 자세한 설명.
 ![라운드결과](readme/라운드결과.gif)
 
 **설명:**
+
 - 모든 라운드가 끝나면, 게임의 최종 결과가 공개됩니다.
 - 자신이 속한 팀이 라운드 별로 제출한 핀들을 모아 볼 수 있습니다.
 - 자신의 팀이 라운드 별로 획득한 점수를 확인할 수 있습니다.
@@ -241,8 +248,8 @@ PINN 서비스의 각 화면에 대한 자세한 설명.
 - 각 팀의 라운드 별 점수를 합산한 총점을 바탕으로 한, 현재 게임의 최종 순위를 확인할 수 있습니다.
 - 한 게임이 최종 종료되면, 해당 방은 자동으로 소멸됩니다.
 
-
 ## 아키텍처 다이어그램
+
 ![아키텍처 다이어그램](exec/PINN Archetecture 2.drawio.png)
 
 ## ERD
@@ -253,7 +260,7 @@ PINN 서비스의 각 화면에 대한 자세한 설명.
 <summary>DDL</summary>
 <div markdown="1">
 
-``` SQL
+```SQL
 CREATE TABLE `gamer` (
 	`gamer_id`	int	NOT NULL	DEFAULT auto_increment,
 	`nickname`	varchar(20)	NULL,
