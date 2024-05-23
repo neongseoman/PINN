@@ -64,7 +64,7 @@
         </td>
         <td align="center">
             <div><b>백엔드, 인프라</b></div>
-            <div>Nginx, Grafana, Prometheus</div>
+            <div>Nginx, Grafana, Prometheus 설정</div>
             <div>인게임 진행 로직, Game 관련 API</div>
         </td>
 		<td align="center">
@@ -237,7 +237,7 @@ PINN 서비스의 각 화면에 대한 자세한 설명.
 
 ### 게임 결과
 
-![라운드결과](readme/라운드결과.gif)
+![라운드결과](readme/게임결과.gif)
 
 **설명:**
 
@@ -477,3 +477,7 @@ REFERENCES `gamer` (
 </details>
 
 ## 디렉토리 구조
+
+### BE
+
+### FE
