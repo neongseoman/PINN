@@ -84,8 +84,9 @@
         </td>
         <td align="center">
           <div><b>프론트엔드</b></div>
-          <div>Room page</div>
-          <div>Result page</div>
+          <div><b>Room, Result page</b></div>
+          <div>Google Map API 커스텀</div>
+          <div>STOMP.js 기반 소켓 연결</div>
         </td>
       </tr>
   </tr>
