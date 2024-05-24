@@ -21,7 +21,7 @@
 
 ## 개발 기간
 
-2024.05.01 ~ 2024.05.20 (6주)
+2024.04.08 ~ 2024.05.20 (6주)
 
 ## 팀원
 
@@ -132,7 +132,7 @@
 <img src="https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=MongoDB&logoColor=white"/>
 </div>
 
-### 협업Tools
+### 협업 Tools
 
 <div>
 <img src="https://img.shields.io/badge/gitlab-FC6D26?style=for-the-badge&logo=gitlab&logoColor=white">
@@ -145,7 +145,7 @@
 
 <br />
 
-## 서비스 화면 예시
+## 서비스 화면 및 주요 기능 소개
 
 PINN 서비스의 각 화면에 대한 자세한 설명.
 
