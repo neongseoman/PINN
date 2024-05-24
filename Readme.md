@@ -126,8 +126,8 @@
 <img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white">
 <img src="https://img.shields.io/badge/jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=white">
 <img src="https://img.shields.io/badge/nginx-009639?style=for-the-badge&logo=nginx&logoColor=white">
-<img src="https://img.shields.io/badge/mariadb-003545?style=for-the-badge&logo=mariadb&logoColor=white">
-<img src="https://img.shields.io/badge/redis-DC382D?style=for-the-badge&logo=redis&logoColor=white">
+<img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white"/>
+<img src="https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=MongoDB&logoColor=white"/>
 </div>
 
 ### 협업Tools
@@ -552,8 +552,8 @@ backend
 ├─ dockerfile
 ├─ gradle
 │  └─ wrapper
-│     ├─ gradle-wrapper.jar
-     └─ gradle-wrapper.properties
+│    ├─ gradle-wrapper.jar
+│    └─ gradle-wrapper.properties
 ├─ gradlew
 ├─ gradlew.bat
 ├─ settings.gradle
@@ -608,9 +608,9 @@ backend
    │  │           │  └─ service
    │  │           └─ room
    │  │              ├─ controller
-   │  │              ├─ model
-   │  │              │  ├─ dto
-   │  │              │  └─ vo
+   │  │              └─ model
+   │  │                ├─ dto
+   │  │                └─ vo
    │  └─ resources
    └─ test
       └─ java
@@ -621,19 +621,6 @@ backend
                   │  └─ jwt
                   └─ common
                      └─ Provider
-```
-
-</div>
-</details>
-
-<details>
-<summary>INFRA</summary>
-<div markdown="1">
-
-```
-infra
-└─ docker-compose.yml
-└─ Readme.md
 ```
 
 </div>
