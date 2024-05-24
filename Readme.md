@@ -1,11 +1,13 @@
+<img width="50%" src="readme/pinn.png"/>
+
 # 🌎 PINN 📍
 
-- 전 세계의 다양한 장소를 배경으로 즐기는, Google StreetView 기반 온라인 위치 추측 게임 “**PINN”**
+- 전 세계의 다양한 장소를 배경으로 즐기는, Google StreetView 기반 온라인 위치 추측 게임! **"PINN"**
 - ‘랜덤’, ‘한국’, ‘그리스’, ‘이집트’, ‘랜드마크’의 5가지 테마 중 하나를 선택해 플레이할 수 있습니다.
 - 각 게임은 여러 개의 라운드로 구성되고, 하나의 라운드는 2개의 스테이지로 구분됩니다.
 - 팀원들과 핀을 공유하며, 스트릿 뷰와 힌트를 바탕으로 정답 위치를 추측하세요.
 - 각 라운드의 점수를 종합하여 최종 순위가 결정됩니다.
-- 최종 1위 팀이 되어, 보물을 차지하세요.
+- 최종 1위 팀이 되어, 숨겨진 보물을 차지하세요.
 
 ## 목차
 
@@ -19,7 +21,7 @@
 
 ## 개발 기간
 
-2024.05.01 ~ 2024.05.21 (6주)
+2024.05.01 ~ 2024.05.20 (6주)
 
 ## 팀원
 
@@ -254,8 +256,7 @@ PINN 서비스의 각 화면에 대한 자세한 설명.
 - 한 게임이 최종 종료되면, 해당 방은 자동으로 소멸됩니다.
 
 ## 아키텍처 다이어그램
-
-![아키텍처 다이어그램](exec/PINN Archetecture 2.drawio.png)
+<img width="75%" src="exec/PINN Archetecture 2.drawio.png"/>
 
 ## ERD
 
@@ -484,7 +485,7 @@ REFERENCES `gamer` (
 ## 디렉토리 구조
 
 <details>
-<summary>FE</summary>
+<summary><b>FE<b/></summary>
 <div markdown="1">
 
 ```
@@ -543,7 +544,7 @@ frontend
 </details>
 
 <details>
-<summary>BE</summary>
+<summary><b>BE<b/></summary>
 <div markdown="1">
 
 ```
