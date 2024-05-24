@@ -1,4 +1,6 @@
-<img width="50%" src="readme/pinn.png"/>
+<p align="center">
+  <img width="40%" src="readme/pinn.png"/>
+</p>
 
 # 🌎 PINN 📍
 
