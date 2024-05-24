@@ -81,6 +81,7 @@
             <div><b>프론트엔드</b></div>
           <div>Landing page</div>
           <div>Lobby page</div>
+		  <div>OAuth Login</div>
         </td>
         <td align="center">
           <div><b>프론트엔드</b></div>
