@@ -483,6 +483,158 @@ REFERENCES `gamer` (
 
 ## 디렉토리 구조
 
-### BE
+<details>
+<summary>FE</summary>
+<div markdown="1">
 
-### FE
+```
+frontend
+├─ .env
+├─ .eslintrc.json
+├─ .gitignore
+├─ .prettierrc
+├─ Dockerfile
+├─ next-env.d.ts
+├─ next.config.mjs
+├─ package-lock.json
+├─ package.json
+├─ public
+│  └─ assets
+│     ├─ fonts
+│     ├─ images
+│     │  ├─ lotties
+│     │  ├─ svg
+│     │  └─ themes
+│     └─ sounds
+├─ README.md
+├─ src
+│  ├─ app
+│  │  ├─ (landing)
+│  │  └─ (main)
+│  │     ├─ game
+│  │     │  └─ [gameId]
+│  │     │     ├─ [round]
+│  │     │     │  ├─ (ingame)
+│  │     │     │  │  └─ _components
+│  │     │     │  ├─ result
+│  │     │     │  │  └─ _components
+│  │     │     │  └─ waiting
+│  │     │     │      └─ _components
+│  │     │     └─ end
+│  │     │        ├─ 1
+│  │     │        │  └─ _components
+│  │     │        └─ 2
+│  │     ├─ lobby
+│  │     │  └─ _components
+│  │     ├─ login
+│  │     └─ room
+│  │        └─ [id]
+│  │           └─ _components
+│  ├─ components
+│  ├─ stores
+│  ├─ types
+│  └─ utils
+├─ tsconfig.json
+└─ yarn.lock
+
+```
+
+</div>
+</details>
+
+<details>
+<summary>BE</summary>
+<div markdown="1">
+
+```
+backend
+├─ build.gradle
+├─ dockerfile
+├─ gradle
+│  └─ wrapper
+│     ├─ gradle-wrapper.jar
+     └─ gradle-wrapper.properties
+├─ gradlew
+├─ gradlew.bat
+├─ settings.gradle
+└─ src
+   ├─ main
+   │  ├─ java
+   │  │  └─ com
+   │  │     └─ ssafy
+   │  │        └─ be
+   │  │           ├─ auth
+   │  │           │  ├─ handler
+   │  │           │  ├─ jwt
+   │  │           │  └─ model
+   │  │           ├─ common
+   │  │           │  ├─ component
+   │  │           │  ├─ config
+   │  │           │  ├─ exception
+   │  │           │  ├─ handler
+   │  │           │  ├─ Interceptor
+   │  │           │  ├─ model
+   │  │           │  │  ├─ domain
+   │  │           │  │  ├─ dto
+   │  │           │  │  └─ repository
+   │  │           │  ├─ Provider
+   │  │           │  └─ response
+   │  │           ├─ game
+   │  │           │  ├─ controller
+   │  │           │  ├─ model
+   │  │           │  │  ├─ domain
+   │  │           │  │  ├─ dto
+   │  │           │  │  │  ├─ entitys
+   │  │           │  │  │  └─ hint
+   │  │           │  │  ├─ repository
+   │  │           │  │  └─ vo
+   │  │           │  └─ service
+   │  │           ├─ gamer
+   │  │           │  ├─ controller
+   │  │           │  ├─ model
+   │  │           │  │  ├─ domain
+   │  │           │  │  ├─ dto
+   │  │           │  │  ├─ repository
+   │  │           │  └─ service
+   │  │           ├─ lobby
+   │  │           │  ├─ controller
+   │  │           │  ├─ model
+   │  │           │  │  ├─ dto
+   │  │           │  │  └─ vo
+   │  │           │  └─ service
+   │  │           ├─ oauth2
+   │  │           │  ├─ controller
+   │  │           │  ├─ dto
+   │  │           │  └─ service
+   │  │           └─ room
+   │  │              ├─ controller
+   │  │              ├─ model
+   │  │              │  ├─ dto
+   │  │              │  └─ vo
+   │  └─ resources
+   └─ test
+      └─ java
+         └─ com
+            └─ ssafy
+               └─ be
+                  ├─ auth
+                  │  └─ jwt
+                  └─ common
+                     └─ Provider
+```
+
+</div>
+</details>
+
+<details>
+<summary>INFRA</summary>
+<div markdown="1">
+
+```
+infra
+└─ docker-compose.yml
+└─ Readme.md
+```
+
+</div>
+</details>
